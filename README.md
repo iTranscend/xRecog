@@ -23,4 +23,4 @@ python recognize_video.py --detector face_detection_model \
 	--le output/le.pickle
 ```
 
-Full docs @ [pyimagesearch] (https://www.pyimagesearch.com/2018/09/24/opencv-face-recognition/)
+Full docs @ [pyimagesearch](https://www.pyimagesearch.com/2018/09/24/opencv-face-recognition/)
