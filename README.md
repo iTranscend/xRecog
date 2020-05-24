@@ -4,11 +4,19 @@
 Full docs @ [pyimagesearch](https://www.pyimagesearch.com/2018/09/24/opencv-face-recognition/)
 
 
-# Massively Abridged docs
-## Dependencies 
-[OpenCv install guide](https://www.pyimagesearch.com/opencv-tutorials-resources-guides/)
+## Massively Abridged docs
+### Dependencies 
+
+	[OpenCv install guide](https://www.pyimagesearch.com/opencv-tutorials-resources-guides/)
+	python
+	imutils
+	numpy
+	pickle
+	argparse
+	
 ### Usage 
-Commands should be executed from the root directory in this order: 
+
+	Commands should be executed from the root directory in this order: 
 
 ###### To extract embeddings from all images in the dataset:
 ```
