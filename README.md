@@ -6,8 +6,7 @@ Full docs @ [pyimagesearch](https://www.pyimagesearch.com/2018/09/24/opencv-face
 
 ## Massively Abridged docs
 ### Dependencies 
-
-[OpenCv install guide](https://www.pyimagesearch.com/opencv-tutorials-resources-guides/)
+[OpenCv install guide](https://www.pyimagesearch.com/opencv-tutorials-resources-guides/)	
 	python
 	imutils
 	numpy
