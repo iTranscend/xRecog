@@ -324,6 +324,12 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter, xrecog.Ui_MainWindow
         self.pushRow(markPresent, student)
 
     def pushRow(self, isPresent, student):
+        presentStudents = len(self.students['present'])
+        absentStudents = len(self.students['absent'])
+        self.totalLineEdit.setText("%d" % (presentStudents + absentStudents))
+        self.presentLineEdit.setText("%d" % presentStudents)
+        self.absentLineEdit.setText("%d" % absentStudents)
+
         table = self.findChild(QtWidgets.QTableWidget, '%sTable' %
                                ("present" if isPresent else "absent"))
         index = table.rowCount()
@@ -356,6 +362,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter, xrecog.Ui_MainWindow
         if student is None:
             return
         self.students['absent'].remove(student)
+        self.students['present'].append(student)
         self.absentTable.removeRow(index)
         self.pushRow(True, student)
         self.emit('foundStudent', student)
