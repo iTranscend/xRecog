@@ -20,8 +20,8 @@
    <string>About xRegog</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../../../../d3vstash/python/banky/resource.qrc">
-    <normaloff>:/logos/xrecog-16px.svg</normaloff>:/logos/xrecog-16px.svg</iconset>
+   <iconset resource="resources.qrc">
+    <normaloff>:/logos/xrecog-64px.svg</normaloff>:/logos/xrecog-64px.svg</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="1" column="0">
@@ -97,7 +97,7 @@ p, li { white-space: pre-wrap; }
   </layout>
  </widget>
  <resources>
-  <include location="../../../../../d3vstash/python/banky/resource.qrc"/>
+  <include location="resources.qrc"/>
  </resources>
  <connections/>
 </ui>

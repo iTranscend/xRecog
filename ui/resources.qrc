@@ -1,6 +1,5 @@
 <RCC>
   <qresource prefix="logos">
-    <file>xrecog-16px.svg</file>
     <file>xrecog-64px.svg</file>
   </qresource>
 </RCC>
