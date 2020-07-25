@@ -94,7 +94,7 @@ def mountTestInstance():
 
 
 if __name__ == '__main__':
-    global main_window, capture_window
+    global main_window
     app = QtWidgets.QApplication(sys.argv)
     main_window = XrecogMainWindow()
     mountTestInstance()
