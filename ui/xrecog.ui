@@ -441,9 +441,6 @@
             <property name="insertPolicy">
              <enum>QComboBox::InsertAtBottom</enum>
             </property>
-            <property name="placeholderText">
-             <string/>
-            </property>
            </widget>
           </item>
          </layout>

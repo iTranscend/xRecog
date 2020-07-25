@@ -513,9 +513,6 @@
         <layout class="QHBoxLayout" name="deviceSelectorHLayout">
          <item>
           <widget class="QComboBox" name="deviceSelectorComboBox">
-           <property name="placeholderText">
-            <string>Select a device</string>
-           </property>
           </widget>
          </item>
          <item>
