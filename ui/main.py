@@ -1,8 +1,6 @@
 import os
 import sys
 import random
-import xrecog
-import capture
 import tempfile
 from PyQt5 import uic, QtWidgets, QtMultimedia, QtMultimediaWidgets, QtCore, QtGui
 
@@ -23,7 +21,7 @@ class EventEmitter(object):
             handler(*args)
 
 
-class XrecogCaptureWindow(QtWidgets.QDialog, EventEmitter, capture.Ui_Form):
+class XrecogCaptureWindow(QtWidgets.QDialog, EventEmitter):
     closed = QtCore.pyqtSignal()
 
     def __init__(self):
@@ -196,7 +194,7 @@ class XrecogCaptureWindow(QtWidgets.QDialog, EventEmitter, capture.Ui_Form):
         return [image["path"] for image in self.images]
 
 
-class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter, xrecog.Ui_MainWindow):
+class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
     def __init__(self):
         super(XrecogMainWindow, self).__init__()
         uic.loadUi('xrecog.ui', self)
