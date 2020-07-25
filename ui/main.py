@@ -126,8 +126,8 @@ class XrecogCaptureWindow(QtWidgets.QDialog, EventEmitter, capture.Ui_Form):
         self.camera = QtMultimedia.QCamera(self.selected_camera)
         self.camera.setViewfinder(self.viewfinder)
         self.camera.setCaptureMode(QtMultimedia.QCamera.CaptureStillImage)
-        self.camera.statusChanged.connect(lambda status: self.captureButton.setDisabled(
-            False) if status == QtMultimedia.QCamera.ActiveStatus and len(self.images) < 12 else None)
+        self.camera.statusChanged.connect(lambda status: self.enableCaptureButton(
+        ) if status == QtMultimedia.QCamera.ActiveStatus and len(self.images) < 12 else None)
         self.camera.error.connect(
             lambda: self.alert('camera error', self.camera.errorString()))
         self.camera.start()
@@ -136,6 +136,10 @@ class XrecogCaptureWindow(QtWidgets.QDialog, EventEmitter, capture.Ui_Form):
         self.capture.error.connect(
             lambda i, e, s: self.alert('capture error', s))
         self.capture.imageCaptured.connect(self.imageCaptured)
+
+    def enableCaptureButton(self):
+        self.captureButton.setDisabled(False)
+        self.captureButton.setFocus(True)
 
     def captureImage(self):
         save_path = tempfile.mktemp(suffix='.jpg')
@@ -152,8 +156,7 @@ class XrecogCaptureWindow(QtWidgets.QDialog, EventEmitter, capture.Ui_Form):
     def displayImages(self, force=False):
         lastIndex = -1
         if (len(self.images) < 12):
-            self.captureButton.setDisabled(False)
-            self.captureButton.setFocus(True)
+            self.enableCaptureButton()
         for (index, imageObject) in enumerate(self.images):
             lastIndex = index
             slot = self.imageSlots[index]
