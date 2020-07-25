@@ -277,8 +277,6 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter, xrecog.Ui_MainWindow
         markPresent = self.presentCheckBox.isChecked()
         capturedImages = ensureValid(self.captureButton,
                                      self.capture_window and self.capture_window.getImages(), lambda images: len(images) == 12)
-        print(firstName, middleName, lastName, entryYear,
-              matriculationCode, courseOfStudy, markPresent, capturedImages)
         if (all(x is not None for x in [firstName, middleName, lastName, entryYear,
                                         matriculationCode, courseOfStudy, capturedImages])):
             studentData = {
@@ -292,8 +290,6 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter, xrecog.Ui_MainWindow
                 "capturedImages": capturedImages
             }
             self.emit('registrationData', studentData)
-        else:
-            print("Incomplete registration data")
 
     def setMatricValidator(self, validator):
         self.matriculationCodeValidator = validator
