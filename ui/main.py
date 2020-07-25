@@ -367,6 +367,9 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter, xrecog.Ui_MainWindow
         self.pushRow(True, student)
         self.emit('foundStudent', student)
 
+    def getAbsentStudentsMatric(self):
+        return [student['matriculationCode'] for student in self.students['absent']]
+
 
 CSS_BG_RED = "background-color: rgb(223, 36, 15);"
 
@@ -462,15 +465,15 @@ def mountTestInstance():
 
     def startAttendanceCamera(*args):
         print("stopCameraButtonClicked")
-        numStudents = random.randint(0, len(students))
-        foundStudentsIndexes = set()
-        while len(foundStudentsIndexes) < numStudents:
-            foundStudentsIndexes.add(students.index(random.choice(students)))
-        print("Found %d students" % len(foundStudentsIndexes))
-        if (len(foundStudentsIndexes) == 0):
+        students = main_window.getAbsentStudentsMatric()
+        foundStudents = random.sample(
+            students, k=random.randint(0, len(students)))
+        print("Found %d student%s" %
+              (len(foundStudents), "" if len(foundStudents) == 1 else "s"))
+        if (len(foundStudents) == 0):
             return
-        for index in foundStudentsIndexes:
-            main_window.markPresent(students[index]["matriculationCode"])
+        for student in foundStudents:
+            main_window.markPresent(student)
 
     main_window.on('startCameraButtonClicked', startAttendanceCamera)
 
