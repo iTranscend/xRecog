@@ -26,7 +26,7 @@ class XrecogCaptureWindow(QtWidgets.QDialog, EventEmitter):
 
     def __init__(self):
         super(XrecogCaptureWindow, self).__init__()
-        uic.loadUi('capture.ui', self)
+        uic.loadUi(translatePath('capture.ui'), self)
         self.images = []
         self.imageSlots = []
         self.selected_camera = None
@@ -197,7 +197,7 @@ class XrecogCaptureWindow(QtWidgets.QDialog, EventEmitter):
 class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
     def __init__(self):
         super(XrecogMainWindow, self).__init__()
-        uic.loadUi('xrecog.ui', self)
+        uic.loadUi(translatePath('xrecog.ui'), self)
         self.capture_window = None
         self.prepareAttendance()
         self.prepareRegistration()
@@ -383,6 +383,9 @@ def ensureValid(object, value, validifier=None):
         return None
     return value
 
+
+def translatePath(file):
+    return os.path.join(os.path.dirname(os.path.realpath(__file__)), file)
 
 def mountTestInstance():
     students = [
