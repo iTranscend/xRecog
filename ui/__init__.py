@@ -234,8 +234,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             self.registerDispatcher('startCameraButtonClicked'))
         self.stopCameraButton.clicked.connect(
             self.registerDispatcher('stopCameraButtonClicked'))
-        self.printButton.clicked.connect(
-            self.registerDispatcher('printButtonClicked'))
+        self.printButton.clicked.connect(self.print)
         self.searchLineEdit.textChanged.connect(self.lookupText)
 
     def prepareRegistration(self):
@@ -414,6 +413,49 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
 
     def getAbsentStudentsMatric(self):
         return [student['matriculationCode'] for student in self.students['absent']]
+
+    def print(self):
+        document = QtGui.QTextDocument()
+        cursor = QtGui.QTextCursor(document)
+
+        def insertTable(students):
+            rowCount = len(students)
+            table = cursor.insertTable(rowCount + 1, 6)
+            cursor.insertText('Matric Code')
+            cursor.movePosition(QtGui.QTextCursor.NextCell)
+            cursor.insertText('First Name')
+            cursor.movePosition(QtGui.QTextCursor.NextCell)
+            cursor.insertText('Middle Name')
+            cursor.movePosition(QtGui.QTextCursor.NextCell)
+            cursor.insertText('Last Name')
+            cursor.movePosition(QtGui.QTextCursor.NextCell)
+            cursor.insertText('Year')
+            cursor.movePosition(QtGui.QTextCursor.NextCell)
+            cursor.insertText('Course of Study')
+            cursor.movePosition(QtGui.QTextCursor.NextCell)
+            for (row, student) in enumerate(students):
+                cursor.insertText(student['matriculationCode'])
+                cursor.movePosition(QtGui.QTextCursor.NextCell)
+                cursor.insertText(student['firstName'])
+                cursor.movePosition(QtGui.QTextCursor.NextCell)
+                cursor.insertText(student['middleName'])
+                cursor.movePosition(QtGui.QTextCursor.NextCell)
+                cursor.insertText(student['lastName'])
+                cursor.movePosition(QtGui.QTextCursor.NextCell)
+                cursor.insertText("%d" % student['entryYear'])
+                cursor.movePosition(QtGui.QTextCursor.NextCell)
+                cursor.insertText(self.courses[student['courseOfStudy']])
+                cursor.movePosition(QtGui.QTextCursor.NextCell)
+
+        cursor.insertText("Present Students")
+        insertTable(self.students['present'])
+        cursor.movePosition(QtGui.QTextCursor.Down)
+        cursor.insertText("Absent Students")
+        insertTable(self.students['absent'])
+        cursor.movePosition(QtGui.QTextCursor.Down)
+        print(document.toMarkdown())
+        with open('index.html', 'w') as file:
+            file.write(document.toHtml())
 
 
 CSS_BG_RED = "background-color: rgb(223, 36, 15);"
