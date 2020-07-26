@@ -187,7 +187,7 @@
             </property>
             <property name="icon">
              <iconset theme="camera">
-              <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+              <normaloff>.</normaloff>.</iconset>
             </property>
            </widget>
           </item>
@@ -198,7 +198,7 @@
             </property>
             <property name="icon">
              <iconset theme="stop">
-              <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+              <normaloff>.</normaloff>.</iconset>
             </property>
            </widget>
           </item>
@@ -294,7 +294,7 @@
             </property>
             <property name="icon">
              <iconset theme="document-print">
-              <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+              <normaloff>.</normaloff>.</iconset>
             </property>
            </widget>
           </item>
@@ -496,7 +496,7 @@
             </property>
             <property name="icon">
              <iconset theme="undo">
-              <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+             <normaloff>.</normaloff>.</iconset>
             </property>
            </widget>
           </item>
@@ -507,7 +507,7 @@
             </property>
             <property name="icon">
              <iconset theme="user">
-              <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+              <normaloff>.</normaloff>.</iconset>
             </property>
            </widget>
           </item>
@@ -610,7 +610,7 @@
             </property>
             <property name="icon">
              <iconset theme="camera">
-              <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+              <normaloff>.</normaloff>.</iconset>
             </property>
            </widget>
           </item>
@@ -670,7 +670,7 @@
   <action name="actionQuit">
    <property name="icon">
     <iconset theme="application-exit">
-     <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Quit</string>
@@ -679,7 +679,7 @@
   <action name="actionResetAttendance">
    <property name="icon">
     <iconset theme="undo">
-     <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Reset Attendance</string>
