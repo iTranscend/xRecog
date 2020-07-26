@@ -688,7 +688,7 @@
   </action>
   <action name="actionResetAttendance">
    <property name="icon">
-    <iconset theme="undo">
+    <iconset theme="document-revert">
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
@@ -706,7 +706,8 @@
   </action>
   <action name="actionExportHTML">
    <property name="icon">
-    <iconset theme="document-export"/>
+    <iconset theme="document-export">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Export HTML</string>
@@ -714,7 +715,8 @@
   </action>
   <action name="actionExportMarkdown">
    <property name="icon">
-    <iconset theme="document-export"/>
+    <iconset theme="document-export">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Export Markdown</string>
@@ -722,7 +724,8 @@
   </action>
   <action name="actionShowHTMLReport">
    <property name="icon">
-    <iconset theme="document-preview"/>
+    <iconset theme="document-preview">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Show HTML Report</string>
@@ -730,7 +733,8 @@
   </action>
   <action name="actionShowMarkdownReport">
    <property name="icon">
-    <iconset theme="document-preview"/>
+    <iconset theme="document-preview">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Show Markdown Report</string>
