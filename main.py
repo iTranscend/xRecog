@@ -2,6 +2,7 @@ from core import extract_embeddings
 from core import recognize_video
 from core import train_model
 import sys
+import os
 from ui import QtWidgets, XrecogMainWindow
 from ui import resources_rc
 
@@ -45,6 +46,9 @@ def main():
 
 
 if __name__ == "__main__":
+    if (not os.path.exists("core/output")):
+        os.mkdir("core/output")
+
     extractEmbeddings()
     trainModel()
     recognizeVideo()
