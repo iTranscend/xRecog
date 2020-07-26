@@ -2,7 +2,7 @@ import os
 import sys
 import random
 import tempfile
-import resources_rc
+
 from PyQt5 import uic, QtWidgets, QtMultimedia, QtMultimediaWidgets, QtCore, QtGui
 
 

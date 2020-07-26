@@ -1,7 +1,7 @@
 import os
 import sys
 import random
-
+import resources_rc
 from __init__ import XrecogMainWindow, QtWidgets
 
 

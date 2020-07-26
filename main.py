@@ -3,6 +3,7 @@ import core.recognize_video
 import core.train_model
 import sys
 from ui import QtWidgets, XrecogMainWindow
+from ui import resources_rc
 
 
 def extractEmbeddings():
