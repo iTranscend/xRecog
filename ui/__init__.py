@@ -205,8 +205,19 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.matriculationCodeValidator = None
         self.aboutText = None
         self.courses = []
-        self.students = {"present": [], "absent": []}
+        self.resetAttendance()
         self.actionAbout.triggered.connect(self.showAbout)
+        self.actionResetAttendance.triggered.connect(self.resetAttendance)
+
+    def resetAttendance(self):
+        self.students = {"present": [], "absent": []}
+        self.presentTable.clearContents()
+        self.absentTable.clearContents()
+        self.presentTable.setRowCount(0)
+        self.absentTable.setRowCount(0)
+        self.totalLineEdit.setText("0")
+        self.presentLineEdit.setText("0")
+        self.absentLineEdit.setText("0")
 
     def registerDispatcher(self, objectName):
         return lambda *args: self.emit(objectName, *args)
