@@ -273,7 +273,6 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                                         self.matricNumberLineEdit.text(), self.matriculationCodeValidator)
         courseOfStudy = ensureValid(self.courseComboBox,
                                     self.courseComboBox.currentIndex(), lambda index: index >= 0)
-        markPresent = self.presentCheckBox.isChecked()
         capturedImages = ensureValid(self.captureButton,
                                      self.capture_window and self.capture_window.getImages(), lambda images: len(images) == 12)
         if (all(x is not None for x in [firstName, middleName, lastName, entryYear,
@@ -285,7 +284,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                 "entryYear": int(entryYear),
                 "matriculationCode": matriculationCode,
                 "courseOfStudy": courseOfStudy,
-                "markPresent": markPresent,
+                "markPresent": False,
                 "capturedImages": capturedImages
             }
             self.emit('registrationData', studentData)
