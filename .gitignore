@@ -1,5 +1,9 @@
-# Ignore output files
-core/output/
+# Ignore output folder
+core/output/*
+
+# Ignore some dataset folders
+core/dataset/
+!core/dataset/0000
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
