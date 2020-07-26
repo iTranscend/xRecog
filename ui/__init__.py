@@ -381,7 +381,6 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             table.showRow(index)
 
     def lookupText(self, query):
-        print(query)
         query = query.lower()
         self.query = query
         for (table, students) in (
