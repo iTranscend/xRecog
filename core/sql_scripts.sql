@@ -1,1 +1,0 @@
-CREATE TABLE `attendance`.`attendees` ( `id` INT NOT NULL AUTO_INCREMENT , `name` VARCHAR NOT NULL , `is_present` BOOLEAN NOT NULL DEFAULT FALSE , PRIMARY KEY (`id`)) ENGINE = InnoDB;
