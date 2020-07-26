@@ -590,8 +590,7 @@
              <string>Register</string>
             </property>
             <property name="icon">
-             <iconset theme="user">
-              <normaloff>.</normaloff>.</iconset>
+             <iconset theme="user-identity"/>
             </property>
            </widget>
           </item>
