@@ -375,13 +375,16 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         query = query or self.query
         searchFields = [student['firstName'], student['middleName'], student['lastName'],
                         str(student['entryYear']), student['matriculationCode'], self.courses[student['courseOfStudy']]]
-        if query and not any(query in value.lower() for value in searchFields):
+        if query and not all(any(
+                text in part
+                for value in searchFields
+                for part in filter(bool, value.lower().split(' '))) for text in query):
             table.hideRow(index)
         elif table.isRowHidden(index):
             table.showRow(index)
 
     def lookupText(self, query):
-        query = query.lower()
+        query = list(filter(bool, query.lower().split(' ')))
         self.query = query
         for (table, students) in (
                 (self.presentTable, self.students['present']),
