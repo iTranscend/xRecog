@@ -204,6 +204,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.prepareRegistration()
         self.matriculationCodeValidator = None
         self.aboutText = None
+        self.query = None
         self.courses = []
         self.resetAttendance()
         self.actionAbout.triggered.connect(self.showAbout)
@@ -229,8 +230,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             self.registerDispatcher('stopCameraButtonClicked'))
         self.printButton.clicked.connect(
             self.registerDispatcher('printButtonClicked'))
-        self.searchLineEdit.textChanged.connect(
-            self.registerDispatcher('searchLineEdit'))
+        self.searchLineEdit.textChanged.connect(self.lookupText)
 
     def prepareRegistration(self):
         self.clearRegistrationForm()
@@ -369,6 +369,26 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         lastNameItem.setText(student["lastName"])
         yearItem.setText("%d" % student["entryYear"])
         courseItem.setText(self.courses[student["courseOfStudy"]])
+        self.validateQuery(table, index, student)
+
+    def validateQuery(self, table, index, student, query=None):
+        query = query or self.query
+        searchFields = [student['firstName'], student['middleName'], student['lastName'],
+                        str(student['entryYear']), student['matriculationCode'], self.courses[student['courseOfStudy']]]
+        if query and not any(query in value.lower() for value in searchFields):
+            table.hideRow(index)
+        elif table.isRowHidden(index):
+            table.showRow(index)
+
+    def lookupText(self, query):
+        print(query)
+        query = query.lower()
+        self.query = query
+        for (table, students) in (
+                (self.presentTable, self.students['present']),
+                (self.absentTable, self.students['absent'])):
+            for (index, student) in enumerate(students):
+                self.validateQuery(table, index, student, query)
 
     def markPresent(self, matricCode):
         try:
