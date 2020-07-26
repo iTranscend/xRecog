@@ -305,6 +305,11 @@
             <property name="toolButtonStyle">
              <enum>Qt::ToolButtonTextBesideIcon</enum>
             </property>
+            <addaction name="actionPrintPreview"/>
+            <addaction name="actionExportHTML"/>
+            <addaction name="actionExportMarkdown"/>
+            <addaction name="actionShowHTMLReport"/>
+            <addaction name="actionShowMarkdownReport"/>
            </widget>
           </item>
          </layout>
@@ -688,6 +693,47 @@
    </property>
    <property name="text">
     <string>Reset Attendance</string>
+   </property>
+  </action>
+  <action name="actionPrintPreview">
+   <property name="icon">
+    <iconset theme="document-print-preview">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Print Preview</string>
+   </property>
+  </action>
+  <action name="actionExportHTML">
+   <property name="icon">
+    <iconset theme="document-export"/>
+   </property>
+   <property name="text">
+    <string>Export HTML</string>
+   </property>
+  </action>
+  <action name="actionExportMarkdown">
+   <property name="icon">
+    <iconset theme="document-export"/>
+   </property>
+   <property name="text">
+    <string>Export Markdown</string>
+   </property>
+  </action>
+  <action name="actionShowHTMLReport">
+   <property name="icon">
+    <iconset theme="document-preview"/>
+   </property>
+   <property name="text">
+    <string>Show HTML Report</string>
+   </property>
+  </action>
+  <action name="actionShowMarkdownReport">
+   <property name="icon">
+    <iconset theme="document-preview"/>
+   </property>
+   <property name="text">
+    <string>Show Markdown Report</string>
    </property>
   </action>
  </widget>
