@@ -1,9 +1,8 @@
 import os
 import sys
 import random
-import xrecog
-import capture
 import tempfile
+import resources_rc
 from PyQt5 import uic, QtWidgets, QtMultimedia, QtMultimediaWidgets, QtCore, QtGui
 
 
@@ -23,12 +22,12 @@ class EventEmitter(object):
             handler(*args)
 
 
-class XrecogCaptureWindow(QtWidgets.QDialog, EventEmitter, capture.Ui_Form):
+class XrecogCaptureWindow(QtWidgets.QDialog, EventEmitter):
     closed = QtCore.pyqtSignal()
 
     def __init__(self):
         super(XrecogCaptureWindow, self).__init__()
-        uic.loadUi('capture.ui', self)
+        uic.loadUi(translatePath('capture.ui'), self)
         self.images = []
         self.imageSlots = []
         self.selected_camera = None
@@ -196,10 +195,10 @@ class XrecogCaptureWindow(QtWidgets.QDialog, EventEmitter, capture.Ui_Form):
         return [image["path"] for image in self.images]
 
 
-class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter, xrecog.Ui_MainWindow):
+class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
     def __init__(self):
         super(XrecogMainWindow, self).__init__()
-        uic.loadUi('xrecog.ui', self)
+        uic.loadUi(translatePath('xrecog.ui'), self)
         self.capture_window = None
         self.prepareAttendance()
         self.prepareRegistration()
@@ -277,8 +276,6 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter, xrecog.Ui_MainWindow
         markPresent = self.presentCheckBox.isChecked()
         capturedImages = ensureValid(self.captureButton,
                                      self.capture_window and self.capture_window.getImages(), lambda images: len(images) == 12)
-        print(firstName, middleName, lastName, entryYear,
-              matriculationCode, courseOfStudy, markPresent, capturedImages)
         if (all(x is not None for x in [firstName, middleName, lastName, entryYear,
                                         matriculationCode, courseOfStudy, capturedImages])):
             studentData = {
@@ -292,8 +289,6 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter, xrecog.Ui_MainWindow
                 "capturedImages": capturedImages
             }
             self.emit('registrationData', studentData)
-        else:
-            print("Incomplete registration data")
 
     def setMatricValidator(self, validator):
         self.matriculationCodeValidator = validator
@@ -340,12 +335,12 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter, xrecog.Ui_MainWindow
         lastNameItem = QtWidgets.QTableWidgetItem()
         yearItem = QtWidgets.QTableWidgetItem()
         courseItem = QtWidgets.QTableWidgetItem()
-        table.setVerticalHeaderItem(index, matricItem)
-        table.setItem(index, 0, firstNameItem)
-        table.setItem(index, 1, middleNameItem)
-        table.setItem(index, 2, lastNameItem)
-        table.setItem(index, 3, yearItem)
-        table.setItem(index, 4, courseItem)
+        table.setItem(index, 0, matricItem)
+        table.setItem(index, 1, firstNameItem)
+        table.setItem(index, 2, middleNameItem)
+        table.setItem(index, 3, lastNameItem)
+        table.setItem(index, 4, yearItem)
+        table.setItem(index, 5, courseItem)
         matricItem.setText(student["matriculationCode"])
         firstNameItem.setText(student["firstName"])
         middleNameItem.setText(student["middleName"])
@@ -367,6 +362,9 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter, xrecog.Ui_MainWindow
         self.pushRow(True, student)
         self.emit('foundStudent', student)
 
+    def getAbsentStudentsMatric(self):
+        return [student['matriculationCode'] for student in self.students['absent']]
+
 
 CSS_BG_RED = "background-color: rgb(223, 36, 15);"
 
@@ -387,98 +385,5 @@ def ensureValid(object, value, validifier=None):
     return value
 
 
-def mountTestInstance():
-    students = [
-        {
-            'firstName': 'Joanna',
-            'middleName': 'Emily',
-            'lastName': 'Spike',
-            'entryYear': 2018,
-            'matriculationCode': '8472',
-            'courseOfStudy': 0,
-            'markPresent': False
-        },
-        {
-            'firstName': 'Jules',
-            'middleName': 'Alison',
-            'lastName': 'Friday',
-            'entryYear': 2019,
-            'matriculationCode': '6485',
-            'courseOfStudy': 4,
-            'markPresent': False
-        },
-        {
-            'firstName': 'Jimmy',
-            'middleName': 'Tom',
-            'lastName': 'Fellow',
-            'entryYear': 2020,
-            'matriculationCode': '5578',
-            'courseOfStudy': 3,
-            'markPresent': False
-        },
-        {
-            'firstName': 'Janet',
-            'middleName': 'Relly',
-            'lastName': 'Francesca',
-            'entryYear': 2019,
-            'matriculationCode': '6645',
-            'courseOfStudy': 1,
-            'markPresent': False
-        },
-    ]
-
-    courses = [
-        "Computer Science",
-        "Physics",
-        "Chemistry",
-        "Law",
-        "Sociology",
-        "Political Sciences",
-        "Art",
-    ]
-
-    main_window.loadCourses(courses)
-    main_window.loadStudents(students)
-
-    def handleTestRegData(data):
-        main_window.addStudent(data)
-        print("Full Name: %s%s %s" % (
-            data["firstName"],
-            " %s" % data["middleName"] if data["middleName"] else "",
-            data["lastName"],
-        ))
-        print("Entry Year: %d" % data["entryYear"])
-        print("Matriculation Code: %s" % data["matriculationCode"])
-        print("Course of study: %s" % courses[data["courseOfStudy"]])
-        print("Mark as present: %s" % "yes" if data["markPresent"] else "no")
-        print("Captured Images:")
-        for image in data["capturedImages"]:
-            # os.rename(image["path"], os.path.join(dir, "%02d" % index))
-            print(" > %s" % image)
-            os.unlink(image)
-        main_window.resetRegistrationForm()
-    main_window.on('registrationData', handleTestRegData)
-    main_window.setRegistrationYearRange(2014, 2023)
-
-    def startAttendanceCamera(*args):
-        print("stopCameraButtonClicked")
-        numStudents = random.randint(0, len(students))
-        foundStudentsIndexes = set()
-        while len(foundStudentsIndexes) < numStudents:
-            foundStudentsIndexes.add(students.index(random.choice(students)))
-        print("Found %d students" % len(foundStudentsIndexes))
-        if (len(foundStudentsIndexes) == 0):
-            return
-        for index in foundStudentsIndexes:
-            main_window.markPresent(students[index]["matriculationCode"])
-
-    main_window.on('startCameraButtonClicked', startAttendanceCamera)
-
-
-if __name__ == '__main__':
-    global main_window, capture_window
-    app = QtWidgets.QApplication(sys.argv)
-    main_window = XrecogMainWindow()
-    mountTestInstance()
-    main_window.show()
-    app.exec_()
+def translatePath(file):
+    return os.path.join(os.path.dirname(os.path.realpath(__file__)), file)
