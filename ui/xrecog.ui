@@ -291,13 +291,19 @@
            </layout>
           </item>
           <item>
-           <widget class="QPushButton" name="printButton">
+           <widget class="QToolButton" name="printToolButton">
             <property name="text">
              <string>Print</string>
             </property>
             <property name="icon">
              <iconset theme="document-print">
               <normaloff>.</normaloff>.</iconset>
+            </property>
+            <property name="popupMode">
+             <enum>QToolButton::MenuButtonPopup</enum>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextBesideIcon</enum>
             </property>
            </widget>
           </item>
@@ -692,7 +698,7 @@
   <tabstop>searchLineEdit</tabstop>
   <tabstop>presentTable</tabstop>
   <tabstop>absentTable</tabstop>
-  <tabstop>printButton</tabstop>
+  <tabstop>printToolButton</tabstop>
   <tabstop>totalLineEdit</tabstop>
   <tabstop>absentLineEdit</tabstop>
   <tabstop>presentLineEdit</tabstop>
