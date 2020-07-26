@@ -1,6 +1,6 @@
-import core.extract_embeddings
-import core.recognize_video
-import core.train_model
+from core import extract_embeddings
+from core import recognize_video
+from core import train_model
 import sys
 from ui import QtWidgets, XrecogMainWindow
 from ui import resources_rc
@@ -8,29 +8,31 @@ from ui import resources_rc
 
 def extractEmbeddings():
     args = {
-        "dataset": "dataset",
-        "embeddings": "output/embeddings.pickle",
-        "detector": "face_detection_model",
-        "embedding-model": "openface_nn4.small2.v1.t7"
+        "dataset": "core/dataset",
+        "embeddings": "core/output/embeddings.pickle",
+        "detector": "core/face_detection_model",
+        "embedding_model": "core/openface_nn4.small2.v1.t7",
+        "confidence": 0.5
     }
     extract_embeddings.init(args)
 
 
 def trainModel():
     args = {
-        "embeddings": "output/embeddings.pickle",
-        "recognizer": "output/recognizer.pickle",
-        "le": "output/le.pickle"
+        "embeddings": "core/output/embeddings.pickle",
+        "recognizer": "core/output/recognizer.pickle",
+        "le": "core/output/le.pickle"
     }
     train_model.init(args)
 
 
 def recognizeVideo():
     args = {
-        "detector": "face_detection_model",
-        "embedding-model": "openface_nn4.small2.v1.t7",
-        "recognizer": "output/recognizer.pickle",
-        "le": "output/le.pickle"
+        "detector": "core/face_detection_model",
+        "embedding_model": "core/openface_nn4.small2.v1.t7",
+        "recognizer": "core/output/recognizer.pickle",
+        "le": "core/output/le.pickle",
+        "confidence": 0.5
     }
     recognize_video.init(args)
 
@@ -43,4 +45,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    extractEmbeddings()
+    trainModel()
+    recognizeVideo()
+    # main()
