@@ -203,8 +203,10 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.prepareAttendance()
         self.prepareRegistration()
         self.matriculationCodeValidator = None
+        self.aboutText = None
         self.courses = []
         self.students = {"present": [], "absent": []}
+        self.actionAbout.triggered.connect(self.showAbout)
 
     def registerDispatcher(self, objectName):
         return lambda *args: self.emit(objectName, *args)
@@ -243,6 +245,16 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.capture_window = self.capture_window or XrecogCaptureWindow()
         self.capture_window.init()
         self.capture_window.exec_()
+
+    def showAbout(self):
+        dialog = QtWidgets.QDialog()
+        uic.loadUi(translatePath('about.ui'), dialog)
+        if self.aboutText:
+            dialog.aboutText.setPlainText(self.tr(self.aboutText))
+        dialog.exec_()
+
+    def setAboutText(self, text):
+        self.aboutText = text
 
     def clearRegistrationForm(self):
         self.firstNameLineEdit.clear()

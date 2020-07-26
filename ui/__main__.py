@@ -57,6 +57,8 @@ def mountTestInstance():
 
     main_window.loadCourses(courses)
     main_window.loadStudents(students)
+    main_window.setAboutText(
+        "xRecog\n\nApp Description\n\n2020 (c) Femi Bankole")
 
     def handleTestRegData(data):
         main_window.addStudent(data)
