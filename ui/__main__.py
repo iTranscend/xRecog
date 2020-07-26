@@ -59,6 +59,7 @@ def mountTestInstance():
     main_window.loadStudents(students)
     main_window.setAboutText(
         "xRecog\n\nApp Description\n\n2020 (c) Femi Bankole")
+    main_window.setRegistrationYearRange(2014, 2023)
 
     def handleTestRegData(data):
         main_window.addStudent(data)
@@ -77,8 +78,8 @@ def mountTestInstance():
             print(" > %s" % image)
             os.unlink(image)
         main_window.resetRegistrationForm()
+
     main_window.on('registrationData', handleTestRegData)
-    main_window.setRegistrationYearRange(2014, 2023)
 
     def startAttendanceCamera(*args):
         print("stopCameraButtonClicked")
