@@ -3,7 +3,13 @@ import sys
 import random
 import tempfile
 
-from PyQt5 import uic, QtWidgets, QtMultimedia, QtMultimediaWidgets, QtCore, QtGui
+from PyQt5 import (
+    uic,
+    QtGui,
+    QtCore,
+    QtWidgets,
+    QtMultimedia,
+    QtMultimediaWidgets)
 
 
 class EventEmitter(object):
