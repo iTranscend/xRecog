@@ -306,6 +306,7 @@
              <enum>Qt::ToolButtonTextBesideIcon</enum>
             </property>
             <addaction name="actionPrintPreview"/>
+            <addaction name="actionExportCSV"/>
             <addaction name="actionExportHTML"/>
             <addaction name="actionExportMarkdown"/>
             <addaction name="actionShowHTMLReport"/>
@@ -738,6 +739,14 @@
    </property>
    <property name="text">
     <string>Show Markdown Report</string>
+   </property>
+  </action>
+  <action name="actionExportCSV">
+   <property name="icon">
+    <iconset theme="document-export"/>
+   </property>
+   <property name="text">
+    <string>Export CSV</string>
    </property>
   </action>
  </widget>
