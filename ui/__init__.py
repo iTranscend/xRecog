@@ -425,9 +425,11 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
     def getAbsentStudentsMatric(self):
         return [student['matriculationCode'] for student in self.students['absent']]
 
-    def log(self, *args):
-        from datetime import datetime
-        print("[%s]" % datetime.now(), *args)
+    def log(self, *args, **kwargs):
+        ActingLogger().print(*args, **kwargs)
+
+    def logr(self, *args, **kwargs):
+        return ActingLogger(*args, **kwargs)
 
     def buildReport(self):
         self.log("<buildReport> Building Report")
@@ -554,6 +556,33 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         dialog.paintRequested.connect(lambda printer: document.print_(printer))
         dialog.exec_()
         self.log("<printPreview> Successfully printed")
+
+
+class ActingLogger:
+    entry_time = exit_time = None
+
+    def __init__(self, entry=None, exit=None, end="", entry_kwargs=None, exit_kwargs=None):
+        self.entry_tuple = () if entry is None else (
+            entry,) if type(entry) is not tuple else entry
+        self.entry_kwargs = entry_kwargs or {}
+        self.exit_tuple = ("done",) if exit is None else (
+            exit,) if type(exit) is not tuple else exit
+        self.exit_kwargs = exit_kwargs or {}
+        self.end_str = end
+
+    def print(self, *args, **kwargs):
+        self.entry_time = datetime.now()
+        print("[%s]" % self.entry_time, *args, **kwargs)
+
+    def __enter__(self):
+        self.print(*self.entry_tuple, end=self.end_str or "...",
+                   flush=True, **self.entry_kwargs)
+
+    def __exit__(self, *args):
+        self.exit_time = datetime.now()
+
+        print(*self.exit_tuple, "(%ds)" %
+              ((self.exit_time - self.entry_time).total_seconds()), **self.exit_kwargs)
 
 
 CSS_BG_RED = "background-color: rgb(223, 36, 15);"
