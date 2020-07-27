@@ -5,6 +5,11 @@ core/output/*
 core/dataset/
 !core/dataset/0000
 
+# Extra venv files
+bin/
+lib64
+pyvenv.cfg
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
