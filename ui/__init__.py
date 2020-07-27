@@ -225,6 +225,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.actionShowHTMLReport.triggered.connect(
             lambda: self.showReportPreview('html'))
         self.actionExportMarkdown.triggered.connect(self.printMarkdown)
+        self.actionExportCSV.triggered.connect(self.printCSV)
         self.actionShowMarkdownReport.triggered.connect(
             lambda: self.showReportPreview('markdown'))
 
@@ -493,6 +494,28 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         # combobox for selecting showing HTML or Markdown
         self.log(
             "<showReportPreview> Showing report preview in %s format" % type)
+
+    def printCSV(self):
+        self.log("<printCSV> Printing CSV")
+        filename = 'report.csv'
+        document = "matric_code,first_name,middle_name,last_name,is_present,year,course_of_study\n"
+        document += "\n".join([
+            ",".join([
+                student['matriculationCode'],
+                student['firstName'],
+                student['middleName'],
+                student['lastName'],
+                "1" if studentList == "present" else "0",
+                str(student['entryYear']),
+                self.courses[student['courseOfStudy']]
+            ])
+            for studentList in ['present', 'absent']
+            for student in self.students[studentList]])
+        self.log(
+            "<printCSV> Saving requested CSV report to %s" % filename)
+        with open(filename, 'w') as file:
+            file.write(document)
+        self.log("<printCSV> Successfully saved CSV report")
 
     def printHTML(self):
         self.log("<printHTML> Printing HTML")
