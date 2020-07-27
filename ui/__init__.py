@@ -363,8 +363,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.presentLineEdit.setText("%d" % presentStudents)
         self.absentLineEdit.setText("%d" % absentStudents)
 
-        table = self.findChild(QtWidgets.QTableWidget, '%sTable' %
-                               ("present" if isPresent else "absent"))
+        table = self.presentTable if isPresent else self.absentTable
         index = table.rowCount()
         table.insertRow(index)
         matricItem = QtWidgets.QTableWidgetItem()
