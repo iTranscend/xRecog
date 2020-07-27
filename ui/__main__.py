@@ -2,48 +2,16 @@ import os
 import sys
 import random
 import resources_rc
+from faker import Faker
 from __init__ import XrecogMainWindow, QtWidgets
 
 
-def mountTestInstance():
-    students = [
-        {
-            'firstName': 'Joanna',
-            'middleName': 'Emily',
-            'lastName': 'Spike',
-            'entryYear': 2018,
-            'matriculationCode': '8472',
-            'courseOfStudy': 0,
-            'markPresent': False
-        },
-        {
-            'firstName': 'Jules',
-            'middleName': 'Alison',
-            'lastName': 'Friday',
-            'entryYear': 2019,
-            'matriculationCode': '6485',
-            'courseOfStudy': 4,
-            'markPresent': False
-        },
-        {
-            'firstName': 'Jimmy',
-            'middleName': 'Tom',
-            'lastName': 'Fellow',
-            'entryYear': 2020,
-            'matriculationCode': '5578',
-            'courseOfStudy': 3,
-            'markPresent': False
-        },
-        {
-            'firstName': 'Janet',
-            'middleName': 'Relly',
-            'lastName': 'Francesca',
-            'entryYear': 2019,
-            'matriculationCode': '6645',
-            'courseOfStudy': 1,
-            'markPresent': False
-        },
-    ]
+def mountTestInstance(main_window):
+    MIN_YEAR = 2014
+    MAX_YEAR = 2023
+
+    args = sys.argv[1:]
+    num_students = int(args[0]) if len(args) else 10000
 
     courses = [
         "Computer Science",
@@ -54,12 +22,29 @@ def mountTestInstance():
         "Political Sciences",
         "Art",
     ]
+    with main_window.logr("Loading %d courses" % len(courses)):
+        main_window.loadCourses(courses)
 
-    main_window.loadCourses(courses)
-    main_window.loadStudents(students)
+    with main_window.logr("Generating %d students" % num_students):
+        students = []
+        faker = Faker()
+        for index in range(0, num_students):
+            students.append({
+                'firstName': faker.first_name(),
+                'middleName': faker.first_name(),
+                'lastName': faker.last_name(),
+                'entryYear': random.randint(MIN_YEAR, MAX_YEAR + 1),
+                'matriculationCode': "%04d" % random.randint(0, 10000),
+                'courseOfStudy': random.randint(0, len(courses) - 1),
+                'markPresent': False
+            })
+
+    with main_window.logr("Populating UI with %d students" % len(students)):
+        main_window.loadStudents(students)
+
     main_window.setAboutText(
         "xRecog\n\nApp Description\n\n2020 (c) Femi Bankole")
-    main_window.setRegistrationYearRange(2014, 2023)
+    main_window.setRegistrationYearRange(MIN_YEAR, MAX_YEAR)
 
     def handleTestRegData(data):
         main_window.addStudent(data)
@@ -97,10 +82,9 @@ def mountTestInstance():
 
 
 if __name__ == '__main__':
-    global main_window
     app = QtWidgets.QApplication(sys.argv)
     app.setApplicationName("xRecog")
     main_window = XrecogMainWindow()
-    mountTestInstance()
+    mountTestInstance(main_window)
     main_window.show()
     app.exec_()
