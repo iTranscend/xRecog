@@ -2,6 +2,7 @@ import os
 import sys
 import random
 import tempfile
+from datetime import datetime
 
 from PyQt5 import (
     uic,
@@ -451,7 +452,6 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                 table.append(row)
             return table
 
-        from datetime import datetime
         presentStudents = len(self.students['present'])
         absentStudents = len(self.students['absent'])
         markdown = [
