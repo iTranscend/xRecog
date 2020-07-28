@@ -521,9 +521,14 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.log(
             "<showReportPreview> Showing report preview in %s format" % type)
 
+    previous_files = {
+        "md": None,
+        "csv": None,
+        "html": None
+    }
+
     def printCSV(self):
         self.log("<printCSV> Printing CSV")
-        filename = 'report.csv'
         document = "matric_code,first_name,middle_name,last_name,is_present,year,course_of_study\n"
         with self.logr("<printCSV> Compiling CSV records"):
             document += "\n".join([
@@ -538,30 +543,46 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                 ])
                 for studentList in ['present', 'absent']
                 for student in self.students[studentList]])
-        with self.logr("<printCSV> Saving requested CSV report to %s" % filename):
-            with open(filename, 'w') as file:
-                file.write(document)
+        filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+            self, 'Save CSV File', self.previous_files['csv'] or os.getcwd(), 'CSV File (*.csv)')
+        if filename:
+            self.previous_files['csv'] = filename
+            with self.logr("<printCSV> Saving requested CSV report to %s" % filename):
+                with open(filename, 'w') as file:
+                    file.write(document)
+        else:
+            self.log("Save CSV cancelled by user")
 
     def printHTML(self):
         self.log("<printHTML> Printing HTML")
-        filename = 'report.html'
         report = self.buildReport()
         with self.logr("<printHTML> Preparing HTML document"):
             document = markdown2.markdown(
                 report, extras=["tables", "header-ids"])
-        with self.logr(
-                "<printHTML> Saving requested HTML report to %s" % filename):
-            with open(filename, 'w') as file:
-                file.write(document)
+        filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+            self, 'Save HTML File', self.previous_files['html'] or os.getcwd(), 'HTML File (*.html)')
+        if filename:
+            self.previous_files['html'] = filename
+            with self.logr(
+                    "<printHTML> Saving requested HTML report to %s" % filename):
+                with open(filename, 'w') as file:
+                    file.write(document)
+        else:
+            self.log("Save HTML cancelled by user")
 
     def printMarkdown(self):
         self.log("<printMarkdown> Printing Markdown")
-        filename = 'report.md'
         document = self.buildReport()
-        with self.logr(
-                "<printMarkdown> Saving requested Markdown report to %s" % filename):
-            with open(filename, 'w') as file:
-                file.write(document)
+        filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+            self, 'Save Markdown File', self.previous_files['md'] or os.getcwd(), 'Markdown File (*.md)')
+        if filename:
+            self.previous_files['md'] = filename
+            with self.logr(
+                    "<printMarkdown> Saving requested Markdown report to %s" % filename):
+                with open(filename, 'w') as file:
+                    file.write(document)
+        else:
+            self.log("Save Markdown cancelled by user")
 
     def print(self):
         self.log("<print> Printing document")
