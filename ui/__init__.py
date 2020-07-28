@@ -714,8 +714,9 @@ class ActingLogger:
     def __exit__(self, *args):
         self.exit_time = datetime.now()
 
-        print(*self.exit_tuple, "(%ds)" %
-              ((self.exit_time - self.entry_time).total_seconds()), **self.exit_kwargs)
+        delta = (self.exit_time - self.entry_time).total_seconds()
+        print(*self.exit_tuple, "(%ss)" %
+              ("%d" % delta if delta.is_integer() else "%.4f" % delta), **self.exit_kwargs)
 
 
 CSS_BG_RED = "background-color: rgb(223, 36, 15);"
