@@ -223,11 +223,11 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
     def preparePrint(self):
         self.printToolButton.clicked.connect(self.print)
         self.actionPrintPreview.triggered.connect(self.printPreview)
-        self.actionExportHTML.triggered.connect(self.printHTML)
+        self.actionExportHTML.triggered.connect(self.exportHTML)
         self.actionShowHTMLReport.triggered.connect(
             lambda: self.showReportPreview('html'))
-        self.actionExportMarkdown.triggered.connect(self.printMarkdown)
-        self.actionExportCSV.triggered.connect(self.printCSV)
+        self.actionExportMarkdown.triggered.connect(self.exportMarkdown)
+        self.actionExportCSV.triggered.connect(self.exportCSV)
         self.actionShowMarkdownReport.triggered.connect(
             lambda: self.showReportPreview('markdown'))
 
@@ -527,7 +527,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         "html": None
     }
 
-    def printCSV(self):
+    def exportCSV(self):
         self.log("<printCSV> Printing CSV")
         document = "matric_code,first_name,middle_name,last_name,is_present,year,course_of_study\n"
         with self.logr("<printCSV> Compiling CSV records"):
@@ -553,7 +553,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         else:
             self.log("Save CSV cancelled by user")
 
-    def printHTML(self):
+    def exportHTML(self):
         self.log("<printHTML> Printing HTML")
         report = self.buildReport()
         with self.logr("<printHTML> Preparing HTML document"):
@@ -570,7 +570,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         else:
             self.log("Save HTML cancelled by user")
 
-    def printMarkdown(self):
+    def exportMarkdown(self):
         self.log("<printMarkdown> Printing Markdown")
         document = self.buildReport()
         filename, _ = QtWidgets.QFileDialog.getSaveFileName(
