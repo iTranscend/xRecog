@@ -654,22 +654,29 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         else:
             self.log("Save Markdown cancelled by user")
 
-    def print(self):
-        self.log("<print> Printing document")
-        document = self.buildReportDocument()
-        with self.logr("<print> Starting Print"):
+    def printDocument(self, document):
+        self.log("<printDocument> Printing document")
+        with self.logr("<printDocument> Starting Print"):
             dialog = QtPrintSupport.QPrintDialog()
             if dialog.exec_() == QtWidgets.QDialog.Accepted:
                 document.print_(dialog.printer())
 
-    def printPreview(self):
-        self.log("<printPreview> Printing Preview")
-        document = self.buildReportDocument()
-        with self.logr("<printPreview> Start rendering"):
+    def printDocumentPreview(self, document):
+        with self.logr("<printDocumentPreview> Rendering to print preview"):
             dialog = QtPrintSupport.QPrintPreviewDialog()
             dialog.paintRequested.connect(
                 lambda printer: document.print_(printer))
             dialog.exec_()
+
+    def print(self):
+        self.log("<print> Printing document")
+        self.printDocument(self.buildReportDocument())
+        self.log("<print> Successfully Printed document")
+
+    def printPreview(self):
+        self.log("<printPreview> Printing Preview")
+        self.printDocumentPreview(self.buildReportDocument())
+        self.log("<printPreview> Successfully Printed Preview")
 
 
 class ActingLogger:
