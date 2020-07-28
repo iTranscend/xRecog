@@ -2,6 +2,7 @@ import os
 import sys
 import random
 import tempfile
+import markdown2
 from datetime import datetime
 
 from PyQt5 import (
@@ -440,7 +441,10 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                 table = [
                     "| Matric Code | First Name | Middle Name | Last Name | Year | Course of Study |",
                     "|-------------|------------|-------------|-----------|------|-----------------|",
+                    "|             |            |             |           |      |                 |"
                 ]
+                if len(self.students[tableName]):
+                    table.pop()
                 for student in self.students[tableName]:
                     row = "| %s | %s | %s | %s | %d | %s |" % (
                         student['matriculationCode'],
@@ -459,21 +463,39 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         with self.logr("<buildReport> Compiling report"):
             presentStudents = len(self.students['present'])
             absentStudents = len(self.students['absent'])
+            styling = "".join(map(str.strip, [
+                "<style>",
+                "  body {",
+                "    font-family:'Noto Sans';",
+                "    font-size:10pt;",
+                "    font-weight:400;",
+                "    font-style:normal;",
+                "  }",
+                "  h1 {",
+                "    font-size:xx-large;",
+                "    font-weight:600;",
+                "  }",
+                "  table, th, td {",
+                "    font-size:10pt;",
+                "    border: 1px solid black;",
+                "  }",
+                "</style>"]))
             markdown = [
+                styling,
                 "# xRecog Report at %s" % datetime.now().strftime("%I:%M %p on %d-%m-%Y"),
                 "",
                 "|    Statistics    | Count |",
                 "|------------------|-------|",
                 "| Total Students   | %s    |" % "%d " % (
                     presentStudents + absentStudents),
-                "| [Present Students](#presentstudents) | %s    |" % "%d " % presentStudents,
-                "| [Absent Students](#absentstudents)  | %s    |" % "%d " % absentStudents,
+                "| [Present Students](#present-students) | %s    |" % "%d " % presentStudents,
+                "| [Absent Students](#absent-students)  | %s    |" % "%d " % absentStudents,
                 "",
-                "<h2 id='presentstudents'> Present Students </h2>",
+                "## Present Students",
                 "",
                 *presentTable,
                 "",
-                "<h2 id='absentstudents'> Absent Students </h2>",
+                "## Absent Students",
                 "",
                 *absentTable,
                 "",
@@ -523,11 +545,14 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
     def printHTML(self):
         self.log("<printHTML> Printing HTML")
         filename = 'report.html'
-        document = self.buildReportDocument()
+        report = self.buildReport()
+        with self.logr("<printHTML> Preparing HTML document"):
+            document = markdown2.markdown(
+                report, extras=["tables", "header-ids"])
         with self.logr(
                 "<printHTML> Saving requested HTML report to %s" % filename):
             with open(filename, 'w') as file:
-                file.write(document.toHtml())
+                file.write(document)
 
     def printMarkdown(self):
         self.log("<printMarkdown> Printing Markdown")
