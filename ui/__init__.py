@@ -274,10 +274,11 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
     def preparePrint(self):
         self.printToolButton.clicked.connect(self.print)
         self.actionPrintPreview.triggered.connect(self.printPreview)
-        self.actionExportHTML.triggered.connect(self.exportHTML)
         self.actionReportPreview.triggered.connect(self.showReportPreview)
-        self.actionExportMarkdown.triggered.connect(self.exportMarkdown)
-        self.actionExportCSV.triggered.connect(self.exportCSV)
+        self.actionExportCSV.triggered.connect(lambda: self.export('csv'))
+        self.actionExportHTML.triggered.connect(lambda: self.export('html'))
+        self.actionExportMarkdown.triggered.connect(
+            lambda: self.export('markdown'))
 
     def resetAttendance(self):
         self.students = {"present": [], "absent": []}
@@ -606,19 +607,6 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             '<buildCSV> Successfully built CSV Report')
         return document
 
-    def exportCSV(self):
-        self.log("<exportCSV> Exporting CSV")
-        document = self.buildCSV()
-        filename, _ = QtWidgets.QFileDialog.getSaveFileName(
-            self, 'Save CSV File', self.previous_files['csv'] or os.getcwd(), 'CSV File (*.csv)')
-        if filename:
-            self.previous_files['csv'] = filename
-            with self.logr("<printCSV> Saving requested CSV report to %s" % filename):
-                with open(filename, 'w') as file:
-                    file.write(document)
-        else:
-            self.log("Save CSV cancelled by user")
-
     def buildHTMLReportFrom(self, report):
         self.log('<buildHTMLReportFrom> Building HTML Report from markdown report')
         with self.logr("<buildHTMLReport> Preparing HTML document"):
@@ -634,33 +622,41 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.log("<buildHTMLReport> Successfully built HTML Report")
         return document
 
-    def exportHTML(self):
-        self.log("<exportHTML> Exporting HTML")
-        document = self.buildHTMLReport()
-        filename, _ = QtWidgets.QFileDialog.getSaveFileName(
-            self, 'Save HTML File', self.previous_files['html'] or os.getcwd(), 'HTML File (*.html)')
-        if filename:
-            self.previous_files['html'] = filename
-            with self.logr(
-                    "<exportHTML> Saving requested HTML report to %s" % filename):
-                with open(filename, 'w') as file:
-                    file.write(document)
-        else:
-            self.log("Save HTML cancelled by user")
+    file_maps = {
+        "csv": {
+            "title": "CSV",
+            "handler": buildCSV,
+            "last_file": None,
+            "save_filters": "CSV File (*.csv)",
+        },
+        "html": {
+            "title": "HTML",
+            "handler": buildHTMLReport,
+            "last_file": None,
+            "save_filters": "HTML File (*.html)",
+        },
+        "markdown": {
+            "title": "Markdown",
+            "handler": buildReport,
+            "last_file": None,
+            "save_filters": "Markdown File (*.md)",
+        },
+    }
 
-    def exportMarkdown(self):
-        self.log("<exportMarkdown> Exporting Markdown")
-        document = self.buildReport()
+    def export(self, type):
+        stack = self.file_maps[type]
+        self.log("<export> Exporting %s" % stack["title"])
+        document = stack["handler"](self)
         filename, _ = QtWidgets.QFileDialog.getSaveFileName(
-            self, 'Save Markdown File', self.previous_files['md'] or os.getcwd(), 'Markdown File (*.md)')
+            self, 'Save %s File' % stack["title"], stack["last_file"] or os.getcwd(), stack["save_filters"])
         if filename:
-            self.previous_files['md'] = filename
+            stack["last_file"] = filename
             with self.logr(
-                    "<exportMarkdown> Saving requested Markdown report to %s" % filename):
+                    "<export> Saving requested %s report to %s" % (stack["title"], filename)):
                 with open(filename, 'w') as file:
                     file.write(document)
         else:
-            self.log("Save Markdown cancelled by user")
+            self.log("<export> Save %s cancelled by user" % stack["title"])
 
     def printDocument(self, document):
         self.log("<printDocument> Printing document")
