@@ -550,10 +550,10 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
 
     def buildReportDocument(self):
         self.log("<buildReportDocument>")
-        report = self.buildReport()
+        report = self.buildHTMLReport()
         document = QtGui.QTextDocument()
         with self.logr("<buildReportDocument> Creating document"):
-            document.setMarkdown(report)
+            document.setHtml(report)
         return document
 
     def showReportPreview(self):
