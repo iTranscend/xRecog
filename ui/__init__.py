@@ -204,7 +204,7 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
         return [image["path"] for image in self.images]
 
 
-class XrecogPreviewWindow(QtWidgets.QDialog):
+class XrecogPreviewWindow(QtWidgets.QDialog, EventEmitter):
     def __init__(self):
         super(XrecogPreviewWindow, self).__init__()
         uic.loadUi(translatePath('reportpreview.ui'), self)
@@ -213,8 +213,14 @@ class XrecogPreviewWindow(QtWidgets.QDialog):
         self.formatComboBox.currentIndexChanged.connect(
             lambda index: self.load(self.comboSlots[index]))
         self.loadPreviewButton.clicked.connect(self.handleLoadPreview)
+        self.printButton.setDisabled(True)
+        self.printButton.clicked.connect(
+            lambda: self.emit('print', self.previewTextEdit))
+        self.actionPrintPreview.triggered.connect(
+            lambda: self.emit('printPreview', self.previewTextEdit))
 
     def handleLoadPreview(self):
+        self.printButton.setDisabled(False)
         self.loadPreviewButton.hide()
         self.setPreview(forcePreview=True)
 
@@ -566,6 +572,8 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         dialog.setLoader('csv', "CSV", self.buildCSV)
         dialog.setLoader('html', "HTML", lambda: html)
         dialog.setLoader('markdown', "Markdown", lambda: report)
+        dialog.on('print', self.printFor)
+        dialog.on('printPreview', self.printPreviewFor)
         with self.logr("<showReportPreview> Loading markdown preview"):
             dialog.load("markdown")
         with self.logr("<showReportPreview> Launching report window"):
@@ -673,10 +681,21 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.printDocument(self.buildReportDocument())
         self.log("<print> Successfully Printed document")
 
+    def printFor(self, report):
+        self.log("<printFor> Printing document for HTML document report")
+        self.printDocument(report)
+        self.log("<printFor> Successfully Printed document for HTML document report")
+
     def printPreview(self):
         self.log("<printPreview> Printing Preview")
         self.printDocumentPreview(self.buildReportDocument())
         self.log("<printPreview> Successfully Printed Preview")
+
+    def printPreviewFor(self, report):
+        self.log("<printPreviewFor> Printing Preview for HTML document report")
+        self.printDocumentPreview(report)
+        self.log(
+            "<printPreviewFor> Successfully Printed Preview for HTML document report")
 
 
 class ActingLogger:

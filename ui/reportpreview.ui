@@ -73,6 +73,35 @@ p, li { white-space: pre-wrap; }
           </property>
          </widget>
         </item>
+        <item row="0" column="0" alignment="Qt::AlignHCenter">
+         <widget class="QPushButton" name="loadPreviewButton">
+          <property name="text">
+           <string>Load Preview</string>
+          </property>
+          <property name="icon">
+           <iconset theme="reload">
+            <normaloff>.</normaloff>.</iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" alignment="Qt::AlignRight">
+         <widget class="QToolButton" name="printButton">
+          <property name="text">
+           <string>Print</string>
+          </property>
+          <property name="icon">
+           <iconset theme="document-print">
+            <normaloff>.</normaloff>.</iconset>
+          </property>
+          <property name="popupMode">
+           <enum>QToolButton::MenuButtonPopup</enum>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonTextBesideIcon</enum>
+          </property>
+          <addaction name="actionPrintPreview"/>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>
@@ -89,6 +118,14 @@ p, li { white-space: pre-wrap; }
     </widget>
    </item>
   </layout>
+  <action name="actionPrintPreview">
+   <property name="icon">
+    <iconset theme="document-print-preview"/>
+   </property>
+   <property name="text">
+    <string>Print Preview</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="resources.qrc"/>
