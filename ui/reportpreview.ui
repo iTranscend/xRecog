@@ -40,7 +40,7 @@
          <widget class="QComboBox" name="formatComboBox"/>
         </item>
         <item row="1" column="0" alignment="Qt::AlignRight">
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="saveButton">
           <property name="text">
            <string>Save</string>
           </property>

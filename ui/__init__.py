@@ -218,6 +218,8 @@ class XrecogPreviewWindow(QtWidgets.QDialog, EventEmitter):
             lambda: self.emit('print', self.previewTextEdit))
         self.actionPrintPreview.triggered.connect(
             lambda: self.emit('printPreview', self.previewTextEdit))
+        self.saveButton.clicked.connect(lambda: self.emit(
+            'saveFile', self.comboSlots[self.formatComboBox.currentIndex()]))
 
     def handleLoadPreview(self):
         self.printButton.setDisabled(False)
@@ -574,6 +576,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         dialog.setLoader('html', "HTML", lambda: html)
         dialog.setLoader('markdown', "Markdown", lambda: report)
         dialog.on('print', self.printFor)
+        dialog.on('saveFile', self.export)
         dialog.on('printPreview', self.printPreviewFor)
         with self.logr("<showReportPreview> Loading markdown preview"):
             dialog.load("markdown")
