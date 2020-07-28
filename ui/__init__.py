@@ -204,6 +204,39 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
         return [image["path"] for image in self.images]
 
 
+class XrecogPreviewWindow(QtWidgets.QDialog):
+    def __init__(self):
+        super(XrecogPreviewWindow, self).__init__()
+        uic.loadUi(translatePath('reportpreview.ui'), self)
+        self.formatComboBox.currentIndexChanged.connect(
+            lambda index: self.load(self.comboSlots[index]))
+
+    def setPreview(self, content):
+        self.previewTextEdit.setHtml(content)
+
+    comboSlots = []
+    loaderMap = {}
+
+    def setLoader(self, type, title, loader):
+        if (type not in self.loaderMap):
+            self.loaderMap[type] = {}
+        self.loaderMap[type]["data"] = None
+        self.loaderMap[type]["title"] = title
+        self.loaderMap[type]["loader"] = loader
+        self.comboSlots.append(type)
+        self.formatComboBox.addItem(title)
+
+    def load(self, type):
+        self.formatComboBox.blockSignals(True)
+        self.formatComboBox.setCurrentIndex(self.comboSlots.index(type))
+        self.formatComboBox.blockSignals(False)
+        typeStack = self.loaderMap[type]
+        if typeStack["data"] is None:
+            typeStack["data"] = typeStack["loader"]()
+        self.rawGroupBox.setTitle(self.tr(typeStack["title"]))
+        self.rawTextEdit.setPlainText(typeStack["data"])
+
+
 class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
     def __init__(self):
         super(XrecogMainWindow, self).__init__()
@@ -224,12 +257,9 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.printToolButton.clicked.connect(self.print)
         self.actionPrintPreview.triggered.connect(self.printPreview)
         self.actionExportHTML.triggered.connect(self.exportHTML)
-        self.actionShowHTMLReport.triggered.connect(
-            lambda: self.showReportPreview('html'))
+        self.actionReportPreview.triggered.connect(self.showReportPreview)
         self.actionExportMarkdown.triggered.connect(self.exportMarkdown)
         self.actionExportCSV.triggered.connect(self.exportCSV)
-        self.actionShowMarkdownReport.triggered.connect(
-            lambda: self.showReportPreview('markdown'))
 
     def resetAttendance(self):
         self.students = {"present": [], "absent": []}
@@ -514,12 +544,19 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             document.setMarkdown(report)
         return document
 
-    def showReportPreview(self, type):
-        # a report window
-        # text browser for showing code representation
-        # combobox for selecting showing HTML or Markdown
-        self.log(
-            "<showReportPreview> Showing report preview in %s format" % type)
+    def showReportPreview(self):
+        self.log("<showReportPreview> Opening Report Preview Dialog")
+        dialog = XrecogPreviewWindow()
+        report = self.buildReport()
+        html = self.buildHTMLReportFrom(report)
+        with self.logr("<showReportPreview> Setting HTML Preview"):
+            dialog.setPreview(html)
+        dialog.setLoader('csv', "CSV", self.buildCSV)
+        dialog.setLoader('html', "HTML", lambda: html)
+        dialog.setLoader('markdown', "Markdown", lambda: report)
+        with self.logr("<showReportPreview> Loading markdown preview"):
+            dialog.load("markdown")
+        dialog.exec_()
 
     previous_files = {
         "md": None,
