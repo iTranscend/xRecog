@@ -584,12 +584,6 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             dialog.show()
         dialog.exec_()
 
-    previous_files = {
-        "md": None,
-        "csv": None,
-        "html": None
-    }
-
     def buildCSV(self):
         self.log("<buildCSV> Building CSV")
         document = "matric_code,first_name,middle_name,last_name,is_present,year,course_of_study\n"
