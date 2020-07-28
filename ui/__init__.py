@@ -527,10 +527,10 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         "html": None
     }
 
-    def exportCSV(self):
-        self.log("<printCSV> Printing CSV")
+    def buildCSV(self):
+        self.log("<buildCSV> Building CSV")
         document = "matric_code,first_name,middle_name,last_name,is_present,year,course_of_study\n"
-        with self.logr("<printCSV> Compiling CSV records"):
+        with self.logr("<buildCSV> Compiling CSV records"):
             document += "\n".join([
                 ",".join([
                     student['matriculationCode'],
@@ -543,6 +543,13 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                 ])
                 for studentList in ['present', 'absent']
                 for student in self.students[studentList]])
+        self.log(
+            '<buildCSV> Successfully built CSV Report')
+        return document
+
+    def exportCSV(self):
+        self.log("<exportCSV> Exporting CSV")
+        document = self.buildCSV()
         filename, _ = QtWidgets.QFileDialog.getSaveFileName(
             self, 'Save CSV File', self.previous_files['csv'] or os.getcwd(), 'CSV File (*.csv)')
         if filename:
@@ -553,11 +560,20 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         else:
             self.log("Save CSV cancelled by user")
 
+    def buildHTMLReportFrom(self, report):
+        self.log('<buildHTMLReportFrom> Building HTML Report from markdown report')
+        with self.logr("<buildHTMLReport> Preparing HTML document"):
+            document = markdown2.markdown(
+                report, extras=["tables", "header-ids"])
+        self.log(
+            '<buildHTMLReportFrom> Successfully built HTML Report from markdown report')
+        return document
+
     def buildHTMLReport(self):
         self.log("<buildHTMLReport> Building HTML Report")
-        report = self.buildReport()
-        with self.logr("<buildHTMLReport> Preparing HTML document"):
-            return markdown2.markdown(report, extras=["tables", "header-ids"])
+        document = self.buildHTMLReportFrom(self.buildReport())
+        self.log("<buildHTMLReport> Successfully built HTML Report")
+        return document
 
     def exportHTML(self):
         self.log("<exportHTML> Exporting HTML")
