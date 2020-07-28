@@ -743,7 +743,8 @@
   </action>
   <action name="actionExportCSV">
    <property name="icon">
-    <iconset theme="document-export"/>
+    <iconset theme="document-export">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Export CSV</string>
