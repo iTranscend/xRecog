@@ -309,8 +309,7 @@
             <addaction name="actionExportCSV"/>
             <addaction name="actionExportHTML"/>
             <addaction name="actionExportMarkdown"/>
-            <addaction name="actionShowHTMLReport"/>
-            <addaction name="actionShowMarkdownReport"/>
+            <addaction name="actionReportPreview"/>
            </widget>
           </item>
          </layout>
@@ -723,24 +722,6 @@
     <string>Export Markdown</string>
    </property>
   </action>
-  <action name="actionShowHTMLReport">
-   <property name="icon">
-    <iconset theme="document-preview">
-     <normaloff>.</normaloff>.</iconset>
-   </property>
-   <property name="text">
-    <string>Show HTML Report</string>
-   </property>
-  </action>
-  <action name="actionShowMarkdownReport">
-   <property name="icon">
-    <iconset theme="document-preview">
-     <normaloff>.</normaloff>.</iconset>
-   </property>
-   <property name="text">
-    <string>Show Markdown Report</string>
-   </property>
-  </action>
   <action name="actionExportCSV">
    <property name="icon">
     <iconset theme="document-export">
@@ -748,6 +729,15 @@
    </property>
    <property name="text">
     <string>Export CSV</string>
+   </property>
+  </action>
+  <action name="actionReportPreview">
+   <property name="icon">
+    <iconset theme="document-preview">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Report Preview</string>
    </property>
   </action>
  </widget>
