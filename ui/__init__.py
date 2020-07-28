@@ -553,32 +553,35 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         else:
             self.log("Save CSV cancelled by user")
 
-    def exportHTML(self):
-        self.log("<printHTML> Printing HTML")
+    def buildHTMLReport(self):
+        self.log("<buildHTMLReport> Building HTML Report")
         report = self.buildReport()
-        with self.logr("<printHTML> Preparing HTML document"):
-            document = markdown2.markdown(
-                report, extras=["tables", "header-ids"])
+        with self.logr("<buildHTMLReport> Preparing HTML document"):
+            return markdown2.markdown(report, extras=["tables", "header-ids"])
+
+    def exportHTML(self):
+        self.log("<exportHTML> Exporting HTML")
+        document = self.buildHTMLReport()
         filename, _ = QtWidgets.QFileDialog.getSaveFileName(
             self, 'Save HTML File', self.previous_files['html'] or os.getcwd(), 'HTML File (*.html)')
         if filename:
             self.previous_files['html'] = filename
             with self.logr(
-                    "<printHTML> Saving requested HTML report to %s" % filename):
+                    "<exportHTML> Saving requested HTML report to %s" % filename):
                 with open(filename, 'w') as file:
                     file.write(document)
         else:
             self.log("Save HTML cancelled by user")
 
     def exportMarkdown(self):
-        self.log("<printMarkdown> Printing Markdown")
+        self.log("<exportMarkdown> Exporting Markdown")
         document = self.buildReport()
         filename, _ = QtWidgets.QFileDialog.getSaveFileName(
             self, 'Save Markdown File', self.previous_files['md'] or os.getcwd(), 'Markdown File (*.md)')
         if filename:
             self.previous_files['md'] = filename
             with self.logr(
-                    "<printMarkdown> Saving requested Markdown report to %s" % filename):
+                    "<exportMarkdown> Saving requested Markdown report to %s" % filename):
                 with open(filename, 'w') as file:
                     file.write(document)
         else:
