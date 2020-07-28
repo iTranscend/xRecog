@@ -208,11 +208,21 @@ class XrecogPreviewWindow(QtWidgets.QDialog):
     def __init__(self):
         super(XrecogPreviewWindow, self).__init__()
         uic.loadUi(translatePath('reportpreview.ui'), self)
+        self.isPreviewing = False
+        self.previewText = None
         self.formatComboBox.currentIndexChanged.connect(
             lambda index: self.load(self.comboSlots[index]))
+        self.loadPreviewButton.clicked.connect(self.handleLoadPreview)
 
-    def setPreview(self, content):
-        self.previewTextEdit.setHtml(content)
+    def handleLoadPreview(self):
+        self.loadPreviewButton.hide()
+        self.setPreview(forcePreview=True)
+
+    def setPreview(self, content=None, forcePreview=False):
+        self.previewText = self.previewText or content
+        self.isPreviewing = self.isPreviewing or forcePreview
+        if self.isPreviewing:
+            self.previewTextEdit.setHtml(self.previewText)
 
     comboSlots = []
     loaderMap = {}
@@ -224,7 +234,9 @@ class XrecogPreviewWindow(QtWidgets.QDialog):
         self.loaderMap[type]["title"] = title
         self.loaderMap[type]["loader"] = loader
         self.comboSlots.append(type)
+        self.formatComboBox.blockSignals(True)
         self.formatComboBox.addItem(title)
+        self.formatComboBox.blockSignals(False)
 
     def load(self, type):
         self.formatComboBox.blockSignals(True)
@@ -556,6 +568,8 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         dialog.setLoader('markdown', "Markdown", lambda: report)
         with self.logr("<showReportPreview> Loading markdown preview"):
             dialog.load("markdown")
+        with self.logr("<showReportPreview> Launching report window"):
+            dialog.show()
         dialog.exec_()
 
     previous_files = {
