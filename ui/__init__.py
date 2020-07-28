@@ -31,7 +31,7 @@ class EventEmitter(object):
             handler(*args)
 
 
-class XrecogCaptureWindow(QtWidgets.QDialog, EventEmitter):
+class XrecogCaptureWindow(QtWidgets.QDialog):
     closed = QtCore.pyqtSignal()
 
     def __init__(self):
