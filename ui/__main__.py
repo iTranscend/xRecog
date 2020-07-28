@@ -29,10 +29,11 @@ def mountTestInstance(main_window):
         students = []
         faker = Faker()
         for index in range(0, num_students):
+            male = bool(random.getrandbits(1))
             students.append({
-                'firstName': faker.first_name(),
-                'middleName': faker.first_name(),
-                'lastName': faker.last_name(),
+                'firstName': faker.first_name_male() if male else faker.first_name_female(),
+                'middleName': faker.first_name_male() if male else faker.first_name_female(),
+                'lastName': faker.last_name_male() if male else faker.last_name_female(),
                 'entryYear': random.randint(MIN_YEAR, MAX_YEAR + 1),
                 'matriculationCode': "%04d" % random.randint(0, 10000),
                 'courseOfStudy': random.randint(0, len(courses) - 1),
