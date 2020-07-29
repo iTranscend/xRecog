@@ -503,7 +503,11 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         return [student for student in self.students if not self.students[student]['isPresent']]
 
     def log(self, *args, **kwargs):
-        ActingLogger().print(*args, **kwargs)
+        force = False
+        if 'force' in kwargs:
+            force = kwargs['force']
+            del kwargs['force']
+        ActingLogger(force=force).print(*args, **kwargs)
 
     def logr(self, *args, **kwargs):
         return ActingLogger(*args, **kwargs)
@@ -718,7 +722,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
 class ActingLogger:
     entry_time = exit_time = None
 
-    def __init__(self, entry=None, exit=None, reenter=False, end="", entry_kwargs=None, exit_kwargs=None):
+    def __init__(self, entry=None, exit=None, reenter=False, end="", force=False, entry_kwargs=None, exit_kwargs=None):
         self.entry_tuple = () if entry is None else (
             entry,) if type(entry) is not tuple else entry
         self.entry_kwargs = entry_kwargs or {}
@@ -727,8 +731,11 @@ class ActingLogger:
         self.exit_kwargs = exit_kwargs or {}
         self.reenter = reenter
         self.end_str = end
+        self.do_print = force or os.environ.get("DEBUG_UI") == "1"
 
     def print(self, *args, **kwargs):
+        if not self.do_print:
+            return
         self.entry_time = datetime.now()
         print("[%s]" % self.entry_time, *args, **kwargs)
 
@@ -738,6 +745,8 @@ class ActingLogger:
         self.print(*self.entry_tuple, **kwargs, **self.entry_kwargs)
 
     def __exit__(self, *args):
+        if not self.do_print:
+            return
         self.exit_time = datetime.now()
 
         delta = (self.exit_time - self.entry_time).total_seconds()
