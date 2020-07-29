@@ -520,9 +520,10 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                     "|-------------|------------|-------------|-----------|------|-----------------|",
                     "|             |            |             |           |      |                 |"
                 ]
-                if len(self.students[tableName]):
+                if len(self.matric_records[tableName]):
                     table.pop()
-                for student in self.students[tableName]:
+                for matric in self.matric_records[tableName]:
+                    student = self.students[matric]
                     row = "| %s | %s | %s | %s | %d | %s |" % (
                         student['matriculationCode'],
                         student['firstName'],
@@ -534,12 +535,13 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                     table.append(row)
             return table
 
+        presentStudents = len(self.matric_records["present"])
+        absentStudents = len(self.matric_records["absent"])
+
         presentTable = buildTable('present')
         absentTable = buildTable('absent')
 
         with self.logr("<buildReport> Compiling report"):
-            presentStudents = len(self.students['present'])
-            absentStudents = len(self.students['absent'])
             styling = "".join(map(str.strip, [
                 "<style>",
                 "  body {",
