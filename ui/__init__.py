@@ -4,6 +4,7 @@ import random
 import tempfile
 import markdown2
 from datetime import datetime
+from collections import deque
 
 from PyQt5 import (
     uic,
@@ -283,7 +284,9 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             lambda: self.export('markdown'))
 
     def resetAttendance(self):
-        self.students = {"present": [], "absent": []}
+        self.stats = {"present": 0, "absent": 0}
+        self.students = {}
+        self.matric_records = {"present": deque(), "absent": deque()}
         self.presentTable.clearContents()
         self.absentTable.clearContents()
         self.presentTable.setRowCount(0)
@@ -402,42 +405,49 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
 
     def addStudent(self, student):
         student = {**student}
-        markPresent = student['markPresent']
+        markPresent = student["isPresent"] = bool(student['markPresent'])
         del student['markPresent']
-        if (markPresent):
-            self.students['present'].append(student)
-        else:
-            self.students['absent'].append(student)
-        self.pushRow(markPresent, student)
+        self.students[student["matriculationCode"]] = student
+        self.stats["present" if markPresent else "absent"] += 1
+        self.pushRow(student)
 
-    def pushRow(self, isPresent, student):
-        presentStudents = len(self.students['present'])
-        absentStudents = len(self.students['absent'])
+    def pushRow(self, student):
+        self.log("<pushRow> Creating student row on table")
+        presentStudents = self.stats["present"]
+        absentStudents = self.stats["absent"]
         self.totalLineEdit.setText("%d" % (presentStudents + absentStudents))
         self.presentLineEdit.setText("%d" % presentStudents)
         self.absentLineEdit.setText("%d" % absentStudents)
 
-        table = self.presentTable if isPresent else self.absentTable
-        index = table.rowCount()
-        table.insertRow(index)
-        matricItem = QtWidgets.QTableWidgetItem()
-        firstNameItem = QtWidgets.QTableWidgetItem()
-        middleNameItem = QtWidgets.QTableWidgetItem()
-        lastNameItem = QtWidgets.QTableWidgetItem()
-        yearItem = QtWidgets.QTableWidgetItem()
-        courseItem = QtWidgets.QTableWidgetItem()
-        table.setItem(index, 0, matricItem)
-        table.setItem(index, 1, firstNameItem)
-        table.setItem(index, 2, middleNameItem)
-        table.setItem(index, 3, lastNameItem)
-        table.setItem(index, 4, yearItem)
-        table.setItem(index, 5, courseItem)
-        matricItem.setText(student["matriculationCode"])
-        firstNameItem.setText(student["firstName"])
-        middleNameItem.setText(student["middleName"])
-        lastNameItem.setText(student["lastName"])
-        yearItem.setText("%d" % student["entryYear"])
-        courseItem.setText(self.courses[student["courseOfStudy"]])
+        (table, index, key) = \
+            (self.presentTable, presentStudents - 1, "present") \
+            if student["isPresent"] else \
+            (self.absentTable, absentStudents - 1, "absent")
+
+        self.matric_records[key].append(student["matriculationCode"])
+
+        with self.logr("<pushRow> Insert row"):
+            table.insertRow(index)
+        with self.logr("<pushRow> Insert row slots"):
+            matricItem = QtWidgets.QTableWidgetItem()
+            firstNameItem = QtWidgets.QTableWidgetItem()
+            middleNameItem = QtWidgets.QTableWidgetItem()
+            lastNameItem = QtWidgets.QTableWidgetItem()
+            yearItem = QtWidgets.QTableWidgetItem()
+            courseItem = QtWidgets.QTableWidgetItem()
+            table.setItem(index, 0, matricItem)
+            table.setItem(index, 1, firstNameItem)
+            table.setItem(index, 2, middleNameItem)
+            table.setItem(index, 3, lastNameItem)
+            table.setItem(index, 4, yearItem)
+            table.setItem(index, 5, courseItem)
+        with self.logr("<pushRow> Set row cell text"):
+            matricItem.setText(student["matriculationCode"])
+            firstNameItem.setText(student["firstName"])
+            middleNameItem.setText(student["middleName"])
+            lastNameItem.setText(student["lastName"])
+            yearItem.setText("%d" % student["entryYear"])
+            courseItem.setText(self.courses[student["courseOfStudy"]])
         self.validateQuery(table, index, student)
 
     def validateQuery(self, table, index, student, query=None):
@@ -453,30 +463,44 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             table.showRow(index)
 
     def lookupText(self, query):
-        query = list(filter(bool, query.lower().split(' ')))
-        self.query = query
-        for (table, students) in (
-                (self.presentTable, self.students['present']),
-                (self.absentTable, self.students['absent'])):
-            for (index, student) in enumerate(students):
-                self.validateQuery(table, index, student, query)
+        self.query = query = list(filter(bool, query.lower().split(' ')))
+        for matric in self.students:
+            student = self.students[matric]
+            (table, key) = (self.presentTable, "present") if student["isPresent"] else (
+                self.absentTable, "absent")
+            index = self.matric_records[key].index(
+                student['matriculationCode'])
+            self.validateQuery(table, index, student, query)
 
     def markPresent(self, matricCode):
-        try:
-            (index, student) = next(
-                (index, student) for (index, student) in enumerate(self.students['absent']) if student['matriculationCode'] is matricCode)
-        except:
-            student = None
-        if student is None:
+        self.log("<markPresent> Mark Present [%s]" % matricCode)
+        with self.logr("<markPresent> Matric lookup in students [%s]" % matricCode):
+            try:
+                student = self.students[matricCode]
+            except:
+                student = None
+        if student is None or student['isPresent']:
             return
-        self.students['absent'].remove(student)
-        self.students['present'].append(student)
-        self.absentTable.removeRow(index)
-        self.pushRow(True, student)
+        with self.logr("<markPresent> Matric lookup in records [%s]" % matricCode):
+            index = self.matric_records['absent'].index(
+                student['matriculationCode'])
+        with self.logr("<markPresent> Matric remove from records [%s]" % matricCode):
+            del self.matric_records['absent'][index]
+        with self.logr("<markPresent> Pop student from absent table [%s]" % matricCode):
+            self.stats["absent"] -= 1
+            self.absentTable.removeRow(index)
+        with self.logr(
+            "<markPresent> Push student into present table [%s]" % matricCode,
+            "<markPresent> Pushed student into present table [%s]" % matricCode, reenter=True
+        ):
+            student["isPresent"] = True
+            self.stats["present"] += 1
+            self.pushRow(student)
+        self.log("<markPresent> Marked student as present [%s]" % matricCode)
         self.emit('foundStudent', student)
 
     def getAbsentStudentsMatric(self):
-        return [student['matriculationCode'] for student in self.students['absent']]
+        return [student for student in self.students if not self.students[student]['isPresent']]
 
     def log(self, *args, **kwargs):
         ActingLogger().print(*args, **kwargs)
@@ -694,13 +718,14 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
 class ActingLogger:
     entry_time = exit_time = None
 
-    def __init__(self, entry=None, exit=None, end="", entry_kwargs=None, exit_kwargs=None):
+    def __init__(self, entry=None, exit=None, reenter=False, end="", entry_kwargs=None, exit_kwargs=None):
         self.entry_tuple = () if entry is None else (
             entry,) if type(entry) is not tuple else entry
         self.entry_kwargs = entry_kwargs or {}
         self.exit_tuple = ("done",) if exit is None else (
             exit,) if type(exit) is not tuple else exit
         self.exit_kwargs = exit_kwargs or {}
+        self.reenter = reenter
         self.end_str = end
 
     def print(self, *args, **kwargs):
@@ -708,15 +733,20 @@ class ActingLogger:
         print("[%s]" % self.entry_time, *args, **kwargs)
 
     def __enter__(self):
-        self.print(*self.entry_tuple, end=self.end_str or "...",
-                   flush=True, **self.entry_kwargs)
+        kwargs = {"end": self.end_str or "...",
+                  "flush": True} if not self.reenter else {}
+        self.print(*self.entry_tuple, **kwargs, **self.entry_kwargs)
 
     def __exit__(self, *args):
         self.exit_time = datetime.now()
 
         delta = (self.exit_time - self.entry_time).total_seconds()
-        print(*self.exit_tuple, "(%ss)" %
-              ("%d" % delta if delta.is_integer() else "%.4f" % delta), **self.exit_kwargs)
+        delta = "(%ss)" % ("%d" %
+                           delta if delta.is_integer() else "%.4f" % delta)
+        print(*self.exit_tuple, delta, flush=True, **self.exit_kwargs) \
+            if not self.reenter else \
+            print("[%s]" % self.exit_time, *self.exit_tuple, "%s" %
+                  delta, flush=True, **self.exit_kwargs)
 
 
 CSS_BG_RED = "background-color: rgb(223, 36, 15);"
