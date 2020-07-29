@@ -284,7 +284,6 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             lambda: self.export('markdown'))
 
     def resetAttendance(self):
-        self.stats = {"present": 0, "absent": 0}
         self.students = {}
         self.matric_records = {"present": deque(), "absent": deque()}
         self.presentTable.clearContents()
@@ -408,23 +407,24 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         markPresent = student["isPresent"] = bool(student['markPresent'])
         del student['markPresent']
         self.students[student["matriculationCode"]] = student
-        self.stats["present" if markPresent else "absent"] += 1
         self.pushRow(student)
 
     def pushRow(self, student):
         self.log("<pushRow> Creating student row on table")
-        presentStudents = self.stats["present"]
-        absentStudents = self.stats["absent"]
-        self.totalLineEdit.setText("%d" % (presentStudents + absentStudents))
-        self.presentLineEdit.setText("%d" % presentStudents)
-        self.absentLineEdit.setText("%d" % absentStudents)
 
         (table, index, key) = \
-            (self.presentTable, presentStudents - 1, "present") \
+            (self.presentTable, len(self.matric_records["present"]), "present") \
             if student["isPresent"] else \
-            (self.absentTable, absentStudents - 1, "absent")
+            (self.absentTable, len(self.matric_records["absent"]), "absent")
 
         self.matric_records[key].append(student["matriculationCode"])
+
+        presentStudents = len(self.matric_records["present"])
+        absentStudents = len(self.matric_records["absent"])
+        self.totalLineEdit.setText(
+            "%d" % (presentStudents + absentStudents))
+        self.presentLineEdit.setText("%d" % presentStudents)
+        self.absentLineEdit.setText("%d" % absentStudents)
 
         with self.logr("<pushRow> Insert row"):
             table.insertRow(index)
@@ -487,14 +487,12 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         with self.logr("<markPresent> Matric remove from records [%s]" % matricCode):
             del self.matric_records['absent'][index]
         with self.logr("<markPresent> Pop student from absent table [%s]" % matricCode):
-            self.stats["absent"] -= 1
             self.absentTable.removeRow(index)
         with self.logr(
             "<markPresent> Push student into present table [%s]" % matricCode,
             "<markPresent> Pushed student into present table [%s]" % matricCode, reenter=True
         ):
             student["isPresent"] = True
-            self.stats["present"] += 1
             self.pushRow(student)
         self.log("<markPresent> Marked student as present [%s]" % matricCode)
         self.emit('foundStudent', student)
