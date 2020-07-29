@@ -618,16 +618,16 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         with self.logr("<buildCSV> Compiling CSV records"):
             document += "\n".join([
                 ",".join([
-                    student['matriculationCode'],
-                    student['firstName'],
-                    student['middleName'],
-                    student['lastName'],
+                    self.students[matric]['matriculationCode'],
+                    self.students[matric]['firstName'],
+                    self.students[matric]['middleName'],
+                    self.students[matric]['lastName'],
                     "1" if studentList == "present" else "0",
-                    str(student['entryYear']),
-                    self.courses[student['courseOfStudy']]
+                    str(self.students[matric]['entryYear']),
+                    self.courses[self.students[matric]['courseOfStudy']]
                 ])
                 for studentList in ['present', 'absent']
-                for student in self.students[studentList]])
+                for matric in self.matric_records[studentList]])
         self.log(
             '<buildCSV> Successfully built CSV Report')
         return document
