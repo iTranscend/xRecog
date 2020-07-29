@@ -216,9 +216,9 @@ class XrecogPreviewWindow(QtWidgets.QDialog, EventEmitter):
         self.loadPreviewButton.clicked.connect(self.handleLoadPreview)
         self.printButton.setDisabled(True)
         self.printButton.clicked.connect(
-            lambda: self.emit('print', self.previewTextEdit))
+            lambda: self.emit('print', self.previewTextBrowser))
         self.actionPrintPreview.triggered.connect(
-            lambda: self.emit('printPreview', self.previewTextEdit))
+            lambda: self.emit('printPreview', self.previewTextBrowser))
         self.saveButton.clicked.connect(lambda: self.emit(
             'saveFile', self.comboSlots[self.formatComboBox.currentIndex()]))
 
@@ -231,7 +231,7 @@ class XrecogPreviewWindow(QtWidgets.QDialog, EventEmitter):
         self.previewText = self.previewText or content
         self.isPreviewing = self.isPreviewing or forcePreview
         if self.isPreviewing:
-            self.previewTextEdit.setHtml(self.previewText)
+            self.previewTextBrowser.setHtml(self.previewText)
 
     comboSlots = []
     loaderMap = {}
