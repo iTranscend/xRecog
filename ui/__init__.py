@@ -3,6 +3,7 @@ import sys
 import random
 import tempfile
 import markdown2
+import threading
 from datetime import datetime
 from collections import deque
 
@@ -462,14 +463,40 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         elif table.isRowHidden(index):
             table.showRow(index)
 
+    def parallelize(self, items, jobs, handler):
+        items = iter(items)
+        lock = threading.Lock()
+
+        def threadHandler():
+            while True:
+                try:
+                    lock.acquire()
+                    item = next(items)
+                    lock.release()
+                    handler(item)
+                except StopIteration:
+                    lock.release()
+                    break
+
+        def newThread():
+            thread = threading.Thread(target=threadHandler)
+            thread.start()
+            return thread
+
+        return [newThread() for job in range(jobs)]
+
     def lookupText(self, query):
-        self.query = query = list(filter(bool, query.lower().split(' ')))
-        for student in self.students.values():
-            (table, key) = (self.presentTable, "present") if student["isPresent"] else (
-                self.absentTable, "absent")
-            index = self.matric_records[key].index(
-                student['matriculationCode'])
-            self.validateQuery(table, index, student, query)
+        with self.logr("Looking up query [%s]" % query):
+            self.query = list(filter(bool, query.lower().split(' ')))
+
+            def studentHandler(student):
+                (table, key) = (self.presentTable, "present") if student["isPresent"] else (
+                    self.absentTable, "absent")
+                index = self.matric_records[key].index(
+                    student['matriculationCode'])
+                self.validateQuery(table, index, student, self.query)
+
+            self.parallelize(self.students.values(), 8, studentHandler)
 
     def markPresent(self, matricCode):
         self.log("<markPresent> Mark Present [%s]" % matricCode)
