@@ -22,10 +22,11 @@ def mountTestInstance(main_window):
         "Political Sciences",
         "Art",
     ]
-    with main_window.logr("Loading %d courses" % len(courses)):
+    with main_window.logr(
+            "Loading %d courses" % len(courses), force=True):
         main_window.loadCourses(courses)
 
-    with main_window.logr("Generating %d students" % num_students):
+    with main_window.logr("Generating %d students" % num_students, force=True):
         students = []
         faker = Faker()
         for index in range(0, num_students):
@@ -40,7 +41,11 @@ def mountTestInstance(main_window):
                 'markPresent': False
             })
 
-    with main_window.logr("Populating UI with %d students" % len(students)):
+    with main_window.logr(
+        "Populating UI with %d students" % len(students),
+        "Populated UI with %d students" % len(students),
+        reenter=True, force=True
+    ):
         main_window.loadStudents(students)
 
     main_window.setAboutText(
@@ -68,16 +73,21 @@ def mountTestInstance(main_window):
     main_window.on('registrationData', handleTestRegData)
 
     def startAttendanceCamera(*args):
-        print("stopCameraButtonClicked")
+        main_window.log("<startAttendanceCamera>")
         students = main_window.getAbsentStudentsMatric()
-        foundStudents = random.sample(
-            students, k=random.randint(0, len(students)))
-        print("Found %d student%s" %
-              (len(foundStudents), "" if len(foundStudents) == 1 else "s"))
-        if (len(foundStudents) == 0):
+        length = random.randint(0, len(students))
+        foundStudents = random.sample(students, k=length)
+        main_window.log("<startAttendanceCamera> Found %d student%s" %
+                        (length, "" if length == 1 else "s"), force=True)
+        if (length == 0):
             return
-        for student in foundStudents:
-            main_window.markPresent(student)
+        with main_window.logr(
+            "<startAttendanceCamera> Marking %s students" % length,
+            "<startAttendanceCamera> Marked %s students" % length,
+            reenter=True, force=True
+        ):
+            for student in foundStudents:
+                main_window.markPresent(student)
 
     main_window.on('startCameraButtonClicked', startAttendanceCamera)
 
