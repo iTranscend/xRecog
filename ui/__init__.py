@@ -464,8 +464,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
 
     def lookupText(self, query):
         self.query = query = list(filter(bool, query.lower().split(' ')))
-        for matric in self.students:
-            student = self.students[matric]
+        for student in self.students.values():
             (table, key) = (self.presentTable, "present") if student["isPresent"] else (
                 self.absentTable, "absent")
             index = self.matric_records[key].index(
@@ -498,7 +497,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.emit('foundStudent', student)
 
     def getAbsentStudentsMatric(self):
-        return [student for student in self.students if not self.students[student]['isPresent']]
+        return [student["matriculationCode"] for student in self.students.values() if not student['isPresent']]
 
     def log(self, *args, **kwargs):
         force = False
@@ -618,16 +617,15 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         with self.logr("<buildCSV> Compiling CSV records"):
             document += "\n".join([
                 ",".join([
-                    self.students[matric]['matriculationCode'],
-                    self.students[matric]['firstName'],
-                    self.students[matric]['middleName'],
-                    self.students[matric]['lastName'],
-                    "1" if studentList == "present" else "0",
-                    str(self.students[matric]['entryYear']),
-                    self.courses[self.students[matric]['courseOfStudy']]
+                    student['matriculationCode'],
+                    student['firstName'],
+                    student['middleName'],
+                    student['lastName'],
+                    "1" if student["isPresent"] else "0",
+                    str(student['entryYear']),
+                    self.courses[student['courseOfStudy']]
                 ])
-                for studentList in ['present', 'absent']
-                for matric in self.matric_records[studentList]])
+                for student in self.students.values()])
         self.log(
             '<buildCSV> Successfully built CSV Report')
         return document
