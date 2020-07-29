@@ -123,7 +123,8 @@ p, li { white-space: pre-wrap; }
   </layout>
   <action name="actionPrintPreview">
    <property name="icon">
-    <iconset theme="document-print-preview"/>
+    <iconset theme="document-print-preview">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Print Preview</string>
