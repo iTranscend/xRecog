@@ -1,5 +1,6 @@
 import os
 import sys
+import ctypes
 import random
 import tempfile
 import markdown2
@@ -466,6 +467,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
     def parallelize(self, items, jobs, handler):
         items = iter(items)
         lock = threading.Lock()
+        doneThreads = []
 
         def threadHandler():
             while True:
@@ -477,10 +479,23 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                 except StopIteration:
                     lock.release()
                     break
+            doneThreads.append(threading.get_ident())
+
+        def cancelThread(thread_id):
+            if thread_id in doneThreads:
+                return
+            res = ctypes.pythonapi.PyThreadState_SetAsyncExc(
+                thread_id, ctypes.py_object(SystemExit))
+            if res > 1:
+                ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, 0)
+                print(
+                    'Fatal Exception: Failed to cancel thread [%d]' % thread_id)
+            doneThreads.append(thread_id)
 
         def newThread():
             thread = threading.Thread(target=threadHandler)
             thread.start()
+            thread.cancel = lambda: cancelThread(thread.ident)
             return thread
 
         return [newThread() for job in range(jobs)]
