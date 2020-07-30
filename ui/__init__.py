@@ -500,7 +500,16 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
 
         return [newThread() for job in range(jobs)]
 
-    def lookupText(self, query):
+    lookupTimer = None
+    lookupThreads = None
+    lookupThreadsLock = None
+
+    def _lookupText(self, query):
+        self.lookupThreadsLock = self.lookupThreadsLock or threading.Lock()
+        self.lookupThreadsLock.acquire()
+        if self.lookupThreads:
+            for thread in self.lookupThreads:
+                thread.cancel()
         with self.logr("Looking up query [%s]" % query):
             query = set(filter(bool, query.lower().split(' ')))
             if self.query.symmetric_difference(query):
@@ -513,7 +522,15 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                         student['matriculationCode'])
                     self.validateQuery(table, index, student, self.query)
 
-                self.parallelize(self.students.values(), 8, studentHandler)
+                self.lookupThreads = self.parallelize(
+                    self.students.values(), 8, studentHandler)
+        self.lookupThreadsLock.release()
+
+    def lookupText(self, query):
+        if self.lookupTimer:
+            self.lookupTimer.cancel()
+        self.lookupTimer = threading.Timer(1, self._lookupText, (query,))
+        self.lookupTimer.start()
 
     def markPresent(self, matricCode):
         self.log("<markPresent> Mark Present [%s]" % matricCode)
