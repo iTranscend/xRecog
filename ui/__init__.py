@@ -268,7 +268,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.prepareRegistration()
         self.matriculationCodeValidator = None
         self.aboutText = None
-        self.query = None
+        self.query = set()
         self.courses = []
         self.resetAttendance()
         self.actionAbout.triggered.connect(self.showAbout)
@@ -487,16 +487,18 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
 
     def lookupText(self, query):
         with self.logr("Looking up query [%s]" % query):
-            self.query = list(filter(bool, query.lower().split(' ')))
+            query = set(filter(bool, query.lower().split(' ')))
+            if self.query.symmetric_difference(query):
+                self.query = query
 
-            def studentHandler(student):
-                (table, key) = (self.presentTable, "present") if student["isPresent"] else (
-                    self.absentTable, "absent")
-                index = self.matric_records[key].index(
-                    student['matriculationCode'])
-                self.validateQuery(table, index, student, self.query)
+                def studentHandler(student):
+                    (table, key) = (self.presentTable, "present") if student["isPresent"] else (
+                        self.absentTable, "absent")
+                    index = self.matric_records[key].index(
+                        student['matriculationCode'])
+                    self.validateQuery(table, index, student, self.query)
 
-            self.parallelize(self.students.values(), 8, studentHandler)
+                self.parallelize(self.students.values(), 8, studentHandler)
 
     def markPresent(self, matricCode):
         self.log("<markPresent> Mark Present [%s]" % matricCode)
