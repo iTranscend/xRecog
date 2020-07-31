@@ -465,6 +465,10 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             table.showRow(index)
 
     def parallelize(self, items, jobs, handler):
+        try:
+            jobs = min(jobs, len(items))
+        except:
+            pass
         items = iter(items)
         lock = threading.Lock()
         doneThreads = []
