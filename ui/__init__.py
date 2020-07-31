@@ -1,10 +1,10 @@
 import os
 import sys
-import ctypes
 import random
 import tempfile
 import markdown2
 import threading
+from inspect import signature
 from datetime import datetime
 from collections import deque
 
@@ -473,34 +473,52 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         lock = threading.Lock()
         doneLock = threading.Lock()
         doneThreads = []
+        takesChecker = len(signature(handler).parameters) == 2
 
-        def threadHandler():
-            while True:
+        def threadHandler(event):
+            doCancel = threading.Event()
+
+            def newConstraintChecker(listeners):
+                def checkConstraint(handle=None, persist=False):
+                    if handle:
+                        if not persist:
+                            listeners.append(handle)
+                        event.on('cancel', handle)
+                    else:
+                        return doCancel.isSet()
+                return checkConstraint
+
+            event.on('cancel', doCancel.set)
+            while not doCancel.isSet():
+                listeners = []
                 try:
                     with lock:
                         item = next(items)
+                    if takesChecker:
+                        handler(item, newConstraintChecker(listeners))
+                    else:
                         handler(item)
                 except StopIteration:
                     break
+                finally:
+                    for listener in listeners:
+                        event.removeListener('cancel', listener)
             with doneLock:
                 doneThreads.append(threading.get_ident())
 
-        def cancelThread(thread_id):
+        def cancelThread(thread_id, threadSignal):
             if thread_id in doneThreads:
                 return
-            res = ctypes.pythonapi.PyThreadState_SetAsyncExc(
-                thread_id, ctypes.py_object(SystemExit))
-            if res > 1:
-                ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, 0)
-                print(
-                    'Fatal Exception: Failed to cancel thread [%d]' % thread_id)
+            threadSignal.emit('cancel')
             with doneLock:
                 doneThreads.append(thread_id)
 
         def newThread():
-            thread = threading.Thread(target=threadHandler)
+            threadSignal = EventEmitter()
+            thread = threading.Thread(
+                target=threadHandler, args=(threadSignal,))
             thread.start()
-            thread.cancel = lambda: cancelThread(thread.ident)
+            thread.cancel = lambda: cancelThread(thread.ident, threadSignal)
             return thread
 
         return [newThread() for job in range(jobs)]
