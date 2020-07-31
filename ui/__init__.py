@@ -33,6 +33,12 @@ class EventEmitter(object):
         for handler in self.handlers[objectName]:
             handler(*args)
 
+    def removeListener(self, objectName, handler):
+        if (objectName not in self.handlers):
+            return
+        if handler in self.handlers[objectName]:
+            self.handlers[objectName].remove(handler)
+
 
 class XrecogCaptureWindow(QtWidgets.QDialog):
     closed = QtCore.pyqtSignal()
