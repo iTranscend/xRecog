@@ -4,7 +4,6 @@ from core import train_model
 import sys
 import os
 from ui import QtWidgets, XrecogMainWindow
-from ui import resources_rc
 
 
 def extractEmbeddings():

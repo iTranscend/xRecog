@@ -1,9 +1,8 @@
 import os
 import sys
 import random
-import resources_rc
 from faker import Faker
-from __init__ import XrecogMainWindow, QtWidgets
+from . import XrecogMainWindow, QtWidgets
 
 
 def mountTestInstance(main_window):

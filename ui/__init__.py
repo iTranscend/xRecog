@@ -17,7 +17,8 @@ from PyQt5 import (
     QtPrintSupport,
     QtMultimediaWidgets)
 
-from ui.eventemitter import EventEmitter
+from . import resources_rc
+from .eventemitter import EventEmitter
 
 
 class XrecogCaptureWindow(QtWidgets.QDialog):
