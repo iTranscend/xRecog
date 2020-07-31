@@ -4,7 +4,6 @@ import random
 import tempfile
 import markdown2
 import threading
-from inspect import signature
 from datetime import datetime
 from collections import deque
 
@@ -19,6 +18,7 @@ from PyQt5 import (
 
 from . import resources_rc
 from .eventemitter import EventEmitter
+from .parallelizer import Parallelizer
 
 
 class XrecogCaptureWindow(QtWidgets.QDialog):
@@ -451,65 +451,6 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         elif table.isRowHidden(index):
             table.showRow(index)
 
-    def parallelize(self, items, jobs, handler):
-        try:
-            jobs = min(jobs, len(items))
-        except:
-            pass
-        items = iter(items)
-        lock = threading.Lock()
-        doneLock = threading.Lock()
-        doneThreads = []
-        takesChecker = len(signature(handler).parameters) == 2
-
-        def threadHandler(event):
-            doCancel = threading.Event()
-
-            def newConstraintChecker(listeners):
-                def checkConstraint(handle=None, persist=False):
-                    if handle:
-                        if not persist:
-                            listeners.append(handle)
-                        event.on('cancel', handle)
-                    else:
-                        return doCancel.isSet()
-                return checkConstraint
-
-            event.on('cancel', doCancel.set)
-            while not doCancel.isSet():
-                listeners = []
-                try:
-                    with lock:
-                        item = next(items)
-                    if takesChecker:
-                        handler(item, newConstraintChecker(listeners))
-                    else:
-                        handler(item)
-                except StopIteration:
-                    break
-                finally:
-                    for listener in listeners:
-                        event.removeListener('cancel', listener)
-            with doneLock:
-                doneThreads.append(threading.get_ident())
-
-        def cancelThread(thread_id, threadSignal):
-            if thread_id in doneThreads:
-                return
-            threadSignal.emit('cancel')
-            with doneLock:
-                doneThreads.append(thread_id)
-
-        def newThread():
-            threadSignal = EventEmitter()
-            thread = threading.Thread(
-                target=threadHandler, args=(threadSignal,))
-            thread.start()
-            thread.cancel = lambda: cancelThread(thread.ident, threadSignal)
-            return thread
-
-        return [newThread() for job in range(jobs)]
-
     lookupTimer = None
     lookupThreads = None
     lookupThreadsLock = None
@@ -518,8 +459,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.lookupThreadsLock = self.lookupThreadsLock or threading.Lock()
         self.lookupThreadsLock.acquire()
         if self.lookupThreads:
-            for thread in self.lookupThreads:
-                thread.cancel()
+            self.lookupThreads.cancelAll()
         with self.logr("Looking up query [%s]" % query):
             query = set(filter(bool, query.lower().split(' ')))
             if self.query.symmetric_difference(query):
@@ -532,7 +472,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                         student['matriculationCode'])
                     self.validateQuery(table, index, student, self.query)
 
-                self.lookupThreads = self.parallelize(
+                self.lookupThreads = Parallelizer(
                     self.students.values(), 8, studentHandler)
         self.lookupThreadsLock.release()
 
