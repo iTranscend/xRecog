@@ -471,19 +471,19 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             pass
         items = iter(items)
         lock = threading.Lock()
+        doneLock = threading.Lock()
         doneThreads = []
 
         def threadHandler():
             while True:
                 try:
-                    lock.acquire()
-                    item = next(items)
-                    lock.release()
-                    handler(item)
+                    with lock:
+                        item = next(items)
+                        handler(item)
                 except StopIteration:
-                    lock.release()
                     break
-            doneThreads.append(threading.get_ident())
+            with doneLock:
+                doneThreads.append(threading.get_ident())
 
         def cancelThread(thread_id):
             if thread_id in doneThreads:
@@ -494,7 +494,8 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                 ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, 0)
                 print(
                     'Fatal Exception: Failed to cancel thread [%d]' % thread_id)
-            doneThreads.append(thread_id)
+            with doneLock:
+                doneThreads.append(thread_id)
 
         def newThread():
             thread = threading.Thread(target=threadHandler)
