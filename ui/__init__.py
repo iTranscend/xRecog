@@ -208,8 +208,7 @@ class XrecogPreviewWindow(QtWidgets.QDialog, EventEmitter):
             lambda: self.emit('print', self.previewTextBrowser))
         self.actionPrintPreview.triggered.connect(
             lambda: self.emit('printPreview', self.previewTextBrowser))
-        self.saveButton.clicked.connect(lambda: self.emit(
-            'saveFile', self.comboSlots[self.formatComboBox.currentIndex()]))
+        self.saveButton.clicked.connect(self.save)
 
     def handleLoadPreview(self):
         self.printButton.setDisabled(False)
@@ -235,6 +234,10 @@ class XrecogPreviewWindow(QtWidgets.QDialog, EventEmitter):
         self.formatComboBox.blockSignals(True)
         self.formatComboBox.addItem(title)
         self.formatComboBox.blockSignals(False)
+
+    def save(self):
+        key = self.comboSlots[self.formatComboBox.currentIndex()]
+        self.emit('saveFile', key, self.loaderMap[key]["data"])
 
     def load(self, type):
         self.formatComboBox.blockSignals(True)
@@ -677,10 +680,10 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         },
     }
 
-    def export(self, type):
+    def export(self, type, document=None):
         stack = self.file_maps[type]
         self.log("<export> Exporting %s" % stack["title"])
-        document = stack["handler"](self)
+        document = document or stack["handler"](self)
         filename, _ = QtWidgets.QFileDialog.getSaveFileName(
             self, 'Save %s File' % stack["title"], stack["last_file"] or os.getcwd(), stack["save_filters"])
         if filename:
