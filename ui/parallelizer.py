@@ -15,7 +15,9 @@ class Parallelizer(EventEmitter):
         self.__takesChecker = len(signature(handler).parameters) == 2
         self.__handler = handler
         self.__threads = []
+        self.__doneLock = threading.Lock()
         self.__started = threading.Event()
+        self.__finished = threading.Event()
         for job in range(jobs):
             self.__newThread(job)
 
@@ -30,21 +32,32 @@ class Parallelizer(EventEmitter):
                     return cancelledEvent.isSet()
             return checkConstraint
 
-        while not cancelledEvent.isSet():
-            listeners = []
-            try:
+        try:
+            while not cancelledEvent.isSet():
+                listeners = []
                 try:
-                    with self.__itemsLock:
-                        item = next(self.__items)
-                except StopIteration:
-                    break
-                if self.__takesChecker:
-                    self.__handler(item, newConstraintChecker(listeners))
-                else:
-                    self.__handler(item)
-            finally:
-                for listener in listeners:
-                    threadEvent.removeListener('cancel', listener)
+                    try:
+                        with self.__itemsLock:
+                            item = next(self.__items)
+                    except StopIteration:
+                        break
+                    if self.__takesChecker:
+                        self.__handler(item, newConstraintChecker(listeners))
+                    else:
+                        self.__handler(item)
+                finally:
+                    for listener in listeners:
+                        threadEvent.removeListener('cancel', listener)
+        finally:
+            self.__tickThread()
+
+    def __tickThread(self):
+        if not self.hasStarted():
+            return
+        with self.__doneLock:
+            if all(not threadStack["thread"].is_alive() for threadStack in self.__threads if threadStack["thread"] != threading.current_thread()):
+                self.__finished.set()
+                self.emit('finished')
 
     def __newThread(self, index):
         threadEvent = EventEmitter()
@@ -73,7 +86,10 @@ class Parallelizer(EventEmitter):
         return self.hasStarted() and not self.__threads[n]["thread"].is_alive()
 
     def allFinished(self):
-        return self.hasStarted() and all(not threadStack["thread"].is_alive() for threadStack in self.__threads)
+        return self.__finished.isSet()
+
+    def wait(self, n=None):
+        return self.__finished.wait(n)
 
     def cancelled(self, n):
         return self.__threads[n]["cancelled"].isSet()
@@ -109,6 +125,7 @@ if __name__ == "__main__":
 
     par = Parallelizer(range(10), 4, executor)
     par.on("started", lambda: print("Started thread execution"))
+    par.on("finished", lambda: print("All threads finished execution"))
     par.start()
     par.cancelAll()
     par.joinAll()
