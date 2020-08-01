@@ -499,7 +499,8 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                     self.lookupThreads = Parallelizer(
                         self.students.values(), 8, studentHandler)
                     self.lookupThreads.start()
-                    self.lookupThreads.wait()
+                    self.lookupThreads.joinAll()
+                    self.lookupThreads = None
 
     def lookupText(self, query):
         if self.lookupTimer:
