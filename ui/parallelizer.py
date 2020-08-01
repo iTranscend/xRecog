@@ -32,14 +32,15 @@ class Parallelizer(object):
         while not cancelledEvent.isSet():
             listeners = []
             try:
-                with self.__itemsLock:
-                    item = next(self.__items)
+                try:
+                    with self.__itemsLock:
+                        item = next(self.__items)
+                except StopIteration:
+                    break
                 if self.__takesChecker:
                     self.__handler(item, newConstraintChecker(listeners))
                 else:
                     self.__handler(item)
-            except StopIteration:
-                break
             finally:
                 for listener in listeners:
                     threadEvent.removeListener('cancel', listener)
