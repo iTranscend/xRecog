@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 import random
 import tempfile
 import functools
@@ -434,6 +435,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             index = len(record)
             record.append(student["matriculationCode"])
         self.statUpdateSignal.emit()
+        time.sleep(.0030)
         with self.logr("<pushRow> Insert row slots"):
             matricItem = QtWidgets.QTableWidgetItem()
             firstNameItem = QtWidgets.QTableWidgetItem()
