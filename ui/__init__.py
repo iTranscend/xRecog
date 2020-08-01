@@ -290,7 +290,18 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
     def registerDispatcher(self, objectName):
         return lambda *args: self.emit(objectName, *args)
 
+    statUpdateSignal = QtCore.pyqtSignal()
+
+    def updateStats(self):
+        absentStudents = len(self.matric_records["absent"])
+        presentStudents = len(self.matric_records["present"])
+        self.totalLineEdit.setText(
+            "%d" % (presentStudents + absentStudents))
+        self.presentLineEdit.setText("%d" % presentStudents)
+        self.absentLineEdit.setText("%d" % absentStudents)
+
     def prepareAttendance(self):
+        self.statUpdateSignal.connect(self.updateStats)
         self.startCameraButton.clicked.connect(
             self.registerDispatcher('startCameraButtonClicked'))
         self.stopCameraButton.clicked.connect(
@@ -422,6 +433,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             record = self.matric_records[key]
             index = len(record)
             record.append(student["matriculationCode"])
+        self.statUpdateSignal.emit()
         with self.logr("<pushRow> Insert row slots"):
             matricItem = QtWidgets.QTableWidgetItem()
             firstNameItem = QtWidgets.QTableWidgetItem()
