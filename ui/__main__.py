@@ -25,9 +25,13 @@ def mountTestInstance(main_window):
             "Loading %d courses" % len(courses), force=True):
         main_window.loadCourses(courses)
 
+    max_students = max(10000, num_students)
+
     with main_window.logr("Generating %d students" % num_students, force=True):
-        students = []
         faker = Faker()
+        students = []
+        matric_numbers = random.sample(range(0, max_students), num_students)
+
         def newStudent(index):
             male = bool(random.getrandbits(1))
             students.append({
@@ -35,7 +39,7 @@ def mountTestInstance(main_window):
                 'middleName': faker.first_name_male() if male else faker.first_name_female(),
                 'lastName': faker.last_name_male() if male else faker.last_name_female(),
                 'entryYear': random.randint(MIN_YEAR, MAX_YEAR + 1),
-                'matriculationCode': "%04d" % random.randint(0, 10000),
+                'matriculationCode': "%04d" % matric_numbers[index],
                 'courseOfStudy': random.randint(0, len(courses) - 1),
                 'markPresent': False
             })
