@@ -98,12 +98,10 @@ class Parallelizer(EventEmitter):
     def allCancelled(self):
         return all(threadStack["cancelled"].isSet() for threadStack in self.__threads)
 
-    def cancel(self, n):
-        self.__threads[n]["threadEvent"].emit("cancel")
-
-    def cancelAll(self):
+    def cancel(self):
         for threadStack in self.__threads:
             threadStack["threadEvent"].emit("cancel")
+        self.emit("cancel")
 
     def join(self, n):
         return self.__threads[n]["thread"].join()
