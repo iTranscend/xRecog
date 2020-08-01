@@ -4,13 +4,14 @@ from ui.eventemitter import EventEmitter
 
 
 class Parallelizer(EventEmitter):
-    def __init__(self, items, jobs, handler):
+    def __init__(self, items, jobs, handler, *, sentinel=None):
         super().__init__()
         try:
             jobs = min(jobs, len(items))
         except:
             pass
-        self.__items = iter(items)
+        self.__items = iter(items) if not callable(
+            items) else iter(items, sentinel)
         self.__itemsLock = threading.Lock()
         self.__takesChecker = len(signature(handler).parameters) == 2
         self.__handler = handler
