@@ -114,16 +114,51 @@ class Parallelizer(EventEmitter):
 if __name__ == "__main__":
     import time
 
-    def executor(item, doCancel):
-        thread = threading.current_thread()
-        print("item %d on %a, init (cancel = %a)" % (item, thread.getName(), doCancel()))
-        time.sleep(1)
-        print("item %d on %a, done (cancel = %a)" % (item, thread.getName(), doCancel()))
+    def test1():
+        def executor(item, doCancel):
+            thread = threading.current_thread()
+            print(" * item %d on %a, init (cancel = %a)" %
+                  (item, thread.getName(), doCancel()))
+            time.sleep(1)
+            print(" * item %d on %a, done (cancel = %a)" %
+                  (item, thread.getName(), doCancel()))
 
-    par = Parallelizer(range(10), 4, executor)
-    par.on("cancel", lambda: print("Cancelling jobs"))
-    par.on("started", lambda: print("Started thread execution"))
-    par.on("finished", lambda: print("All threads finished execution"))
-    par.start()
-    par.cancel()
-    par.joinAll()
+        par = Parallelizer(range(10), 4, executor)
+        par.on("cancel", lambda: print(" Cancelling jobs"))
+        par.on("started", lambda: print(" Started thread execution"))
+        par.on("finished", lambda: print(" All threads finished execution"))
+        par.start()
+        par.cancel()
+        par.joinAll()
+
+    def test2():
+        import queue
+        q = queue.Queue()
+
+        def executor(item, doCancel):
+            thread = threading.current_thread()
+            print(" * item %02d on %a, init (cancel = %a)" %
+                  (item, thread.getName(), doCancel()))
+            time.sleep(1)
+            print(" * item %02d on %a, done (cancel = %a)" %
+                  (item, thread.getName(), doCancel()))
+
+        par = Parallelizer(q.get, 4, executor, sentinel=None)
+        par.on("cancel", lambda: print(" Cancelling jobs"))
+        par.on("cancel", lambda: q.put(None))
+        par.on("started", lambda: print(" Started thread execution"))
+        par.on("finished", lambda: print(" All threads finished execution"))
+        print("(i) Use ctrl+c to initiate cancel")
+        try:
+            par.start()
+            for item in range(100):
+                q.put(item)
+            par.joinAll()
+        except KeyboardInterrupt:
+            par.cancel()
+
+    print("Running test 1")
+    test1()
+    print()
+    print("Running test 2")
+    test2()
