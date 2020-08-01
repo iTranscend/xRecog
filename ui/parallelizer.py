@@ -3,8 +3,9 @@ from inspect import signature
 from ui.eventemitter import EventEmitter
 
 
-class Parallelizer(object):
+class Parallelizer(EventEmitter):
     def __init__(self, items, jobs, handler):
+        super().__init__()
         try:
             jobs = min(jobs, len(items))
         except:
@@ -61,6 +62,7 @@ class Parallelizer(object):
             raise RuntimeError(
                 "Parallelizer instances can only be started once")
         self.__started.set()
+        self.emit('started')
         for threadStack in self.__threads:
             threadStack["thread"].start()
 
@@ -106,6 +108,7 @@ if __name__ == "__main__":
         print("item %d on %a, done" % (item, thread.getName()))
 
     par = Parallelizer(range(10), 4, executor)
+    par.on("started", lambda: print("Started thread execution"))
     par.start()
     par.cancelAll()
     par.joinAll()
