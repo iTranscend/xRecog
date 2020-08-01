@@ -123,6 +123,7 @@ if __name__ == "__main__":
         print("item %d on %a, done" % (item, thread.getName()))
 
     par = Parallelizer(range(10), 4, executor)
+    par.on("cancel", lambda: print("Cancelling jobs"))
     par.on("started", lambda: print("Started thread execution"))
     par.on("finished", lambda: print("All threads finished execution"))
     par.start()
