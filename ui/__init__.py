@@ -480,7 +480,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
 
     def _lookupText(self, query):
         if self.lookupThreads:
-            self.lookupThreads.cancel()
+            self.lookupThreads.cancelAll()
             self.lookupThreads.joinAll()
         with self.logr("Looking up query [%s]" % query):
             query = set(filter(bool, query.lower().split(' ')))

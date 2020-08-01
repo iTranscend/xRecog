@@ -126,5 +126,5 @@ if __name__ == "__main__":
     par.on("started", lambda: print("Started thread execution"))
     par.on("finished", lambda: print("All threads finished execution"))
     par.start()
-    par.cancelAll()
+    par.cancel()
     par.joinAll()
