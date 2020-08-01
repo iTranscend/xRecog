@@ -426,7 +426,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             self.students[student["matriculationCode"]] = student
         self.pushRow(student)
 
-    def pushRow(self, student):
+    def pushRow(self, student, insertRow=False):
         self.log("<pushRow> Creating student row on table")
 
         with self.recordLock:
@@ -435,6 +435,8 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             record = self.matric_records[key]
             index = len(record)
             record.append(student["matriculationCode"])
+            if insertRow:
+                table.insertRow(index)
         self.statUpdateSignal.emit()
         time.sleep(.0030)
         with self.logr("<pushRow> Insert row slots"):
@@ -527,7 +529,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             "<markPresent> Pushed student into present table [%s]" % matricCode, reenter=True
         ):
             student["isPresent"] = True
-            self.pushRow(student)
+            self.pushRow(student, insertRow=True)
         self.log("<markPresent> Marked student as present [%s]" % matricCode)
         self.emit('foundStudent', student)
 
