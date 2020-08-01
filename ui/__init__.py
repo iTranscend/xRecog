@@ -401,25 +401,17 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.students[student["matriculationCode"]] = student
         self.pushRow(student)
 
+    recordLock = threading.Lock()
+
     def pushRow(self, student):
         self.log("<pushRow> Creating student row on table")
 
-        (table, index, key) = \
-            (self.presentTable, len(self.matric_records["present"]), "present") \
-            if student["isPresent"] else \
-            (self.absentTable, len(self.matric_records["absent"]), "absent")
-
-        self.matric_records[key].append(student["matriculationCode"])
-
-        presentStudents = len(self.matric_records["present"])
-        absentStudents = len(self.matric_records["absent"])
-        self.totalLineEdit.setText(
-            "%d" % (presentStudents + absentStudents))
-        self.presentLineEdit.setText("%d" % presentStudents)
-        self.absentLineEdit.setText("%d" % absentStudents)
-
-        with self.logr("<pushRow> Insert row"):
-            table.insertRow(index)
+        with self.recordLock:
+            (table, key) = (self.presentTable, "present") if student["isPresent"] else (
+                self.absentTable, "absent")
+            record = self.matric_records[key]
+            index = len(record)
+            record.append(student["matriculationCode"])
         with self.logr("<pushRow> Insert row slots"):
             matricItem = QtWidgets.QTableWidgetItem()
             firstNameItem = QtWidgets.QTableWidgetItem()
@@ -471,8 +463,9 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                 def studentHandler(student):
                     (table, key) = (self.presentTable, "present") if student["isPresent"] else (
                         self.absentTable, "absent")
-                    index = self.matric_records[key].index(
-                        student['matriculationCode'])
+                    with self.recordLock:
+                        index = self.matric_records[key].index(
+                            student['matriculationCode'])
                     self.validateQuery(table, index, student, self.query)
 
                 self.lookupThreads = Parallelizer(
