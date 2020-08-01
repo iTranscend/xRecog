@@ -116,11 +116,9 @@ if __name__ == "__main__":
 
     def executor(item, doCancel):
         thread = threading.current_thread()
-        print("item %d on %a" % (item, thread.getName()))
-        while not doCancel():
-            time.sleep(1)
-            break
-        print("item %d on %a, done" % (item, thread.getName()))
+        print("item %d on %a, init (cancel = %a)" % (item, thread.getName(), doCancel()))
+        time.sleep(1)
+        print("item %d on %a, done (cancel = %a)" % (item, thread.getName(), doCancel()))
 
     par = Parallelizer(range(10), 4, executor)
     par.on("cancel", lambda: print("Cancelling jobs"))
