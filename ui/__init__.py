@@ -420,9 +420,11 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         student = {**student}
         markPresent = student["isPresent"] = bool(student['markPresent'])
         del student['markPresent']
-        self.students[student["matriculationCode"]] = student
+        with self.studentsLock:
+            self.students[student["matriculationCode"]] = student
         self.pushRow(student)
 
+    studentsLock = threading.Lock()
     recordLock = threading.Lock()
 
     def pushRow(self, student):
@@ -492,8 +494,11 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                             student['matriculationCode'])
                     self.validateQuery(table, index, student, self.query)
 
-                self.lookupThreads = Parallelizer(
-                    self.students.values(), 8, studentHandler)
+                with self.studentsLock:
+                    self.lookupThreads = Parallelizer(
+                        self.students.values(), 8, studentHandler)
+                    self.lookupThreads.start()
+                    self.lookupThreads.wait()
         self.lookupThreadsLock.release()
 
     def lookupText(self, query):
