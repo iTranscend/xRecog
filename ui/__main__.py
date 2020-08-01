@@ -2,7 +2,12 @@ import os
 import sys
 import random
 from faker import Faker
-from . import XrecogMainWindow, QtWidgets
+
+from . import (
+    QtWidgets,
+    Parallelizer,
+    XrecogMainWindow,
+)
 
 
 def mountTestInstance(main_window):
