@@ -477,11 +477,8 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
 
     lookupTimer = None
     lookupThreads = None
-    lookupThreadsLock = None
 
     def _lookupText(self, query):
-        self.lookupThreadsLock = self.lookupThreadsLock or threading.Lock()
-        self.lookupThreadsLock.acquire()
         if self.lookupThreads:
             self.lookupThreads.cancelAll()
         with self.logr("Looking up query [%s]" % query):
@@ -502,7 +499,6 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                         self.students.values(), 8, studentHandler)
                     self.lookupThreads.start()
                     self.lookupThreads.wait()
-        self.lookupThreadsLock.release()
 
     def lookupText(self, query):
         if self.lookupTimer:
