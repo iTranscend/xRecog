@@ -28,7 +28,7 @@ def mountTestInstance(main_window):
     with main_window.logr("Generating %d students" % num_students, force=True):
         students = []
         faker = Faker()
-        for index in range(0, num_students):
+        def newStudent(index):
             male = bool(random.getrandbits(1))
             students.append({
                 'firstName': faker.first_name_male() if male else faker.first_name_female(),
@@ -39,6 +39,10 @@ def mountTestInstance(main_window):
                 'courseOfStudy': random.randint(0, len(courses) - 1),
                 'markPresent': False
             })
+        studentJobs = Parallelizer(range(0, num_students), min(
+            num_students, 100 if num_students >= 80000 else 8), newStudent)
+        studentJobs.start()
+        studentJobs.joinAll()
 
     with main_window.logr(
         "Populating UI with %d students" % len(students),
