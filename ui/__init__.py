@@ -267,6 +267,8 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.actionAbout.triggered.connect(self.showAbout)
         self.actionResetAttendance.triggered.connect(self.resetAttendance)
         self.preparePrint()
+        self.studentsLock = threading.Lock()
+        self.recordLock = threading.Lock()
 
     def preparePrint(self):
         self.printToolButton.clicked.connect(self.print)
@@ -423,9 +425,6 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         with self.studentsLock:
             self.students[student["matriculationCode"]] = student
         self.pushRow(student)
-
-    studentsLock = threading.Lock()
-    recordLock = threading.Lock()
 
     def pushRow(self, student):
         self.log("<pushRow> Creating student row on table")
