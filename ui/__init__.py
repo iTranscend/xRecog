@@ -2,6 +2,7 @@ import os
 import sys
 import random
 import tempfile
+import functools
 import markdown2
 import threading
 from datetime import datetime
@@ -391,6 +392,16 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.courseComboBox.setCurrentIndex(-1)
 
     def loadStudents(self, students):
+        [present, absent] = functools.reduce(
+            lambda stack, student:
+                [stack[0]+1, stack[1]]
+                if student["markPresent"] else
+                [stack[0], stack[1]+1],
+            students, [0, 0])
+
+        self.presentTable.setRowCount(self.presentTable.rowCount() + present)
+        self.absentTable.setRowCount(self.absentTable.rowCount() + absent)
+
         for student in students:
             self.addStudent(student)
 
