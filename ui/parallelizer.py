@@ -56,7 +56,10 @@ class Parallelizer(EventEmitter):
         if not self.hasStarted():
             return
         with self.__doneLock:
-            if all(not threadStack["thread"].is_alive() for threadStack in self.__threads if threadStack["thread"] != threading.current_thread()):
+            if all(
+                    (threadStack["thread"]._started.isSet()
+                     and not threadStack["thread"].is_alive())
+                    for threadStack in self.__threads if threadStack["thread"] != threading.current_thread()):
                 self.__finished.set()
                 self.emit('finished')
 
