@@ -269,6 +269,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.preparePrint()
         self.studentsLock = threading.Lock()
         self.recordLock = threading.Lock()
+        self.studentsLoaderQueueLock = threading.Lock()
 
     def closeEvent(self, event):
         self.emit('windowClose')
@@ -409,6 +410,8 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.courseComboBox.addItems(courses)
         self.courseComboBox.setCurrentIndex(-1)
 
+    studentsLoaderQueue = None
+
     def loadStudents(self, students):
         [present, absent] = functools.reduce(
             lambda stack, student:
@@ -420,12 +423,26 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.presentTable.setRowCount(self.presentTable.rowCount() + present)
         self.absentTable.setRowCount(self.absentTable.rowCount() + absent)
 
-        jobs = Parallelizer(students, 8, self.addStudent)
+        with self.studentsLoaderQueueLock:
+            if self.studentsLoaderQueue:
+                self.studentsLoaderQueue.extend(students)
+            else:
+                self.studentsLoaderQueue = deque(students)
 
-        self.on("windowClose", jobs.cancel)
-        jobs.on("finished", lambda: self.removeListener(
-            "windowClose", jobs.cancel))
-        jobs.start()
+                def nextStudent():
+                    try:
+                        return self.studentsLoaderQueue.popleft()
+                    except IndexError:
+                        raise StopIteration
+                jobs = Parallelizer(nextStudent, 8, self.addStudent)
+
+                def onFinished():
+                    self.studentsLoaderQueue = None
+                    self.removeListener("windowClose", jobs.cancel)
+
+                self.on("windowClose", jobs.cancel)
+                jobs.on("finished", onFinished)
+                jobs.start()
 
     def addStudent(self, student):
         student = {**student}
