@@ -420,7 +420,12 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.presentTable.setRowCount(self.presentTable.rowCount() + present)
         self.absentTable.setRowCount(self.absentTable.rowCount() + absent)
 
-        Parallelizer(students, 8, self.addStudent).start()
+        jobs = Parallelizer(students, 8, self.addStudent)
+
+        self.on("windowClose", jobs.cancel)
+        jobs.on("finished", lambda: self.removeListener(
+            "windowClose", jobs.cancel))
+        jobs.start()
 
     def addStudent(self, student):
         student = {**student}
