@@ -20,7 +20,7 @@ from PyQt5 import (
 
 from . import resources_rc
 from .eventemitter import EventEmitter
-from .parallelizer import Parallelizer
+from .parallelizer import Parallelizer, ParallelizerQueue
 
 
 class XrecogCaptureWindow(QtWidgets.QDialog):

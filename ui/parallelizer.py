@@ -1,6 +1,31 @@
 import threading
+from collections import deque
 from inspect import signature
 from ui.eventemitter import EventEmitter
+
+
+class ParallelizerQueue(object):
+    def __init__(self):
+        self.queue = deque()
+        self.do_stop = threading.Event()
+        self.can_get_next = threading.Event()
+
+    def put(self, item):
+        self.queue.append(item)
+        self.can_get_next.set()
+
+    def get(self):
+        self.can_get_next.wait()
+        if self.do_stop.isSet():
+            raise StopIteration
+        data = self.queue.popleft()
+        if len(self.queue) == 0:
+            self.can_get_next.clear()
+        return data
+
+    def stop(self):
+        self.do_stop.set()
+        self.can_get_next.set()
 
 
 class Parallelizer(EventEmitter):
