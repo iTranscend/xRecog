@@ -262,6 +262,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.matriculationCodeValidator = None
         self.aboutText = None
         self.query = set()
+        self.initQueryValidator()
         self.courses = []
         self.resetAttendance()
         self.actionAbout.triggered.connect(self.showAbout)
@@ -307,6 +308,17 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             "%d" % (presentStudents + absentStudents))
         self.presentLineEdit.setText("%d" % presentStudents)
         self.absentLineEdit.setText("%d" % absentStudents)
+
+    def initQueryValidator(self):
+        self.validatorQueue = ParallelizerQueue()
+        self.validatorJobs = Parallelizer(
+            self.validatorQueue.get, 2, self._validateQuery)
+        self.validatorJobs.start()
+
+        def cancelValidatorJobs():
+            self.validatorJobs.cancel()
+            self.validatorQueue.stop()
+        self.on("windowClose", cancelValidatorJobs)
 
     def prepareAttendance(self):
         self.statUpdateSignal.connect(self.updateStats)
@@ -487,9 +499,10 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             lastNameItem.setText(student["lastName"])
             yearItem.setText("%d" % student["entryYear"])
             courseItem.setText(self.courses[student["courseOfStudy"]])
-        self.validateQuery(index, student)
+        self.validatorQueue.put({"index": index, "student": student})
 
-    def validateQuery(self, index, student):
+    def _validateQuery(self, studentObject):
+        student = studentObject["student"]
         searchFields = [student['firstName'], student['middleName'], student['lastName'],
                         str(student['entryYear']), student['matriculationCode'], self.courses[student['courseOfStudy']]]
         table = self.presentTable if student["isPresent"] else self.absentTable
@@ -519,7 +532,8 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                     with self.recordLock:
                         index = self.matric_records[key].index(
                             student['matriculationCode'])
-                    self.validateQuery(index, student)
+                    self.validatorQueue.put(
+                        {"index": index, "student": student})
 
                 with self.studentsLock:
                     self.lookupThreads = Parallelizer(
