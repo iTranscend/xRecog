@@ -446,7 +446,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                         return self.studentsLoaderQueue.popleft()
                     except IndexError:
                         raise StopIteration
-                jobs = Parallelizer(nextStudent, 8, self.addStudent)
+                jobs = Parallelizer(nextStudent, 4, self.addStudent)
 
                 def onFinished():
                     self.studentsLoaderQueue = None
