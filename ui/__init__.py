@@ -310,6 +310,8 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.absentLineEdit.setText("%d" % absentStudents)
 
     def initQueryValidator(self):
+        self.lookupLock = threading.Lock()
+        self.stop_lookup = threading.Event()
         self.validatorQueue = ParallelizerQueue()
         self.validatorJobs = Parallelizer(
             self.validatorQueue.get, 2, self._validateQuery)
@@ -517,38 +519,34 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         elif not doCancel() and table.isRowHidden(studentObject["index"]):
             table.showRow(studentObject["index"])
 
-    lookupJob = None
     lookupTimer = None
 
-    def _lookupText(self, query):
-        if self.lookupThreads:
-            self.lookupThreads.cancel()
-            self.lookupThreads.joinAll()
-        with self.logr("Looking up query [%s]" % query):
-            query = set(filter(bool, query.lower().split(' ')))
-            if self.query.symmetric_difference(query):
-                self.query = query
-
-                def studentHandler(student):
-                    (table, key) = (self.presentTable, "present") if student["isPresent"] else (
-                        self.absentTable, "absent")
-                    with self.recordLock:
-                        index = self.matric_records[key].index(
-                            student['matriculationCode'])
-                    self.validatorQueue.put(
-                        {"index": index, "student": student})
-
-                with self.studentsLock:
-                    self.lookupJob = Parallelizer(
-                        self.students.values(), 1, studentHandler)
-                    self.lookupThreads.start()
-                    self.lookupThreads.joinAll()
-                    self.lookupJob = None
-
     def lookupText(self, query):
-        if self.lookupTimer:
-            self.lookupTimer.cancel()
-        self.lookupTimer = threading.Timer(1, self._lookupText, (query,))
+        with self.lookupLock:
+            if self.lookupTimer and not self.lookupTimer.finished.isSet():
+                self.lookupTimer.cancel()
+                self.stop_lookup.set()
+                self.lookupTimer.join()
+                self.stop_lookup.clear()
+
+            def doQueueLookups(query):
+                with self.logr("Looking up query [%s]" % query):
+                    query = set(filter(bool, query.lower().split(' ')))
+                    if self.query.symmetric_difference(query):
+                        self.query = query
+
+                        with self.studentsLock:
+                            for student in self.students.values():
+                                if self.stop_lookup.isSet():
+                                    break
+                                (table, key) = (self.presentTable, "present") if student["isPresent"] else (
+                                    self.absentTable, "absent")
+                                with self.recordLock:
+                                    index = self.matric_records[key].index(
+                                        student['matriculationCode'])
+                                self.validatorQueue.put(
+                                    {"index": index, "student": student})
+            self.lookupTimer = threading.Timer(1, doQueueLookups, (query,))
         self.lookupTimer.start()
 
     def markPresent(self, matricCode):
