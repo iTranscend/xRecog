@@ -517,8 +517,8 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         elif not doCancel() and table.isRowHidden(studentObject["index"]):
             table.showRow(studentObject["index"])
 
+    lookupJob = None
     lookupTimer = None
-    lookupThreads = None
 
     def _lookupText(self, query):
         if self.lookupThreads:
@@ -539,11 +539,11 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                         {"index": index, "student": student})
 
                 with self.studentsLock:
-                    self.lookupThreads = Parallelizer(
-                        self.students.values(), 8, studentHandler)
+                    self.lookupJob = Parallelizer(
+                        self.students.values(), 1, studentHandler)
                     self.lookupThreads.start()
                     self.lookupThreads.joinAll()
-                    self.lookupThreads = None
+                    self.lookupJob = None
 
     def lookupText(self, query):
         if self.lookupTimer:
