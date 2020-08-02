@@ -35,20 +35,21 @@ def mountTestInstance(main_window):
     with main_window.logr("Generating %d students" % num_students, force=True):
         faker = Faker()
         students = []
+        pad = len(str(num_students))
         matric_numbers = random.sample(range(0, max_students), num_students)
 
-        def newStudent(index):
+        def newStudent(matric_number):
             male = bool(random.getrandbits(1))
             students.append({
                 'firstName': faker.first_name_male() if male else faker.first_name_female(),
                 'middleName': faker.first_name_male() if male else faker.first_name_female(),
                 'lastName': faker.last_name_male() if male else faker.last_name_female(),
                 'entryYear': random.randint(MIN_YEAR, MAX_YEAR + 1),
-                'matriculationCode': "%04d" % matric_numbers[index],
+                'matriculationCode': f"%0{pad}d" % matric_number,
                 'courseOfStudy': random.randint(0, len(courses) - 1),
                 'markPresent': False
             })
-        studentJobs = Parallelizer(range(0, num_students), min(
+        studentJobs = Parallelizer(matric_numbers, min(
             num_students, 100 if num_students >= 80000 else 8), newStudent)
         studentJobs.start()
         studentJobs.joinAll()
