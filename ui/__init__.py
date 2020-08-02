@@ -487,16 +487,16 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             lastNameItem.setText(student["lastName"])
             yearItem.setText("%d" % student["entryYear"])
             courseItem.setText(self.courses[student["courseOfStudy"]])
-        self.validateQuery(table, index, student)
+        self.validateQuery(index, student)
 
-    def validateQuery(self, table, index, student, query=None):
-        query = query or self.query
+    def validateQuery(self, index, student):
         searchFields = [student['firstName'], student['middleName'], student['lastName'],
                         str(student['entryYear']), student['matriculationCode'], self.courses[student['courseOfStudy']]]
-        if query and not all(any(
+        table = self.presentTable if student["isPresent"] else self.absentTable
+        if self.query and not all(any(
                 text in part
                 for value in searchFields
-                for part in filter(bool, value.lower().split(' '))) for text in query):
+                for part in filter(bool, value.lower().split(' '))) for text in self.query):
             table.hideRow(index)
         elif table.isRowHidden(index):
             table.showRow(index)
@@ -519,7 +519,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                     with self.recordLock:
                         index = self.matric_records[key].index(
                             student['matriculationCode'])
-                    self.validateQuery(table, index, student, self.query)
+                    self.validateQuery(index, student)
 
                 with self.studentsLock:
                     self.lookupThreads = Parallelizer(
