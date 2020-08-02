@@ -270,6 +270,10 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.studentsLock = threading.Lock()
         self.recordLock = threading.Lock()
 
+    def closeEvent(self, event):
+        self.emit('windowClose')
+        return super(QtWidgets.QMainWindow, self).closeEvent(event)
+
     def preparePrint(self):
         self.printToolButton.clicked.connect(self.print)
         self.actionPrintPreview.triggered.connect(self.printPreview)
