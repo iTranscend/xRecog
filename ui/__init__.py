@@ -322,6 +322,22 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             self.validatorQueue.stop()
         self.on("windowClose", cancelValidatorJobs)
 
+    def _validateQuery(self, studentObject, doCancel):
+        student = studentObject["student"]
+        searchFields = [student['firstName'], student['middleName'], student['lastName'],
+                        str(student['entryYear']), student['matriculationCode'], self.courses[student['courseOfStudy']]]
+        table = self.presentTable if student["isPresent"] else self.absentTable
+        if self.query and not all(any(
+            text in part
+            for value in searchFields
+            if not doCancel()
+            for part in filter(bool, value.lower().split(' '))
+            if not doCancel()
+        ) for text in self.query if not doCancel()):
+            table.hideRow(studentObject["index"])
+        elif not doCancel() and table.isRowHidden(studentObject["index"]):
+            table.showRow(studentObject["index"])
+
     def prepareAttendance(self):
         self.statUpdateSignal.connect(self.updateStats)
         self.startCameraButton.clicked.connect(
@@ -502,22 +518,6 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             yearItem.setText("%d" % student["entryYear"])
             courseItem.setText(self.courses[student["courseOfStudy"]])
         self.validatorQueue.put({"index": index, "student": student})
-
-    def _validateQuery(self, studentObject, doCancel):
-        student = studentObject["student"]
-        searchFields = [student['firstName'], student['middleName'], student['lastName'],
-                        str(student['entryYear']), student['matriculationCode'], self.courses[student['courseOfStudy']]]
-        table = self.presentTable if student["isPresent"] else self.absentTable
-        if self.query and not all(any(
-            text in part
-            for value in searchFields
-            if not doCancel()
-            for part in filter(bool, value.lower().split(' '))
-            if not doCancel()
-        ) for text in self.query if not doCancel()):
-            table.hideRow(studentObject["index"])
-        elif not doCancel() and table.isRowHidden(studentObject["index"]):
-            table.showRow(studentObject["index"])
 
     lookupTimer = None
 
