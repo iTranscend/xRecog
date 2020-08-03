@@ -495,7 +495,6 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             addedRowEvent = threading.Event()
             self.addRowSignal.emit(key, index, addedRowEvent)
         addedRowEvent.wait()
-        time.sleep(.0030)
         with self.logr("<pushRow> Insert row slots"):
             matricItem = QtWidgets.QTableWidgetItem()
             firstNameItem = QtWidgets.QTableWidgetItem()
