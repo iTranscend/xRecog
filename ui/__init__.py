@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import queue
 import random
 import tempfile
 import functools
@@ -20,7 +21,7 @@ from PyQt5 import (
 
 from . import resources_rc
 from .eventemitter import EventEmitter
-from .parallelizer import Parallelizer, ParallelizerQueue
+from .parallelizer import Parallelizer
 
 
 class XrecogCaptureWindow(QtWidgets.QDialog):
@@ -312,14 +313,14 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
     def initQueryValidator(self):
         self.lookupLock = threading.Lock()
         self.stop_lookup = threading.Event()
-        self.validatorQueue = ParallelizerQueue()
+        self.validatorQueue = queue.Queue()
         self.validatorJobs = Parallelizer(
             self.validatorQueue.get, 2, self._validateQuery)
         self.validatorJobs.start()
 
         def cancelValidatorJobs():
             self.validatorJobs.cancel()
-            self.validatorQueue.stop()
+            self.validatorQueue.queue.clear()
         self.on("windowClose", cancelValidatorJobs)
 
     def _validateQuery(self, studentObject, doCancel):
