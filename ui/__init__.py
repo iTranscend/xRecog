@@ -338,7 +338,15 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         elif not doCancel() and table.isRowHidden(studentObject["index"]):
             table.showRow(studentObject["index"])
 
+    addRowSignal = QtCore.pyqtSignal(str, int, threading.Event)
+
+    def _addRow(self, key, index, event):
+        table = self.presentTable if key == "present" else self.absentTable
+        event.set()
+        table.insertRow(index)
+
     def prepareAttendance(self):
+        self.addRowSignal.connect(self._addRow)
         self.statUpdateSignal.connect(self.updateStats)
         self.startCameraButton.clicked.connect(
             self.registerDispatcher('startCameraButtonClicked'))
@@ -443,16 +451,6 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
     studentsLoaderQueue = None
 
     def loadStudents(self, students):
-        [present, absent] = functools.reduce(
-            lambda stack, student:
-                [stack[0]+1, stack[1]]
-                if student["markPresent"] else
-                [stack[0], stack[1]+1],
-            students, [0, 0])
-
-        self.presentTable.setRowCount(self.presentTable.rowCount() + present)
-        self.absentTable.setRowCount(self.absentTable.rowCount() + absent)
-
         with self.studentsLoaderQueueLock:
             if self.studentsLoaderQueue:
                 self.studentsLoaderQueue.extend(students)
@@ -484,7 +482,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             self.students[student["matriculationCode"]] = student
         self.pushRow(student)
 
-    def pushRow(self, student, insertRow=False):
+    def pushRow(self, student):
         self.log("<pushRow> Creating student row on table")
 
         with self.recordLock:
@@ -493,9 +491,10 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             record = self.matric_records[key]
             index = len(record)
             record.append(student["matriculationCode"])
-            if insertRow:
-                table.insertRow(index)
-        self.statUpdateSignal.emit()
+            self.statUpdateSignal.emit()
+            addedRowEvent = threading.Event()
+            self.addRowSignal.emit(key, index, addedRowEvent)
+        addedRowEvent.wait()
         time.sleep(.0030)
         with self.logr("<pushRow> Insert row slots"):
             matricItem = QtWidgets.QTableWidgetItem()
@@ -570,7 +569,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             "<markPresent> Pushed student into present table [%s]" % matricCode, reenter=True
         ):
             student["isPresent"] = True
-            self.pushRow(student, insertRow=True)
+            self.pushRow(student)
         self.log("<markPresent> Marked student as present [%s]" % matricCode)
         self.emit('foundStudent', student)
 
