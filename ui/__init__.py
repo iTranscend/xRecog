@@ -348,6 +348,10 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         table.insertRow(index)
 
     def prepareAttendance(self):
+        self.absentTable.setColumnWidth(0, 90)
+        self.presentTable.setColumnWidth(0, 90)
+        self.absentTable.setColumnWidth(4, 49)
+        self.presentTable.setColumnWidth(4, 49)
         self.addRowSignal.connect(self._addRow)
         self.statUpdateSignal.connect(self.updateStats)
         self.startCameraButton.clicked.connect(
