@@ -321,6 +321,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         def cancelValidatorJobs():
             self.validatorJobs.cancel()
             self.validatorQueue.queue.clear()
+            self.validatorQueue.put(None)
         self.on("windowClose", cancelValidatorJobs)
 
     def _validateQuery(self, studentObject, doCancel):
