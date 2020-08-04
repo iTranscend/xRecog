@@ -24,7 +24,8 @@
       <string>Close</string>
      </property>
      <property name="icon">
-      <iconset theme="cancel"/>
+      <iconset theme="cancel">
+       <normaloff>.</normaloff>.</iconset>
      </property>
     </widget>
    </item>
@@ -73,7 +74,7 @@
                </property>
                <property name="icon">
                 <iconset theme="delete">
-                 <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+                 <normaloff>.</normaloff>.</iconset>
                </property>
               </widget>
              </item>
@@ -112,7 +113,7 @@
                </property>
                <property name="icon">
                 <iconset theme="delete">
-                 <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+                 <normaloff>.</normaloff>.</iconset>
                </property>
               </widget>
              </item>
@@ -148,7 +149,7 @@
                </property>
                <property name="icon">
                 <iconset theme="delete">
-                 <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+                 <normaloff>.</normaloff>.</iconset>
                </property>
               </widget>
              </item>
@@ -184,7 +185,7 @@
                </property>
                <property name="icon">
                 <iconset theme="delete">
-                 <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+                 <normaloff>.</normaloff>.</iconset>
                </property>
               </widget>
              </item>
@@ -220,7 +221,7 @@
                </property>
                <property name="icon">
                 <iconset theme="delete">
-                 <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+                 <normaloff>.</normaloff>.</iconset>
                </property>
               </widget>
              </item>
@@ -256,7 +257,7 @@
                </property>
                <property name="icon">
                 <iconset theme="delete">
-                 <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+                 <normaloff>.</normaloff>.</iconset>
                </property>
               </widget>
              </item>
@@ -292,7 +293,7 @@
                </property>
                <property name="icon">
                 <iconset theme="delete">
-                 <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+                 <normaloff>.</normaloff>.</iconset>
                </property>
               </widget>
              </item>
@@ -328,7 +329,7 @@
                </property>
                <property name="icon">
                 <iconset theme="delete">
-                 <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+                 <normaloff>.</normaloff>.</iconset>
                </property>
               </widget>
              </item>
@@ -364,7 +365,7 @@
                </property>
                <property name="icon">
                 <iconset theme="delete">
-                 <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+                 <normaloff>.</normaloff>.</iconset>
                </property>
               </widget>
              </item>
@@ -400,7 +401,7 @@
                </property>
                <property name="icon">
                 <iconset theme="delete">
-                 <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+                 <normaloff>.</normaloff>.</iconset>
                </property>
               </widget>
              </item>
@@ -436,7 +437,7 @@
                </property>
                <property name="icon">
                 <iconset theme="delete">
-                 <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+                 <normaloff>.</normaloff>.</iconset>
                </property>
               </widget>
              </item>
@@ -472,7 +473,7 @@
                </property>
                <property name="icon">
                 <iconset theme="delete">
-                 <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+                 <normaloff>.</normaloff>.</iconset>
                </property>
               </widget>
              </item>
@@ -522,8 +523,7 @@
        <item>
         <layout class="QHBoxLayout" name="deviceSelectorHLayout">
          <item>
-          <widget class="QComboBox" name="deviceSelectorComboBox">
-          </widget>
+          <widget class="QComboBox" name="deviceSelectorComboBox"/>
          </item>
          <item>
           <widget class="QPushButton" name="deviceSelectorReloadButton">
@@ -538,7 +538,7 @@
            </property>
            <property name="icon">
             <iconset theme="reload">
-             <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+             <normaloff>.</normaloff>.</iconset>
            </property>
           </widget>
          </item>
@@ -571,7 +571,7 @@
          </property>
          <property name="icon">
           <iconset theme="camera">
-           <normaloff>../../../.designer/backup</normaloff>../../../.designer/backup</iconset>
+           <normaloff>.</normaloff>.</iconset>
          </property>
         </widget>
        </item>
