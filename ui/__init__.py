@@ -57,7 +57,7 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
 
     def eventFilter(self, obj, event):
         if obj is self and event.type() == QtCore.QEvent.KeyPress:
-            if event.key() in (QtCore.Qt.Key_Escape, QtCore.Qt.Key_Return):
+            if event.key() == QtCore.Qt.Key_Escape:
                 self.close()
                 return True
         if type(obj) is QtWidgets.QWidget:
