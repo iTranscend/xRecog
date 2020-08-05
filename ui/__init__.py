@@ -53,8 +53,13 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
             self.imageSlots.append(slotObject)
         self.viewfinder = QtMultimediaWidgets.QCameraViewfinder()
         self.viewFinderFrame.layout().addWidget(self.viewfinder)
+        self.installEventFilter(self)
 
     def eventFilter(self, obj, event):
+        if obj is self and event.type() == QtCore.QEvent.KeyPress:
+            if event.key() in (QtCore.Qt.Key_Escape, QtCore.Qt.Key_Return):
+                self.close()
+                return True
         if type(obj) is QtWidgets.QWidget:
             if event.type() == QtCore.QEvent.HoverEnter:
                 obj.findChild(QtWidgets.QToolButton).show()
