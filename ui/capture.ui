@@ -56,21 +56,24 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
                <property name="text">
                 <string/>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QPushButton" name="deleteButton07">
+              <widget class="QToolButton" name="deleteButton07">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Delete</string>
                </property>
                <property name="icon">
                 <iconset theme="delete">
@@ -92,6 +95,12 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
                <property name="styleSheet">
                 <string notr="true"/>
                </property>
@@ -101,15 +110,12 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QPushButton" name="deleteButton01">
+              <widget class="QToolButton" name="deleteButton01">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Delete</string>
                </property>
                <property name="icon">
                 <iconset theme="delete">
@@ -131,21 +137,24 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
                <property name="text">
                 <string/>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QPushButton" name="deleteButton10">
+              <widget class="QToolButton" name="deleteButton10">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Delete</string>
                </property>
                <property name="icon">
                 <iconset theme="delete">
@@ -167,21 +176,24 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
                <property name="text">
                 <string/>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QPushButton" name="deleteButton05">
+              <widget class="QToolButton" name="deleteButton05">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Delete</string>
                </property>
                <property name="icon">
                 <iconset theme="delete">
@@ -203,21 +215,24 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
                <property name="text">
                 <string/>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QPushButton" name="deleteButton06">
+              <widget class="QToolButton" name="deleteButton06">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Delete</string>
                </property>
                <property name="icon">
                 <iconset theme="delete">
@@ -239,21 +254,24 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
                <property name="text">
                 <string/>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QPushButton" name="deleteButton12">
+              <widget class="QToolButton" name="deleteButton12">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Delete</string>
                </property>
                <property name="icon">
                 <iconset theme="delete">
@@ -275,21 +293,24 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
                <property name="text">
                 <string/>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QPushButton" name="deleteButton03">
+              <widget class="QToolButton" name="deleteButton03">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Delete</string>
                </property>
                <property name="icon">
                 <iconset theme="delete">
@@ -311,21 +332,24 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
                <property name="text">
                 <string/>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QPushButton" name="deleteButton09">
+              <widget class="QToolButton" name="deleteButton09">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Delete</string>
                </property>
                <property name="icon">
                 <iconset theme="delete">
@@ -347,21 +371,24 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
                <property name="text">
                 <string/>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QPushButton" name="deleteButton11">
+              <widget class="QToolButton" name="deleteButton11">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Delete</string>
                </property>
                <property name="icon">
                 <iconset theme="delete">
@@ -383,21 +410,24 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
                <property name="text">
                 <string/>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QPushButton" name="deleteButton02">
+              <widget class="QToolButton" name="deleteButton02">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Delete</string>
                </property>
                <property name="icon">
                 <iconset theme="delete">
@@ -419,21 +449,24 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
                <property name="text">
                 <string/>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QPushButton" name="deleteButton04">
+              <widget class="QToolButton" name="deleteButton04">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Delete</string>
                </property>
                <property name="icon">
                 <iconset theme="delete">
@@ -455,21 +488,24 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
                <property name="text">
                 <string/>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QPushButton" name="deleteButton08">
+              <widget class="QToolButton" name="deleteButton08">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Delete</string>
                </property>
                <property name="icon">
                 <iconset theme="delete">

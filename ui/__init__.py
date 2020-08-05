@@ -44,7 +44,7 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
             slot.setSizePolicy(newSizePolicy)
             slot.hide()
             imageSlot = slot.findChild(QtWidgets.QLabel)
-            deleteButton = slot.findChild(QtWidgets.QPushButton)
+            deleteButton = slot.findChild(QtWidgets.QToolButton)
             slotObject = {"object": slot, "item": None}
             deleteButton.clicked.connect(self.newDeleteHandler(slotObject))
             self.imageSlots.append(slotObject)
