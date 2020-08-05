@@ -42,14 +42,27 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
             newSizePolicy = slot.sizePolicy()
             newSizePolicy.setRetainSizeWhenHidden(True)
             slot.setSizePolicy(newSizePolicy)
+            slot.setAttribute(QtCore.Qt.WA_Hover)
+            slot.installEventFilter(self)
             slot.hide()
             imageSlot = slot.findChild(QtWidgets.QLabel)
             deleteButton = slot.findChild(QtWidgets.QToolButton)
+            deleteButton.hide()
             slotObject = {"object": slot, "item": None}
             deleteButton.clicked.connect(self.newDeleteHandler(slotObject))
             self.imageSlots.append(slotObject)
         self.viewfinder = QtMultimediaWidgets.QCameraViewfinder()
         self.viewFinderFrame.layout().addWidget(self.viewfinder)
+
+    def eventFilter(self, obj, event):
+        if type(obj) is QtWidgets.QWidget:
+            if event.type() == QtCore.QEvent.HoverEnter:
+                obj.findChild(QtWidgets.QToolButton).show()
+                return True
+            elif event.type() == QtCore.QEvent.HoverLeave:
+                obj.findChild(QtWidgets.QToolButton).hide()
+                return True
+        return super(QtWidgets.QDialog, self).eventFilter(obj, event)
 
     def init(self):
         self.captureButton.setDisabled(True)
