@@ -29,7 +29,7 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
 
     def __init__(self):
         super(XrecogCaptureWindow, self).__init__()
-        uic.loadUi(translatePath('capture.ui'), self)
+        uic.loadUi(translatePath("capture.ui"), self)
         self.images = []
         self.imageSlots = []
         self.selected_camera = None
@@ -148,12 +148,12 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
         self.camera.statusChanged.connect(lambda status: self.enableCaptureButton(
         ) if status == QtMultimedia.QCamera.ActiveStatus and len(self.images) < 12 else None)
         self.camera.error.connect(
-            lambda: self.alert('camera error', self.camera.errorString()))
+            lambda: self.alert("camera error", self.camera.errorString()))
         self.camera.start()
 
         self.capture = QtMultimedia.QCameraImageCapture(self.camera)
         self.capture.error.connect(
-            lambda i, e, s: self.alert('capture error', s))
+            lambda i, e, s: self.alert("capture error", s))
         self.capture.imageCaptured.connect(self.imageCaptured)
 
     def enableCaptureButton(self):
@@ -161,7 +161,7 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
         self.captureButton.setFocus(True)
 
     def captureImage(self):
-        save_path = tempfile.mktemp(suffix='.jpg')
+        save_path = tempfile.mktemp(suffix=".jpg")
         id = self.capture.capture(save_path)
         self.images.append({"path": save_path})
         self.captureButton.setDisabled(True)
@@ -218,7 +218,7 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
 class XrecogPreviewWindow(QtWidgets.QDialog, EventEmitter):
     def __init__(self):
         super(XrecogPreviewWindow, self).__init__()
-        uic.loadUi(translatePath('reportpreview.ui'), self)
+        uic.loadUi(translatePath("reportpreview.ui"), self)
         self.isPreviewing = False
         self.previewText = None
         self.formatComboBox.currentIndexChanged.connect(
@@ -226,9 +226,9 @@ class XrecogPreviewWindow(QtWidgets.QDialog, EventEmitter):
         self.loadPreviewButton.clicked.connect(self.handleLoadPreview)
         self.printButton.setDisabled(True)
         self.printButton.clicked.connect(
-            lambda: self.emit('print', self.previewTextBrowser))
+            lambda: self.emit("print", self.previewTextBrowser))
         self.actionPrintPreview.triggered.connect(
-            lambda: self.emit('printPreview', self.previewTextBrowser))
+            lambda: self.emit("printPreview", self.previewTextBrowser))
         self.saveButton.clicked.connect(self.save)
 
     def handleLoadPreview(self):
@@ -258,7 +258,7 @@ class XrecogPreviewWindow(QtWidgets.QDialog, EventEmitter):
 
     def save(self):
         key = self.comboSlots[self.formatComboBox.currentIndex()]
-        self.emit('saveFile', key, self.loaderMap[key]["data"])
+        self.emit("saveFile", key, self.loaderMap[key]["data"])
 
     def load(self, type):
         self.formatComboBox.blockSignals(True)
@@ -274,7 +274,7 @@ class XrecogPreviewWindow(QtWidgets.QDialog, EventEmitter):
 class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
     def __init__(self):
         super(XrecogMainWindow, self).__init__()
-        uic.loadUi(translatePath('xrecog.ui'), self)
+        uic.loadUi(translatePath("xrecog.ui"), self)
         self.capture_window = None
         self.prepareAttendance()
         self.prepareRegistration()
@@ -292,17 +292,17 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.studentsLoaderQueueLock = threading.Lock()
 
     def closeEvent(self, event):
-        self.emit('windowClose')
+        self.emit("windowClose")
         return super(QtWidgets.QMainWindow, self).closeEvent(event)
 
     def preparePrint(self):
         self.printToolButton.clicked.connect(self.print)
         self.actionPrintPreview.triggered.connect(self.printPreview)
         self.actionReportPreview.triggered.connect(self.showReportPreview)
-        self.actionExportCSV.triggered.connect(lambda: self.export('csv'))
-        self.actionExportHTML.triggered.connect(lambda: self.export('html'))
+        self.actionExportCSV.triggered.connect(lambda: self.export("csv"))
+        self.actionExportHTML.triggered.connect(lambda: self.export("html"))
         self.actionExportMarkdown.triggered.connect(
-            lambda: self.export('markdown'))
+            lambda: self.export("markdown"))
 
     def resetAttendance(self):
         self.students = {}
@@ -311,9 +311,9 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.absentTable.clearContents()
         self.presentTable.setRowCount(0)
         self.absentTable.setRowCount(0)
-        self.totalLineEdit.setText("0")
-        self.presentLineEdit.setText("0")
-        self.absentLineEdit.setText("0")
+        self.totalLineEdit.setText('0')
+        self.presentLineEdit.setText('0')
+        self.absentLineEdit.setText('0')
 
     def registerDispatcher(self, objectName):
         return lambda *args: self.emit(objectName, *args)
@@ -344,8 +344,8 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
 
     def _validateQuery(self, studentObject, doCancel):
         student = studentObject["student"]
-        searchFields = [student['firstName'], student['middleName'], student['lastName'],
-                        str(student['entryYear']), student['matriculationCode'], self.courses[student['courseOfStudy']]]
+        searchFields = [student["firstName"], student["middleName"], student["lastName"],
+                        str(student["entryYear"]), student["matriculationCode"], self.courses[student["courseOfStudy"]]]
         table = self.presentTable if student["isPresent"] else self.absentTable
         if self.query and not all(any(
             text in part
@@ -373,9 +373,9 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.addRowSignal.connect(self._addRow)
         self.statUpdateSignal.connect(self.updateStats)
         self.startCameraButton.clicked.connect(
-            self.registerDispatcher('startCameraButtonClicked'))
+            self.registerDispatcher("startCameraButtonClicked"))
         self.stopCameraButton.clicked.connect(
-            self.registerDispatcher('stopCameraButtonClicked'))
+            self.registerDispatcher("stopCameraButtonClicked"))
         self.searchLineEdit.textChanged.connect(self.lookupText)
 
     def prepareRegistration(self):
@@ -405,7 +405,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
 
     def showAbout(self):
         dialog = QtWidgets.QDialog()
-        uic.loadUi(translatePath('about.ui'), dialog)
+        uic.loadUi(translatePath("about.ui"), dialog)
         if self.aboutText:
             dialog.aboutText.setPlainText(self.tr(self.aboutText))
         dialog.exec_()
@@ -456,7 +456,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                 "markPresent": False,
                 "capturedImages": capturedImages
             }
-            self.emit('registrationData', studentData)
+            self.emit("registrationData", studentData)
 
     def setMatricValidator(self, validator):
         self.matriculationCodeValidator = validator
@@ -498,8 +498,8 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
 
     def addStudent(self, student):
         student = {**student}
-        markPresent = student["isPresent"] = bool(student['markPresent'])
-        del student['markPresent']
+        markPresent = student["isPresent"] = bool(student["markPresent"])
+        del student["markPresent"]
         with self.studentsLock:
             if student["matriculationCode"] in self.students:
                 return
@@ -565,7 +565,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                                     self.absentTable, "absent")
                                 with self.recordLock:
                                     index = self.matric_records[key].index(
-                                        student['matriculationCode'])
+                                        student["matriculationCode"])
                                 self.validatorQueue.put(
                                     {"index": index, "student": student})
             self.lookupTimer = threading.Timer(1, doQueueLookups, (query,))
@@ -578,13 +578,13 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                 student = self.students[matricCode]
             except:
                 student = None
-        if student is None or student['isPresent']:
+        if student is None or student["isPresent"]:
             return
         with self.logr("<markPresent> Matric lookup in records [%s]" % matricCode):
-            index = self.matric_records['absent'].index(
-                student['matriculationCode'])
+            index = self.matric_records["absent"].index(
+                student["matriculationCode"])
         with self.logr("<markPresent> Matric remove from records [%s]" % matricCode):
-            del self.matric_records['absent'][index]
+            del self.matric_records["absent"][index]
         with self.logr("<markPresent> Pop student from absent table [%s]" % matricCode):
             self.absentTable.removeRow(index)
         with self.logr(
@@ -594,16 +594,16 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             student["isPresent"] = True
             self.pushRow(student)
         self.log("<markPresent> Marked student as present [%s]" % matricCode)
-        self.emit('foundStudent', student)
+        self.emit("foundStudent", student)
 
     def getAbsentStudentsMatric(self):
-        return [student["matriculationCode"] for student in self.students.values() if not student['isPresent']]
+        return [student["matriculationCode"] for student in self.students.values() if not student["isPresent"]]
 
     def log(self, *args, **kwargs):
         force = False
-        if 'force' in kwargs:
-            force = kwargs['force']
-            del kwargs['force']
+        if "force" in kwargs:
+            force = kwargs["force"]
+            del kwargs["force"]
         ActingLogger(force=force).print(*args, **kwargs)
 
     def logr(self, *args, **kwargs):
@@ -624,12 +624,12 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                 for matric in self.matric_records[tableName]:
                     student = self.students[matric]
                     row = "| %s | %s | %s | %s | %d | %s |" % (
-                        student['matriculationCode'],
-                        student['firstName'],
-                        student['middleName'],
-                        student['lastName'],
-                        student['entryYear'],
-                        self.courses[student['courseOfStudy']],
+                        student["matriculationCode"],
+                        student["firstName"],
+                        student["middleName"],
+                        student["lastName"],
+                        student["entryYear"],
+                        self.courses[student["courseOfStudy"]],
                     )
                     table.append(row)
             return table
@@ -637,8 +637,8 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         presentStudents = len(self.matric_records["present"])
         absentStudents = len(self.matric_records["absent"])
 
-        presentTable = buildTable('present')
-        absentTable = buildTable('absent')
+        presentTable = buildTable("present")
+        absentTable = buildTable("absent")
 
         with self.logr("<buildReport> Compiling report"):
             styling = "".join(map(str.strip, [
@@ -680,7 +680,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                 "<sub style='color: grey'>Attendance report autogenerated by xRecog</sub>"
             ]
         with self.logr("<buildReport> Merging markdown lines"):
-            markdown = "\n".join(markdown)
+            markdown = '\n'.join(markdown)
         self.log("<buildReport> Done building report")
         return markdown
 
@@ -699,12 +699,12 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         html = self.buildHTMLReportFrom(report)
         with self.logr("<showReportPreview> Setting HTML Preview"):
             dialog.setPreview(html)
-        dialog.setLoader('csv', "CSV", self.buildCSV)
-        dialog.setLoader('html', "HTML", lambda: html)
-        dialog.setLoader('markdown', "Markdown", lambda: report)
-        dialog.on('print', self.printFor)
-        dialog.on('saveFile', self.export)
-        dialog.on('printPreview', self.printPreviewFor)
+        dialog.setLoader("csv", "CSV", self.buildCSV)
+        dialog.setLoader("html", "HTML", lambda: html)
+        dialog.setLoader("markdown", "Markdown", lambda: report)
+        dialog.on("print", self.printFor)
+        dialog.on("saveFile", self.export)
+        dialog.on("printPreview", self.printPreviewFor)
         with self.logr("<showReportPreview> Loading markdown preview"):
             dialog.load("markdown")
         with self.logr("<showReportPreview> Launching report window"):
@@ -715,28 +715,28 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.log("<buildCSV> Building CSV")
         document = "matric_code,first_name,middle_name,last_name,is_present,year,course_of_study\n"
         with self.logr("<buildCSV> Compiling CSV records"):
-            document += "\n".join([
-                ",".join([
-                    student['matriculationCode'],
-                    student['firstName'],
-                    student['middleName'],
-                    student['lastName'],
-                    "1" if student["isPresent"] else "0",
-                    str(student['entryYear']),
-                    self.courses[student['courseOfStudy']]
+            document += '\n'.join([
+                ','.join([
+                    student["matriculationCode"],
+                    student["firstName"],
+                    student["middleName"],
+                    student["lastName"],
+                    '1' if student["isPresent"] else '0',
+                    str(student["entryYear"]),
+                    self.courses[student["courseOfStudy"]]
                 ])
                 for student in self.students.values()])
         self.log(
-            '<buildCSV> Successfully built CSV Report')
+            "<buildCSV> Successfully built CSV Report")
         return document
 
     def buildHTMLReportFrom(self, report):
-        self.log('<buildHTMLReportFrom> Building HTML Report from markdown report')
+        self.log("<buildHTMLReportFrom> Building HTML Report from markdown report")
         with self.logr("<buildHTMLReport> Preparing HTML document"):
             document = markdown2.markdown(
                 report, extras=["tables", "header-ids"])
         self.log(
-            '<buildHTMLReportFrom> Successfully built HTML Report from markdown report')
+            "<buildHTMLReportFrom> Successfully built HTML Report from markdown report")
         return document
 
     def buildHTMLReport(self):
@@ -771,7 +771,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.log("<export> Exporting %s" % stack["title"])
         document = document or stack["handler"](self)
         filename, _ = QtWidgets.QFileDialog.getSaveFileName(
-            self, 'Save %s File' % stack["title"], stack["last_file"] or os.getcwd(), stack["save_filters"])
+            self, "Save %s File" % stack["title"], stack["last_file"] or os.getcwd(), stack["save_filters"])
         if filename:
             stack["last_file"] = filename
             with self.logr(
@@ -829,7 +829,7 @@ class ActingLogger:
         self.exit_kwargs = exit_kwargs or {}
         self.reenter = reenter
         self.end_str = end
-        self.do_print = force or os.environ.get("DEBUG_UI") == "1"
+        self.do_print = force or os.environ.get("DEBUG_UI") == '1'
 
     def print(self, *args, **kwargs):
         if not self.do_print:

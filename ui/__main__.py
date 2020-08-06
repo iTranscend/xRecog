@@ -41,13 +41,13 @@ def mountTestInstance(main_window):
         def newStudent(matric_number):
             male = bool(random.getrandbits(1))
             students.append({
-                'firstName': faker.first_name_male() if male else faker.first_name_female(),
-                'middleName': faker.first_name_male() if male else faker.first_name_female(),
-                'lastName': faker.last_name_male() if male else faker.last_name_female(),
-                'entryYear': random.randint(MIN_YEAR, MAX_YEAR + 1),
-                'matriculationCode': f"%0{pad}d" % matric_number,
-                'courseOfStudy': random.randint(0, len(courses) - 1),
-                'markPresent': False
+                "firstName": faker.first_name_male() if male else faker.first_name_female(),
+                "middleName": faker.first_name_male() if male else faker.first_name_female(),
+                "lastName": faker.last_name_male() if male else faker.last_name_female(),
+                "entryYear": random.randint(MIN_YEAR, MAX_YEAR + 1),
+                "matriculationCode": f"%0{pad}d" % matric_number,
+                "courseOfStudy": random.randint(0, len(courses) - 1),
+                "markPresent": False
             })
         studentJobs = Parallelizer(matric_numbers, min(
             num_students, 100 if num_students >= 80000 else 8), newStudent)
@@ -83,7 +83,7 @@ def mountTestInstance(main_window):
             os.unlink(image)
         main_window.resetRegistrationForm()
 
-    main_window.on('registrationData', handleTestRegData)
+    main_window.on("registrationData", handleTestRegData)
 
     def startAttendanceCamera(*args):
         main_window.log("<startAttendanceCamera>")
@@ -91,7 +91,7 @@ def mountTestInstance(main_window):
         length = random.randint(0, int(.4 * len(students)) or 1)
         foundStudents = random.sample(students, k=length)
         main_window.log("<startAttendanceCamera> Found %d student%s" %
-                        (length, "" if length == 1 else "s"), force=True)
+                        (length, "" if length == 1 else 's'), force=True)
         if (length == 0):
             return
         with main_window.logr(
@@ -102,10 +102,10 @@ def mountTestInstance(main_window):
             for student in foundStudents:
                 main_window.markPresent(student)
 
-    main_window.on('startCameraButtonClicked', startAttendanceCamera)
+    main_window.on("startCameraButtonClicked", startAttendanceCamera)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     app.setApplicationName("xRecog")
     main_window = XrecogMainWindow()

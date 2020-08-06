@@ -28,7 +28,7 @@ class Parallelizer(EventEmitter):
                 if handle:
                     if not persist:
                         listeners.append(handle)
-                    threadEvent.on('cancel', handle)
+                    threadEvent.on("cancel", handle)
                 else:
                     return cancelledEvent.isSet()
             return checkConstraint
@@ -48,7 +48,7 @@ class Parallelizer(EventEmitter):
                         self.__handler(item)
                 finally:
                     for listener in listeners:
-                        threadEvent.removeListener('cancel', listener)
+                        threadEvent.removeListener("cancel", listener)
         finally:
             self.__tickThread()
 
@@ -61,7 +61,7 @@ class Parallelizer(EventEmitter):
                      and not threadStack["thread"].is_alive())
                     for threadStack in self.__threads if threadStack["thread"] != threading.current_thread()):
                 self.__finished.set()
-                self.emit('finished')
+                self.emit("finished")
 
     def __newThread(self, index):
         threadEvent = EventEmitter()
@@ -79,7 +79,7 @@ class Parallelizer(EventEmitter):
             raise RuntimeError(
                 "Parallelizer instances can only be started once")
         self.__started.set()
-        self.emit('started')
+        self.emit("started")
         for threadStack in self.__threads:
             threadStack["thread"].start()
 
