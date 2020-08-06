@@ -75,7 +75,7 @@ def mountTestInstance(main_window):
         print("Entry Year: %d" % data["entryYear"])
         print("Matriculation Code: %s" % data["matriculationCode"])
         print("Course of study: %s" % courses[data["courseOfStudy"]])
-        print("Mark as present: %s" % "yes" if data["markPresent"] else "no")
+        print("Mark as present: %s" % ("yes" if data["markPresent"] else "no"))
         print("Captured Images:")
         for image in data["capturedImages"]:
             # os.rename(image["path"], os.path.join(dir, "%02d" % index))
