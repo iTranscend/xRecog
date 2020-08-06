@@ -294,45 +294,33 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
     def __init__(self):
         super(XrecogMainWindow, self).__init__()
         uic.loadUi(translatePath("xrecog.ui"), self)
+        self.query = set()
+        self.courses = []
+        self.aboutText = None
         self.capture_window = None
+        self.matriculationCodeValidator = None
         self.prepareAttendance()
         self.prepareRegistration()
-        self.matriculationCodeValidator = None
-        self.aboutText = None
-        self.query = set()
-        self.initQueryValidator()
-        self.courses = []
-        self.resetAttendance()
+        self.preparePrint()
         self.actionAbout.triggered.connect(self.showAbout)
         self.actionResetAttendance.triggered.connect(self.resetAttendance)
-        self.preparePrint()
-        self.studentsLock = threading.Lock()
         self.recordLock = threading.Lock()
+        self.studentsLock = threading.Lock()
         self.studentsLoaderQueueLock = threading.Lock()
 
     def closeEvent(self, event):
         self.emit("windowClose")
         return super(QtWidgets.QMainWindow, self).closeEvent(event)
 
-    def preparePrint(self):
-        self.printToolButton.clicked.connect(self.print)
-        self.actionPrintPreview.triggered.connect(self.printPreview)
-        self.actionReportPreview.triggered.connect(self.showReportPreview)
-        self.actionExportCSV.triggered.connect(lambda: self.export("csv"))
-        self.actionExportHTML.triggered.connect(lambda: self.export("html"))
-        self.actionExportMarkdown.triggered.connect(
-            lambda: self.export("markdown"))
+    def showAbout(self):
+        dialog = QtWidgets.QDialog()
+        uic.loadUi(translatePath("about.ui"), dialog)
+        if self.aboutText:
+            dialog.aboutText.setPlainText(self.tr(self.aboutText))
+        dialog.exec_()
 
-    def resetAttendance(self):
-        self.students = {}
-        self.matric_records = {"present": deque(), "absent": deque()}
-        self.presentTable.clearContents()
-        self.absentTable.clearContents()
-        self.presentTable.setRowCount(0)
-        self.absentTable.setRowCount(0)
-        self.totalLineEdit.setText('0')
-        self.presentLineEdit.setText('0')
-        self.absentLineEdit.setText('0')
+    def setAboutText(self, text):
+        self.aboutText = text
 
     def registerDispatcher(self, objectName):
         return lambda *args: self.emit(objectName, *args)
@@ -384,7 +372,20 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         event.set()
         table.insertRow(index)
 
+    def resetAttendance(self):
+        self.students = {}
+        self.matric_records = {"present": deque(), "absent": deque()}
+        self.presentTable.clearContents()
+        self.absentTable.clearContents()
+        self.presentTable.setRowCount(0)
+        self.absentTable.setRowCount(0)
+        self.totalLineEdit.setText('0')
+        self.presentLineEdit.setText('0')
+        self.absentLineEdit.setText('0')
+
     def prepareAttendance(self):
+        self.resetAttendance()
+        self.initQueryValidator()
         self.absentTable.setColumnWidth(0, 90)
         self.presentTable.setColumnWidth(0, 90)
         self.absentTable.setColumnWidth(4, 49)
@@ -397,40 +398,14 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             self.registerDispatcher("stopCameraButtonClicked"))
         self.searchLineEdit.textChanged.connect(self.lookupText)
 
-    def prepareRegistration(self):
-        self.clearRegistrationForm()
-        self.captureButton.clicked.connect(self.initRegistrationCapture)
-        self.resetButton.clicked.connect(self.resetRegistrationForm)
-        self.registerButton.clicked.connect(self.collateRegistrationData)
-        hookupStripBGHandler(self.firstNameLineEdit,
-                             self.firstNameLineEdit.textChanged)
-        hookupStripBGHandler(self.middleNameLineEdit,
-                             self.middleNameLineEdit.textChanged)
-        hookupStripBGHandler(self.lastNameLineEdit,
-                             self.lastNameLineEdit.textChanged)
-        hookupStripBGHandler(self.yearSpinBox,
-                             self.yearSpinBox.valueChanged)
-        hookupStripBGHandler(self.matricNumberLineEdit,
-                             self.matricNumberLineEdit.textChanged)
-        hookupStripBGHandler(self.courseComboBox,
-                             self.courseComboBox.currentTextChanged)
-        hookupStripBGHandler(self.captureButton,
-                             self.captureButton.clicked)
+    def setRegistrationYearRange(self, min, max):
+        self.yearSpinBox.setMinimum(min)
+        self.yearSpinBox.setMaximum(max)
 
     def initRegistrationCapture(self):
         self.capture_window = self.capture_window or XrecogCaptureWindow()
         self.capture_window.init()
         self.capture_window.exec_()
-
-    def showAbout(self):
-        dialog = QtWidgets.QDialog()
-        uic.loadUi(translatePath("about.ui"), dialog)
-        if self.aboutText:
-            dialog.aboutText.setPlainText(self.tr(self.aboutText))
-        dialog.exec_()
-
-    def setAboutText(self, text):
-        self.aboutText = text
 
     def clearRegistrationForm(self):
         self.firstNameLineEdit.clear()
@@ -447,6 +422,9 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         if (self.capture_window):
             self.capture_window.stop()
         self.capture_window = XrecogCaptureWindow()
+
+    def setMatricValidator(self, validator):
+        self.matriculationCodeValidator = validator
 
     def collateRegistrationData(self):
         firstName = ensureValid(self.firstNameLineEdit,
@@ -477,12 +455,64 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             }
             self.emit("registrationData", studentData)
 
-    def setMatricValidator(self, validator):
-        self.matriculationCodeValidator = validator
+    def prepareRegistration(self):
+        self.clearRegistrationForm()
+        self.captureButton.clicked.connect(self.initRegistrationCapture)
+        self.resetButton.clicked.connect(self.resetRegistrationForm)
+        self.registerButton.clicked.connect(self.collateRegistrationData)
+        hookupStripBGHandler(self.firstNameLineEdit,
+                             self.firstNameLineEdit.textChanged)
+        hookupStripBGHandler(self.middleNameLineEdit,
+                             self.middleNameLineEdit.textChanged)
+        hookupStripBGHandler(self.lastNameLineEdit,
+                             self.lastNameLineEdit.textChanged)
+        hookupStripBGHandler(self.yearSpinBox,
+                             self.yearSpinBox.valueChanged)
+        hookupStripBGHandler(self.matricNumberLineEdit,
+                             self.matricNumberLineEdit.textChanged)
+        hookupStripBGHandler(self.courseComboBox,
+                             self.courseComboBox.currentTextChanged)
+        hookupStripBGHandler(self.captureButton,
+                             self.captureButton.clicked)
 
-    def setRegistrationYearRange(self, min, max):
-        self.yearSpinBox.setMinimum(min)
-        self.yearSpinBox.setMaximum(max)
+    def preparePrint(self):
+        self.printToolButton.clicked.connect(self.print)
+        self.actionPrintPreview.triggered.connect(self.printPreview)
+        self.actionReportPreview.triggered.connect(self.showReportPreview)
+        self.actionExportCSV.triggered.connect(lambda: self.export("csv"))
+        self.actionExportHTML.triggered.connect(lambda: self.export("html"))
+        self.actionExportMarkdown.triggered.connect(
+            lambda: self.export("markdown"))
+
+    lookupTimer = None
+
+    def lookupText(self, query):
+        with self.lookupLock:
+            if self.lookupTimer and not self.lookupTimer.finished.isSet():
+                self.lookupTimer.cancel()
+                self.stop_lookup.set()
+                self.lookupTimer.join()
+                self.stop_lookup.clear()
+
+            def doQueueLookups(query):
+                with self.logr("Looking up query [%s]" % query):
+                    query = set(filter(bool, query.lower().split(' ')))
+                    if self.query.symmetric_difference(query):
+                        self.query = query
+
+                        with self.studentsLock:
+                            for student in self.students.values():
+                                if self.stop_lookup.isSet():
+                                    break
+                                (table, key) = (self.presentTable, "present") if student["isPresent"] else (
+                                    self.absentTable, "absent")
+                                with self.recordLock:
+                                    index = self.matric_records[key].index(
+                                        student["matriculationCode"])
+                                self.validatorQueue.put(
+                                    {"index": index, "student": student})
+            self.lookupTimer = threading.Timer(1, doQueueLookups, (query,))
+        self.lookupTimer.start()
 
     def loadCourses(self, courses):
         for course in courses:
@@ -560,35 +590,33 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             courseItem.setText(self.courses[student["courseOfStudy"]])
         self.validatorQueue.put({"index": index, "student": student})
 
-    lookupTimer = None
+    def markPresent(self, matricCode):
+        self.log("<markPresent> Mark Present [%s]" % matricCode)
+        with self.logr("<markPresent> Matric lookup in students [%s]" % matricCode):
+            try:
+                student = self.students[matricCode]
+            except:
+                student = None
+        if student is None or student["isPresent"]:
+            return
+        with self.logr("<markPresent> Matric lookup in records [%s]" % matricCode):
+            index = self.matric_records["absent"].index(
+                student["matriculationCode"])
+        with self.logr("<markPresent> Matric remove from records [%s]" % matricCode):
+            del self.matric_records["absent"][index]
+        with self.logr("<markPresent> Pop student from absent table [%s]" % matricCode):
+            self.absentTable.removeRow(index)
+        with self.logr(
+            "<markPresent> Push student into present table [%s]" % matricCode,
+            "<markPresent> Pushed student into present table [%s]" % matricCode, reenter=True
+        ):
+            student["isPresent"] = True
+            self.pushRow(student)
+        self.log("<markPresent> Marked student as present [%s]" % matricCode)
+        self.emit("foundStudent", student)
 
-    def lookupText(self, query):
-        with self.lookupLock:
-            if self.lookupTimer and not self.lookupTimer.finished.isSet():
-                self.lookupTimer.cancel()
-                self.stop_lookup.set()
-                self.lookupTimer.join()
-                self.stop_lookup.clear()
-
-            def doQueueLookups(query):
-                with self.logr("Looking up query [%s]" % query):
-                    query = set(filter(bool, query.lower().split(' ')))
-                    if self.query.symmetric_difference(query):
-                        self.query = query
-
-                        with self.studentsLock:
-                            for student in self.students.values():
-                                if self.stop_lookup.isSet():
-                                    break
-                                (table, key) = (self.presentTable, "present") if student["isPresent"] else (
-                                    self.absentTable, "absent")
-                                with self.recordLock:
-                                    index = self.matric_records[key].index(
-                                        student["matriculationCode"])
-                                self.validatorQueue.put(
-                                    {"index": index, "student": student})
-            self.lookupTimer = threading.Timer(1, doQueueLookups, (query,))
-        self.lookupTimer.start()
+    def getAbsentStudentsMatric(self):
+        return [student["matriculationCode"] for student in self.students.values() if not student["isPresent"]]
 
     def _dispatch(self, executor, timeout=None, args=(), kwargs=None, *, title=None, message=None, max=None, tickValue=None):
         finished = threading.Event()
@@ -619,34 +647,6 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             return
         logTick()
         dialog.exec_()
-
-    def markPresent(self, matricCode):
-        self.log("<markPresent> Mark Present [%s]" % matricCode)
-        with self.logr("<markPresent> Matric lookup in students [%s]" % matricCode):
-            try:
-                student = self.students[matricCode]
-            except:
-                student = None
-        if student is None or student["isPresent"]:
-            return
-        with self.logr("<markPresent> Matric lookup in records [%s]" % matricCode):
-            index = self.matric_records["absent"].index(
-                student["matriculationCode"])
-        with self.logr("<markPresent> Matric remove from records [%s]" % matricCode):
-            del self.matric_records["absent"][index]
-        with self.logr("<markPresent> Pop student from absent table [%s]" % matricCode):
-            self.absentTable.removeRow(index)
-        with self.logr(
-            "<markPresent> Push student into present table [%s]" % matricCode,
-            "<markPresent> Pushed student into present table [%s]" % matricCode, reenter=True
-        ):
-            student["isPresent"] = True
-            self.pushRow(student)
-        self.log("<markPresent> Marked student as present [%s]" % matricCode)
-        self.emit("foundStudent", student)
-
-    def getAbsentStudentsMatric(self):
-        return [student["matriculationCode"] for student in self.students.values() if not student["isPresent"]]
 
     def log(self, *args, **kwargs):
         force = False
