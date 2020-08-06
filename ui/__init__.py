@@ -303,7 +303,6 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.actionResetAttendance.triggered.connect(self.resetAttendance)
         self.recordLock = threading.Lock()
         self.studentsLock = threading.Lock()
-        self.studentsLoaderQueueLock = threading.Lock()
 
     def closeEvent(self, event):
         self.emit("windowClose")
@@ -332,6 +331,28 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             "%d" % (presentStudents + absentStudents))
         self.presentLineEdit.setText("%d" % presentStudents)
         self.absentLineEdit.setText("%d" % absentStudents)
+
+    def initStudentsLoader(self):
+        self.studentLoaderQueue = queue.Queue()
+        self.studentLoaderJobs = Parallelizer(
+            self.studentLoaderQueue.get, 4, self._addStudent)
+        self.studentLoaderJobs.start()
+
+        def cancelStudentLoaderJobs():
+            self.studentLoaderJobs.cancel()
+            self.studentLoaderQueue.queue.clear()
+            self.studentLoaderQueue.put(None)
+        self.on("windowClose", cancelStudentLoaderJobs)
+
+    def _addStudent(self, student):
+        student = {**student}
+        markPresent = student["isPresent"] = bool(student["markPresent"])
+        del student["markPresent"]
+        with self.studentsLock:
+            if student["matriculationCode"] in self.students:
+                return
+            self.students[student["matriculationCode"]] = student
+        self._pushRow(student)
 
     def initQueryValidator(self):
         self.lookupLock = threading.Lock()
@@ -371,6 +392,41 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         event.set()
         table.insertRow(index)
 
+    def _pushRow(self, student):
+        self.log("<_pushRow> Creating student row on table")
+
+        with self.recordLock:
+            (table, key) = (self.presentTable, "present") if student["isPresent"] else (
+                self.absentTable, "absent")
+            record = self.matric_records[key]
+            index = len(record)
+            record.append(student["matriculationCode"])
+            self.statUpdateSignal.emit()
+            addedRowEvent = threading.Event()
+            self.addRowSignal.emit(key, index, addedRowEvent)
+        addedRowEvent.wait()
+        with self.logr("<_pushRow> Insert row slots"):
+            matricItem = QtWidgets.QTableWidgetItem()
+            firstNameItem = QtWidgets.QTableWidgetItem()
+            middleNameItem = QtWidgets.QTableWidgetItem()
+            lastNameItem = QtWidgets.QTableWidgetItem()
+            yearItem = QtWidgets.QTableWidgetItem()
+            courseItem = QtWidgets.QTableWidgetItem()
+            table.setItem(index, 0, matricItem)
+            table.setItem(index, 1, firstNameItem)
+            table.setItem(index, 2, middleNameItem)
+            table.setItem(index, 3, lastNameItem)
+            table.setItem(index, 4, yearItem)
+            table.setItem(index, 5, courseItem)
+        with self.logr("<_pushRow> Set row cell text"):
+            matricItem.setText(student["matriculationCode"])
+            firstNameItem.setText(student["firstName"])
+            middleNameItem.setText(student["middleName"])
+            lastNameItem.setText(student["lastName"])
+            yearItem.setText("%d" % student["entryYear"])
+            courseItem.setText(self.courses[student["courseOfStudy"]])
+        self.validatorQueue.put({"index": index, "student": student})
+
     def resetAttendance(self):
         self.students = {}
         self.matric_records = {"present": deque(), "absent": deque()}
@@ -385,6 +441,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
     def prepareAttendance(self):
         self.resetAttendance()
         self.initQueryValidator()
+        self.initStudentsLoader()
         self.absentTable.setColumnWidth(0, 90)
         self.presentTable.setColumnWidth(0, 90)
         self.absentTable.setColumnWidth(4, 49)
@@ -520,74 +577,12 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.courseComboBox.addItems(courses)
         self.courseComboBox.setCurrentIndex(-1)
 
-    studentsLoaderQueue = None
-
     def loadStudents(self, students):
-        with self.studentsLoaderQueueLock:
-            if self.studentsLoaderQueue:
-                self.studentsLoaderQueue.extend(students)
-            else:
-                self.studentsLoaderQueue = deque(students)
+        for student in students:
+            self.studentLoaderQueue.put(student)
 
-                def nextStudent():
-                    try:
-                        return self.studentsLoaderQueue.popleft()
-                    except IndexError:
-                        raise StopIteration
-                jobs = Parallelizer(nextStudent, 4, self.addStudent)
-
-                def onFinished():
-                    self.studentsLoaderQueue = None
-                    self.removeListener("windowClose", jobs.cancel)
-
-                self.on("windowClose", jobs.cancel)
-                jobs.on("finished", onFinished)
-                jobs.start()
-
-    def addStudent(self, student):
-        student = {**student}
-        markPresent = student["isPresent"] = bool(student["markPresent"])
-        del student["markPresent"]
-        with self.studentsLock:
-            if student["matriculationCode"] in self.students:
-                return
-            self.students[student["matriculationCode"]] = student
-        self.pushRow(student)
-
-    def pushRow(self, student):
-        self.log("<pushRow> Creating student row on table")
-
-        with self.recordLock:
-            (table, key) = (self.presentTable, "present") if student["isPresent"] else (
-                self.absentTable, "absent")
-            record = self.matric_records[key]
-            index = len(record)
-            record.append(student["matriculationCode"])
-            self.statUpdateSignal.emit()
-            addedRowEvent = threading.Event()
-            self.addRowSignal.emit(key, index, addedRowEvent)
-        addedRowEvent.wait()
-        with self.logr("<pushRow> Insert row slots"):
-            matricItem = QtWidgets.QTableWidgetItem()
-            firstNameItem = QtWidgets.QTableWidgetItem()
-            middleNameItem = QtWidgets.QTableWidgetItem()
-            lastNameItem = QtWidgets.QTableWidgetItem()
-            yearItem = QtWidgets.QTableWidgetItem()
-            courseItem = QtWidgets.QTableWidgetItem()
-            table.setItem(index, 0, matricItem)
-            table.setItem(index, 1, firstNameItem)
-            table.setItem(index, 2, middleNameItem)
-            table.setItem(index, 3, lastNameItem)
-            table.setItem(index, 4, yearItem)
-            table.setItem(index, 5, courseItem)
-        with self.logr("<pushRow> Set row cell text"):
-            matricItem.setText(student["matriculationCode"])
-            firstNameItem.setText(student["firstName"])
-            middleNameItem.setText(student["middleName"])
-            lastNameItem.setText(student["lastName"])
-            yearItem.setText("%d" % student["entryYear"])
-            courseItem.setText(self.courses[student["courseOfStudy"]])
-        self.validatorQueue.put({"index": index, "student": student})
+    def loadStudent(self, student):
+        self.studentLoaderQueue.put(student)
 
     def markPresent(self, matricCode):
         self.log("<markPresent> Mark Present [%s]" % matricCode)
@@ -610,7 +605,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             "<markPresent> Pushed student into present table [%s]" % matricCode, reenter=True
         ):
             student["isPresent"] = True
-            self.pushRow(student)
+            self._pushRow(student)
         self.log("<markPresent> Marked student as present [%s]" % matricCode)
         self.emit("foundStudent", student)
 
