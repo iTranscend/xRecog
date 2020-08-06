@@ -215,6 +215,25 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
         return [image["path"] for image in self.images]
 
 
+class XrecogProgressDialog(QtWidgets.QDialog):
+    def __init__(self, title=None, max=None):
+        super(XrecogProgressDialog, self).__init__()
+        uic.loadUi(translatePath("progress_dialog.ui"), self)
+        self.setWindowFlags(QtCore.Qt.WindowMaximizeButtonHint)
+        self.installEventFilter(self)
+        if max:
+            self.progressBar.setMaximum(max)
+            self.progressBar.setValue(0)
+        if title:
+            self.setWindowTitle(title)
+
+    def eventFilter(self, obj, event):
+        if event.type() == QtCore.QEvent.KeyPress:
+            if event.key() == QtCore.Qt.Key_Escape:
+                return True
+        return super(QtWidgets.QDialog, self).eventFilter(obj, event)
+
+
 class XrecogPreviewWindow(QtWidgets.QDialog, EventEmitter):
     def __init__(self):
         super(XrecogPreviewWindow, self).__init__()
@@ -570,6 +589,36 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                                     {"index": index, "student": student})
             self.lookupTimer = threading.Timer(1, doQueueLookups, (query,))
         self.lookupTimer.start()
+
+    def _dispatch(self, executor, timeout=None, args=(), kwargs=None, *, title=None, message=None, max=None, tickValue=None):
+        finished = threading.Event()
+        dialog = XrecogProgressDialog(title=title, max=max)
+
+        def logTick(msg=None, progress=None, *, tick=False):
+            if type(msg) == int:
+                (msg, progress) = (None, msg)
+            if progress:
+                dialog.progressBar.setValue(progress)
+            elif tick and tickValue:
+                dialog.progressBar.setValue(
+                    dialog.progressBar.value() + tickValue)
+            return dialog.label.setText("%s" % (msg or message or "Loading..."))
+
+        def execTarget(*args):
+            executor(logTick, *args, **(kwargs or {}))
+            dialog.progressBar.setValue(100)
+            finished.set()
+            dialog.close()
+
+        thread = threading.Thread(target=execTarget, args=args)
+        thread.start()
+
+        if timeout:
+            time.sleep(timeout)
+        if finished.isSet():
+            return
+        logTick()
+        dialog.exec_()
 
     def markPresent(self, matricCode):
         self.log("<markPresent> Mark Present [%s]" % matricCode)
