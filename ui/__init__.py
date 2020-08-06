@@ -344,8 +344,8 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             self.studentLoaderQueue.put(None)
         self.on("windowClose", cancelStudentLoaderJobs)
 
-    def _addStudent(self, student):
-        student = {**student}
+    def _addStudent(self, studentStack):
+        student = {**studentStack["student"]}
         markPresent = student["isPresent"] = bool(student["markPresent"])
         del student["markPresent"]
         with self.studentsLock:
@@ -353,6 +353,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                 return
             self.students[student["matriculationCode"]] = student
         self._pushRow(student)
+        studentStack["event"].set()
 
     def initQueryValidator(self):
         self.lookupLock = threading.Lock()
@@ -578,11 +579,12 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.courseComboBox.setCurrentIndex(-1)
 
     def loadStudents(self, students):
-        for student in students:
-            self.studentLoaderQueue.put(student)
+        return [self.loadStudent(student) for student in students]
 
     def loadStudent(self, student):
-        self.studentLoaderQueue.put(student)
+        addedEvent = threading.Event()
+        self.studentLoaderQueue.put({"student": student, "event": addedEvent})
+        return addedEvent
 
     def markPresent(self, matricCode):
         self.log("<markPresent> Mark Present [%s]" % matricCode)
