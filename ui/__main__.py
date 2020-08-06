@@ -1,6 +1,7 @@
 import os
 import sys
 import random
+import threading
 from faker import Faker
 
 from . import (
@@ -57,9 +58,15 @@ def mountTestInstance(main_window):
     with main_window.logr(
         "Populating UI with %d students" % len(students),
         "Populated UI with %d students" % len(students),
-        reenter=True, force=True
-    ):
-        main_window.loadStudents(students)
+        reenter=True, force=True, is_async=True
+    ) as logr:
+        jobs = main_window.loadStudents(students)
+
+        def handle():
+            for job in jobs:
+                job.wait()
+            logr.done()
+        threading.Thread(target=handle).start()
 
     main_window.setAboutText(
         "xRecog\n\nApp Description\n\n2020 (c) Femi Bankole")
