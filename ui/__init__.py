@@ -865,7 +865,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
 class ActingLogger:
     entry_time = exit_time = None
 
-    def __init__(self, entry=None, exit=None, reenter=False, end="", force=False, entry_kwargs=None, exit_kwargs=None):
+    def __init__(self, entry=None, exit=None, reenter=False, is_async=False, end="", force=False, entry_kwargs=None, exit_kwargs=None):
         self.entry_tuple = () if entry is None else (
             entry,) if type(entry) is not tuple else entry
         self.entry_kwargs = entry_kwargs or {}
@@ -873,6 +873,7 @@ class ActingLogger:
             exit,) if type(exit) is not tuple else exit
         self.exit_kwargs = exit_kwargs or {}
         self.reenter = reenter
+        self.is_async = is_async
         self.end_str = end
         self.do_print = force or os.environ.get("DEBUG_UI") == '1'
 
@@ -886,8 +887,13 @@ class ActingLogger:
         kwargs = {"end": self.end_str or "...",
                   "flush": True} if not self.reenter else {}
         self.print(*self.entry_tuple, **kwargs, **self.entry_kwargs)
+        return self
 
     def __exit__(self, *args):
+        if not self.is_async:
+            self.done()
+
+    def done(self):
         if not self.do_print:
             return
         self.exit_time = datetime.now()
