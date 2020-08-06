@@ -25,8 +25,6 @@ from .parallelizer import Parallelizer
 
 
 class XrecogCaptureWindow(QtWidgets.QDialog):
-    closed = QtCore.pyqtSignal()
-
     def __init__(self):
         super(XrecogCaptureWindow, self).__init__()
         uic.loadUi(translatePath("capture.ui"), self)
@@ -96,7 +94,7 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
         self.displayImages()
 
     def closeEvent(self, event):
-        self.closed.emit()
+        self.hideWindow()
         return super(QtWidgets.QDialog, self).closeEvent(event)
 
     def prepareHandlers(self):
@@ -104,7 +102,6 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
         self.captureButton.clicked.connect(self.captureImage)
         self.deviceSelectorComboBox.currentIndexChanged.connect(
             self.selectCamera)
-        self.closed.connect(self.hideWindow)
         self.deleteAllButton.clicked.connect(self.deleteAll)
 
     def hideWindow(self):
@@ -327,6 +324,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
 
     statUpdateSignal = QtCore.pyqtSignal()
 
+    @QtCore.pyqtSlot()
     def updateStats(self):
         absentStudents = len(self.matric_records["absent"])
         presentStudents = len(self.matric_records["present"])
@@ -367,6 +365,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
 
     addRowSignal = QtCore.pyqtSignal(str, int, threading.Event)
 
+    @QtCore.pyqtSlot(str, int, threading.Event)
     def _addRow(self, key, index, event):
         table = self.presentTable if key == "present" else self.absentTable
         event.set()
