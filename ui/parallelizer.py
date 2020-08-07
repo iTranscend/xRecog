@@ -22,7 +22,7 @@ class Parallelizer(EventEmitter):
         for job in range(jobs):
             self.__newThread(job)
 
-    def __threadHandler(self, threadEvent, cancelledEvent):
+    def __threadHandler(self, threadEvent, cancelledEvent, notPausedEvent):
         def newConstraintChecker(listeners):
             def checkConstraint(handle=None, persist=False):
                 if handle:
@@ -35,6 +35,7 @@ class Parallelizer(EventEmitter):
 
         try:
             while not cancelledEvent.isSet():
+                notPausedEvent.wait()
                 listeners = []
                 try:
                     try:
@@ -65,14 +66,23 @@ class Parallelizer(EventEmitter):
 
     def __newThread(self, index):
         threadEvent = EventEmitter()
+        notPausedEvent = threading.Event()
         cancelledEvent = threading.Event()
+        threadEvent.on("pause", notPausedEvent.clear)
         threadEvent.on("cancel", cancelledEvent.set)
+        threadEvent.on("resume", notPausedEvent.set)
+        notPausedEvent.set()
         thread = threading.Thread(
             name="ParallelizerThread-%d" % index,
             target=self.__threadHandler,
-            args=(threadEvent, cancelledEvent))
+            args=(threadEvent, cancelledEvent, notPausedEvent))
         self.__threads.append(
-            {"thread": thread, "cancelled": cancelledEvent, "threadEvent": threadEvent})
+            {
+                "thread": thread,
+                "cancelled": cancelledEvent,
+                "threadEvent": threadEvent,
+                "notPausedEvent": notPausedEvent
+            })
 
     def start(self):
         if self.hasStarted():
@@ -105,6 +115,16 @@ class Parallelizer(EventEmitter):
         for threadStack in self.__threads:
             threadStack["threadEvent"].emit("cancel")
         self.emit("cancel")
+
+    def pause(self):
+        for threadStack in self.__threads:
+            threadStack["threadEvent"].emit("pause")
+        self.emit("pause")
+
+    def resume(self):
+        for threadStack in self.__threads:
+            threadStack["threadEvent"].emit("resume")
+        self.emit("resume")
 
     def join(self, n):
         return self.__threads[n]["thread"].join()
