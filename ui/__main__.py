@@ -28,12 +28,12 @@ def mountTestInstance(main_window):
         "Art",
     ]
     with main_window.logr(
-            "Loading %d courses" % len(courses), force=True):
+            "Loading %d course%s" % (len(courses), "" if len(courses) == 1 else 's'), force=True):
         main_window.loadCourses(courses)
 
     max_students = max(10000, num_students)
 
-    with main_window.logr("Generating %d students" % num_students, force=True):
+    with main_window.logr("Generating %d student%s" % (num_students, "" if num_students == 1 else 's'), force=True):
         faker = Faker()
         students = []
         pad = len(str(num_students))
@@ -56,8 +56,10 @@ def mountTestInstance(main_window):
         studentJobs.joinAll()
 
     with main_window.logr(
-        "Populating UI with %d students" % len(students),
-        "Populated UI with %d students" % len(students),
+        "Populating UI with %d student%s" % (
+            len(students), "" if len(students) == 1 else 's'),
+        "Populated UI with %d student%s" % (
+            len(students), "" if len(students) == 1 else 's'),
         reenter=True, force=True, is_async=True
     ) as logr:
         jobs = main_window.loadStudents(students)
@@ -97,13 +99,14 @@ def mountTestInstance(main_window):
         students = main_window.getAbsentStudentsMatric()
         length = random.randint(0, int(.4 * len(students)) or 1)
         foundStudents = random.sample(students, k=length)
+        end = "" if length == 1 else 's'
         main_window.log("<startAttendanceCamera> Found %d student%s" %
-                        (length, "" if length == 1 else 's'), force=True)
+                        (length, end), force=True)
         if (length == 0):
             return
         with main_window.logr(
-            "<startAttendanceCamera> Marking %s students" % length,
-            "<startAttendanceCamera> Marked %s students" % length,
+            "<startAttendanceCamera> Marking %s student%s" % (length, end),
+            "<startAttendanceCamera> Marked %s student%s" % (length, end),
             reenter=True, force=True
         ):
             for student in foundStudents:
