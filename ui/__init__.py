@@ -338,13 +338,17 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             self.studentLoaderQueue.get, 4, self._addStudent)
         self.studentLoaderJobs.start()
 
-        def cancelStudentLoaderJobs():
-            self.studentLoaderJobs.cancel()
+        def clearStudentLoaderJobs():
             self.studentLoaderJobs.pause()
             self.studentLoaderQueue.put(None)
             for studentStack in iter(self.studentLoaderQueue.get, None):
                 studentStack["event"].set()
             self.studentLoaderJobs.resume()
+        self._clearStudentLoaderJobs = clearStudentLoaderJobs
+
+        def cancelStudentLoaderJobs():
+            self.studentLoaderJobs.cancel()
+            clearStudentLoaderJobs()
         self.on("windowClose", cancelStudentLoaderJobs)
 
     def _addStudent(self, studentStack):
@@ -489,6 +493,8 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.totalLineEdit.setText('0')
         self.presentLineEdit.setText('0')
         self.absentLineEdit.setText('0')
+        if hasattr(self, "_clearStudentLoaderJobs"):
+            self._clearStudentLoaderJobs()
 
     def prepareAttendance(self):
         self.resetAttendance()
