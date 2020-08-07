@@ -116,7 +116,8 @@ def mountTestInstance(main_window):
     def startAttendanceCamera(*args):
         main_window.log("<startAttendanceCamera>")
         students = main_window.getAbsentStudentsMatric()
-        length = random.randint(0, int(.4 * len(students)) or 1)
+        length = random.randint(
+            0, len(students) and (int(.4 * len(students)) or len(students)))
         foundStudents = random.sample(students, k=length)
         end = "" if length == 1 else 's'
         main_window.log("<startAttendanceCamera> Found %d student%s" %
