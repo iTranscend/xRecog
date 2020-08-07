@@ -26,6 +26,25 @@ def mountTestInstance(main_window):
         "Sociology",
         "Political Sciences",
         "Art",
+        "Philosophy",
+        "Music",
+        "Anthropology",
+        "Psychology",
+        "English",
+        "Astrophysics",
+        "Biology",
+        "Geography",
+        "Physiotheraphy",
+        "Medicine",
+        "French",
+        "Statistics",
+        "Biochemistry",
+        "Cybersecurity",
+        "Criminology",
+        "Economics",
+        "Epidemiology",
+        "Statistics",
+        "Mathematics"
     ]
     with main_window.logr(
             "Loading %d course%s" % (len(courses), "" if len(courses) == 1 else 's'), force=True):
