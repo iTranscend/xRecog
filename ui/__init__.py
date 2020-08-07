@@ -611,8 +611,8 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.log("<markPresent> Marked student as present [%s]" % matricCode)
         self.emit("foundStudent", student)
 
-    def getAbsentStudentsMatric(self):
-        return [student["matriculationCode"] for student in self.students.values() if not student["isPresent"]]
+    def getAbsentStudentsMatric(self, n=None):
+        return [*self.matric_records["absent"]][:n]
 
     def _dispatch(self, executor, timeout=None, args=(), kwargs=None, *, title=None, message=None, max=None, tickValue=None):
         finished = threading.Event()
