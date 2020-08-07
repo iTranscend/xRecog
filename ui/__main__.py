@@ -107,10 +107,15 @@ def mountTestInstance(main_window):
         with main_window.logr(
             "<startAttendanceCamera> Marking %s student%s" % (length, end),
             "<startAttendanceCamera> Marked %s student%s" % (length, end),
-            reenter=True, force=True
-        ):
-            for student in foundStudents:
-                main_window.markPresent(student)
+            reenter=True, force=True, is_async=True
+        ) as logr:
+            jobs = main_window.markStudents(foundStudents)
+
+            def handle():
+                for job in jobs:
+                    job.wait()
+                logr.done()
+        threading.Thread(target=handle).start()
 
     main_window.on("startCameraButtonClicked", startAttendanceCamera)
 

@@ -355,6 +355,45 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self._pushRow(student)
         studentStack["event"].set()
 
+    def initStudentsMarker(self):
+        self.studentMarkerQueue = queue.Queue()
+        self.studentMarkerJobs = Parallelizer(
+            self.studentMarkerQueue.get, 2, self._markStudent)
+        self.studentMarkerJobs.start()
+
+        def cancelStudentMarkerJobs():
+            self.studentMarkerJobs.cancel()
+            self.studentMarkerQueue.queue.clear()
+            self.studentMarkerQueue.put(None)
+        self.on("windowClose", cancelStudentMarkerJobs)
+
+    def _markStudent(self, matricStack):
+        matricCode = matricStack["matricCode"]
+        self.log("<markPresent> Mark Present [%s]" % matricCode)
+        with self.logr("<markPresent> Matric lookup in students [%s]" % matricCode):
+            try:
+                student = self.students[matricCode]
+            except:
+                student = None
+        if student is None or student["isPresent"]:
+            return
+        with self.logr("<markPresent> Matric lookup in records [%s]" % matricCode):
+            index = self.matric_records["absent"].index(
+                student["matriculationCode"])
+        with self.logr("<markPresent> Matric remove from records [%s]" % matricCode):
+            del self.matric_records["absent"][index]
+        with self.logr("<markPresent> Pop student from absent table [%s]" % matricCode):
+            self.absentTable.removeRow(index)
+        with self.logr(
+            "<markPresent> Push student into present table [%s]" % matricCode,
+            "<markPresent> Pushed student into present table [%s]" % matricCode, reenter=True
+        ):
+            student["isPresent"] = True
+            self._pushRow(student)
+        self.log("<markPresent> Marked student as present [%s]" % matricCode)
+        self.emit("foundStudent", student)
+        matricStack["event"].set()
+
     def initQueryValidator(self):
         self.lookupLock = threading.Lock()
         self.stop_lookup = threading.Event()
@@ -443,6 +482,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.resetAttendance()
         self.initQueryValidator()
         self.initStudentsLoader()
+        self.initStudentsMarker()
         self.absentTable.setColumnWidth(0, 90)
         self.presentTable.setColumnWidth(0, 90)
         self.absentTable.setColumnWidth(4, 49)
@@ -586,30 +626,14 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.studentLoaderQueue.put({"student": student, "event": addedEvent})
         return addedEvent
 
-    def markPresent(self, matricCode):
-        self.log("<markPresent> Mark Present [%s]" % matricCode)
-        with self.logr("<markPresent> Matric lookup in students [%s]" % matricCode):
-            try:
-                student = self.students[matricCode]
-            except:
-                student = None
-        if student is None or student["isPresent"]:
-            return
-        with self.logr("<markPresent> Matric lookup in records [%s]" % matricCode):
-            index = self.matric_records["absent"].index(
-                student["matriculationCode"])
-        with self.logr("<markPresent> Matric remove from records [%s]" % matricCode):
-            del self.matric_records["absent"][index]
-        with self.logr("<markPresent> Pop student from absent table [%s]" % matricCode):
-            self.absentTable.removeRow(index)
-        with self.logr(
-            "<markPresent> Push student into present table [%s]" % matricCode,
-            "<markPresent> Pushed student into present table [%s]" % matricCode, reenter=True
-        ):
-            student["isPresent"] = True
-            self._pushRow(student)
-        self.log("<markPresent> Marked student as present [%s]" % matricCode)
-        self.emit("foundStudent", student)
+    def markStudents(self, matricCodes):
+        return [self.markStudent(matricCode) for matricCode in matricCodes]
+
+    def markStudent(self, matricCode):
+        markedEvent = threading.Event()
+        self.studentMarkerQueue.put(
+            {"matricCode": matricCode, "event": markedEvent})
+        return markedEvent
 
     def getAbsentStudentsMatric(self, n=None):
         return [*self.matric_records["absent"]][:n]
