@@ -171,11 +171,23 @@ if __name__ == "__main__":
         par.on("cancel", lambda: q.put(None))
         par.on("started", lambda: print(" Started thread execution"))
         par.on("finished", lambda: print(" All threads finished execution"))
-        print("(i) Use ctrl+c to initiate cancel")
+        print("(i) Use ctrl+c to pause threads")
         try:
             par.start()
             for item in range(100):
                 q.put(item)
+            par.joinAll()
+        except KeyboardInterrupt:
+            print(" (i) Use ctrl+c to resume threads")
+            par.pause()
+            print("(i) Paused!")
+        try:
+            par.joinAll()
+        except KeyboardInterrupt:
+            print(" (i) Use ctrl+c to cancel threads")
+            par.resume()
+            print("(i) Resumed!")
+        try:
             par.joinAll()
         except KeyboardInterrupt:
             par.cancel()
