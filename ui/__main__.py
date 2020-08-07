@@ -75,7 +75,7 @@ def mountTestInstance(main_window):
     main_window.setRegistrationYearRange(MIN_YEAR, MAX_YEAR)
 
     def handleTestRegData(data):
-        main_window.addStudent(data)
+        main_window.loadStudent(data)
         print("Full Name: %s%s %s" % (
             data["firstName"],
             " %s" % data["middleName"] if data["middleName"] else "",
