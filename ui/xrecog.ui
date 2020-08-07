@@ -737,7 +737,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Report Preview</string>
+    <string>Preview Attendance Report</string>
    </property>
   </action>
  </widget>
