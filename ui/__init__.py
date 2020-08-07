@@ -350,7 +350,9 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
 
     def _addStudent(self, studentStack):
         student = {**studentStack["student"]}
-        markPresent = student["isPresent"] = bool(student["markPresent"])
+        student["isPresent"] = threading.Event()
+        if bool(student["markPresent"]):
+            student["isPresent"].set()
         del student["markPresent"]
         with self.studentsLock:
             if student["matriculationCode"] in self.students:
@@ -377,19 +379,12 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             self.studentLoaderQueue.put(None)
         self.on("windowClose", cancelStudentMarkerJobs)
 
-    def _markStudent(self, matricStack):
-        matricCode = matricStack["matricCode"]
-        self.log("<markPresent> Mark Present [%s]" % matricCode)
-        with self.logr("<markPresent> Matric lookup in students [%s]" % matricCode):
-            try:
-                student = self.students[matricCode]
-            except:
-                student = None
-        if student is None or student["isPresent"]:
+    def _markStudent(self, student):
+        if student["isPresent"].isSet():
             return
+        matricCode = student["matriculationCode"]
         with self.logr("<markPresent> Matric lookup in records [%s]" % matricCode):
-            index = self.matric_records["absent"].index(
-                student["matriculationCode"])
+            index = self.matric_records["absent"].index(matricCode)
         with self.logr("<markPresent> Matric remove from records [%s]" % matricCode):
             del self.matric_records["absent"][index]
         with self.logr("<markPresent> Pop student from absent table [%s]" % matricCode):
@@ -398,11 +393,10 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             "<markPresent> Push student into present table [%s]" % matricCode,
             "<markPresent> Pushed student into present table [%s]" % matricCode, reenter=True
         ):
-            student["isPresent"] = True
+            student["isPresent"].set()
             self._pushRow(student)
         self.log("<markPresent> Marked student as present [%s]" % matricCode)
         self.emit("foundStudent", student)
-        matricStack["event"].set()
 
     def initQueryValidator(self):
         self.lookupLock = threading.Lock()
@@ -422,7 +416,9 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         student = studentObject["student"]
         searchFields = [student["firstName"], student["middleName"], student["lastName"],
                         str(student["entryYear"]), student["matriculationCode"], self.courses[student["courseOfStudy"]]]
-        table = self.presentTable if student["isPresent"] else self.absentTable
+        table = self.presentTable \
+            if student["isPresent"].isSet() \
+            else self.absentTable
         if self.query and not all(any(
             text in part
             for value in searchFields
@@ -446,8 +442,9 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.log("<_pushRow> Creating student row on table")
 
         with self.recordLock:
-            (table, key) = (self.presentTable, "present") if student["isPresent"] else (
-                self.absentTable, "absent")
+            (table, key) = (self.presentTable, "present") \
+                if student["isPresent"].isSet() \
+                else (self.absentTable, "absent")
             record = self.matric_records[key]
             index = len(record)
             record.append(student["matriculationCode"])
@@ -611,8 +608,9 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                             for student in self.students.values():
                                 if self.stop_lookup.isSet():
                                     break
-                                (table, key) = (self.presentTable, "present") if student["isPresent"] else (
-                                    self.absentTable, "absent")
+                                (table, key) = (self.presentTable, "present") \
+                                    if student["isPresent"].isSet() \
+                                    else (self.absentTable, "absent")
                                 with self.recordLock:
                                     index = self.matric_records[key].index(
                                         student["matriculationCode"])
@@ -640,10 +638,9 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         return [self.markStudent(matricCode) for matricCode in matricCodes]
 
     def markStudent(self, matricCode):
-        markedEvent = threading.Event()
-        self.studentMarkerQueue.put(
-            {"matricCode": matricCode, "event": markedEvent})
-        return markedEvent
+        student = self.students[matricCode]
+        self.studentMarkerQueue.put(student)
+        return student["isPresent"]
 
     def getAbsentStudentsMatric(self, n=None):
         return [*self.matric_records["absent"]][:n]
@@ -800,7 +797,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                     student["firstName"],
                     student["middleName"],
                     student["lastName"],
-                    '1' if student["isPresent"] else '0',
+                    '1' if student["isPresent"].isSet() else '0',
                     str(student["entryYear"]),
                     self.courses[student["courseOfStudy"]]
                 ])
