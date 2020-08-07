@@ -354,6 +354,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         del student["markPresent"]
         with self.studentsLock:
             if student["matriculationCode"] in self.students:
+                studentStack["event"].set()
                 return
             self.students[student["matriculationCode"]] = student
         self._pushRow(student)
