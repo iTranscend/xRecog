@@ -340,8 +340,12 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
 
         def cancelStudentLoaderJobs():
             self.studentLoaderJobs.cancel()
-            self.studentLoaderQueue.queue.clear()
+            [dq, self.studentLoaderQueue.queue] = [
+                self.studentLoaderQueue.queue, deque()]
             self.studentLoaderQueue.put(None)
+            dq.append(None)
+            for studentStack in iter(dq.popleft, None):
+                studentStack["event"].set()
         self.on("windowClose", cancelStudentLoaderJobs)
 
     def _addStudent(self, studentStack):
@@ -363,8 +367,13 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
 
         def cancelStudentMarkerJobs():
             self.studentMarkerJobs.cancel()
-            self.studentMarkerQueue.queue.clear()
+            [dq, self.studentMarkerQueue.queue] = [
+                self.studentMarkerQueue.queue, deque()]
             self.studentMarkerQueue.put(None)
+            dq.append(None)
+            for matricStack in iter(dq.popleft, None):
+                matricStack["event"].set()
+            self.studentLoaderQueue.put(None)
         self.on("windowClose", cancelStudentMarkerJobs)
 
     def _markStudent(self, matricStack):
