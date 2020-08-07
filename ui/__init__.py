@@ -378,8 +378,8 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                 self.studentMarkerQueue.queue, deque()]
             self.studentMarkerQueue.put(None)
             dq.append(None)
-            for matricStack in iter(dq.popleft, None):
-                matricStack["event"].set()
+            for student in iter(dq.popleft, None):
+                student["isPresent"].set()
             self.studentLoaderQueue.put(None)
         self.on("windowClose", cancelStudentMarkerJobs)
 
