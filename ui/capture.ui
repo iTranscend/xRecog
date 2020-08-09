@@ -51,12 +51,18 @@
              <item row="0" column="0" rowspan="2" colspan="2">
               <widget class="QLabel" name="image07">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
                <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
+               <property name="maximumSize">
                 <size>
                  <width>100</width>
                  <height>56</height>
@@ -90,12 +96,18 @@
              <item row="0" column="0" rowspan="2" colspan="2">
               <widget class="QLabel" name="image01">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
                <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
+               <property name="maximumSize">
                 <size>
                  <width>100</width>
                  <height>56</height>
@@ -132,12 +144,18 @@
              <item row="0" column="0" rowspan="2" colspan="2">
               <widget class="QLabel" name="image10">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
                <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
+               <property name="maximumSize">
                 <size>
                  <width>100</width>
                  <height>56</height>
@@ -171,12 +189,18 @@
              <item row="0" column="0" rowspan="2" colspan="2">
               <widget class="QLabel" name="image05">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
                <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
+               <property name="maximumSize">
                 <size>
                  <width>100</width>
                  <height>56</height>
@@ -210,12 +234,18 @@
              <item row="0" column="0" rowspan="2" colspan="2">
               <widget class="QLabel" name="image06">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
                <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
+               <property name="maximumSize">
                 <size>
                  <width>100</width>
                  <height>56</height>
@@ -249,12 +279,18 @@
              <item row="0" column="0" rowspan="2" colspan="2">
               <widget class="QLabel" name="image12">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
                <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
+               <property name="maximumSize">
                 <size>
                  <width>100</width>
                  <height>56</height>
@@ -288,12 +324,18 @@
              <item row="0" column="0" rowspan="2" colspan="2">
               <widget class="QLabel" name="image03">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
                <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
+               <property name="maximumSize">
                 <size>
                  <width>100</width>
                  <height>56</height>
@@ -327,12 +369,18 @@
              <item row="0" column="0" rowspan="2" colspan="2">
               <widget class="QLabel" name="image09">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
                <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
+               <property name="maximumSize">
                 <size>
                  <width>100</width>
                  <height>56</height>
@@ -366,12 +414,18 @@
              <item row="0" column="0" rowspan="2" colspan="2">
               <widget class="QLabel" name="image11">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
                <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
+               <property name="maximumSize">
                 <size>
                  <width>100</width>
                  <height>56</height>
@@ -405,12 +459,18 @@
              <item row="0" column="0" rowspan="2" colspan="2">
               <widget class="QLabel" name="image02">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
                <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
+               <property name="maximumSize">
                 <size>
                  <width>100</width>
                  <height>56</height>
@@ -444,12 +504,18 @@
              <item row="0" column="0" rowspan="2" colspan="2">
               <widget class="QLabel" name="image04">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
                <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
+               <property name="maximumSize">
                 <size>
                  <width>100</width>
                  <height>56</height>
@@ -483,12 +549,18 @@
              <item row="0" column="0" rowspan="2" colspan="2">
               <widget class="QLabel" name="image08">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
                <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>56</height>
+                </size>
+               </property>
+               <property name="maximumSize">
                 <size>
                  <width>100</width>
                  <height>56</height>
