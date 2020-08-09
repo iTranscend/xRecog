@@ -165,12 +165,14 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
         self.captureButton.setFocus(True)
 
     def captureImage(self):
+        self.camera.searchAndLock()
         save_path = tempfile.mktemp(suffix=".jpg")
         id = self.capture.capture(save_path)
         self.images.append({"path": save_path})
         self.captureButton.setDisabled(True)
 
     def imageCaptured(self, id, image):
+        self.camera.unlock()
         stack = self.images[-1]
         stack["image"] = image
         self.progressBar.setValue(len(self.images))
