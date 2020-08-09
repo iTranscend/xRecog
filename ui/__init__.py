@@ -114,12 +114,9 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
         self.deviceSelectorComboBox.clear()
         self.deviceSelectorComboBox.addItems(
             [c.description() for c in self.available_cameras])
-        index = self.index(self.available_cameras, self.selected_camera)
-        if index is not None:
-            self.deviceSelectorComboBox.setCurrentIndex(index)
-        elif len(self.available_cameras):
+        if len(self.available_cameras):
             index = self.index(
-                self.available_cameras, QtMultimedia.QCameraInfo.defaultCamera())
+                self.available_cameras, self.selected_camera or QtMultimedia.QCameraInfo.defaultCamera())
             if index is not None:
                 self.selectCamera(index)
                 self.deviceSelectorComboBox.setCurrentIndex(index)
@@ -137,6 +134,8 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
     def selectCamera(self, index):
         pre_index = self.index(self.available_cameras, self.selected_camera)
         if pre_index is index:
+            if self.camera.state() == QtMultimedia.QCamera.LoadedState:
+                self.camera.start()
             return
         if pre_index is not None:
             self.releaseCamera()
@@ -199,7 +198,6 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
     def releaseCamera(self):
         if (not (self.capture and self.camera)):
             return
-        self.selected_camera = None
         self.capture.cancelCapture()
         self.camera.stop()
 
