@@ -45,7 +45,7 @@
           <string>Images</string>
          </property>
          <layout class="QGridLayout" name="gridLayout2">
-          <item row="2" column="0" alignment="Qt::AlignVCenter">
+          <item row="2" column="0" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
            <widget class="QWidget" name="imageSlot07" native="true">
             <layout class="QGridLayout" name="gridLayout9">
              <item row="0" column="0" rowspan="2" colspan="2">
@@ -84,7 +84,7 @@
             </layout>
            </widget>
           </item>
-          <item row="0" column="0" alignment="Qt::AlignVCenter">
+          <item row="0" column="0" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
            <widget class="QWidget" name="imageSlot01" native="true">
             <layout class="QGridLayout" name="gridLayout3">
              <item row="0" column="0" rowspan="2" colspan="2">
@@ -126,7 +126,7 @@
             </layout>
            </widget>
           </item>
-          <item row="3" column="0" alignment="Qt::AlignVCenter">
+          <item row="3" column="0" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
            <widget class="QWidget" name="imageSlot10" native="true">
             <layout class="QGridLayout" name="gridLayout12">
              <item row="0" column="0" rowspan="2" colspan="2">
@@ -165,7 +165,7 @@
             </layout>
            </widget>
           </item>
-          <item row="1" column="1" alignment="Qt::AlignVCenter">
+          <item row="1" column="1" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
            <widget class="QWidget" name="imageSlot05" native="true">
             <layout class="QGridLayout" name="gridLayout7">
              <item row="0" column="0" rowspan="2" colspan="2">
@@ -204,7 +204,7 @@
             </layout>
            </widget>
           </item>
-          <item row="1" column="2" alignment="Qt::AlignVCenter">
+          <item row="1" column="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
            <widget class="QWidget" name="imageSlot06" native="true">
             <layout class="QGridLayout" name="gridLayout8">
              <item row="0" column="0" rowspan="2" colspan="2">
@@ -243,7 +243,7 @@
             </layout>
            </widget>
           </item>
-          <item row="3" column="2" alignment="Qt::AlignVCenter">
+          <item row="3" column="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
            <widget class="QWidget" name="imageSlot12" native="true">
             <layout class="QGridLayout" name="gridLayout14">
              <item row="0" column="0" rowspan="2" colspan="2">
@@ -282,7 +282,7 @@
             </layout>
            </widget>
           </item>
-          <item row="0" column="2" alignment="Qt::AlignVCenter">
+          <item row="0" column="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
            <widget class="QWidget" name="imageSlot03" native="true">
             <layout class="QGridLayout" name="gridLayout5">
              <item row="0" column="0" rowspan="2" colspan="2">
@@ -321,7 +321,7 @@
             </layout>
            </widget>
           </item>
-          <item row="2" column="2" alignment="Qt::AlignVCenter">
+          <item row="2" column="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
            <widget class="QWidget" name="imageSlot09" native="true">
             <layout class="QGridLayout" name="gridLayout11">
              <item row="0" column="0" rowspan="2" colspan="2">
@@ -360,7 +360,7 @@
             </layout>
            </widget>
           </item>
-          <item row="3" column="1" alignment="Qt::AlignVCenter">
+          <item row="3" column="1" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
            <widget class="QWidget" name="imageSlot11" native="true">
             <layout class="QGridLayout" name="gridLayout13">
              <item row="0" column="0" rowspan="2" colspan="2">
@@ -399,7 +399,7 @@
             </layout>
            </widget>
           </item>
-          <item row="0" column="1" alignment="Qt::AlignVCenter">
+          <item row="0" column="1" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
            <widget class="QWidget" name="imageSlot02" native="true">
             <layout class="QGridLayout" name="gridLayout4">
              <item row="0" column="0" rowspan="2" colspan="2">
@@ -438,7 +438,7 @@
             </layout>
            </widget>
           </item>
-          <item row="1" column="0" alignment="Qt::AlignVCenter">
+          <item row="1" column="0" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
            <widget class="QWidget" name="imageSlot04" native="true">
             <layout class="QGridLayout" name="gridLayout6">
              <item row="0" column="0" rowspan="2" colspan="2">
@@ -477,7 +477,7 @@
             </layout>
            </widget>
           </item>
-          <item row="2" column="1" alignment="Qt::AlignVCenter">
+          <item row="2" column="1" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
            <widget class="QWidget" name="imageSlot08" native="true">
             <layout class="QGridLayout" name="gridLayout10">
              <item row="0" column="0" rowspan="2" colspan="2">
