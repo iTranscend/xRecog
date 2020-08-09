@@ -140,6 +140,7 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
             return
         if pre_index is not None:
             self.releaseCamera()
+        self.captureButton.setDisabled(True)
         self.selected_camera = self.available_cameras[index]
         self.camera = QtMultimedia.QCamera(self.selected_camera)
         self.camera.setViewfinder(self.viewfinder)
