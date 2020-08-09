@@ -139,6 +139,11 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
             return
         if pre_index is not None:
             self.releaseCamera()
+            for imageObject in self.images:
+                if "image" not in imageObject:
+                    print(
+                        "detected unfulfilled capture while switching camera, removing...")
+                    self.images.remove(imageObject)
         self.captureButton.setDisabled(True)
         self.selected_camera = self.available_cameras[index]
         self.camera = QtMultimedia.QCamera(self.selected_camera)
