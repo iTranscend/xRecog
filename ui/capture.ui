@@ -83,18 +83,24 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QToolButton" name="deleteButton07">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="icon">
-                <iconset theme="delete">
-                 <normaloff>.</normaloff>.</iconset>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="imageSlotToolBar07">
+               <item>
+                <widget class="QToolButton" name="viewImageButton07">
+                 <property name="icon">
+                  <iconset theme="view-fullscreen">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QToolButton" name="deleteButton07">
+                 <property name="icon">
+                  <iconset theme="delete">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </widget>
@@ -137,18 +143,24 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QToolButton" name="deleteButton01">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="icon">
-                <iconset theme="delete">
-                 <normaloff>.</normaloff>.</iconset>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="imageSlotToolBar01">
+               <item>
+                <widget class="QToolButton" name="viewImageButton01">
+                 <property name="icon">
+                  <iconset theme="view-fullscreen">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QToolButton" name="deleteButton01">
+                 <property name="icon">
+                  <iconset theme="delete">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </widget>
@@ -191,18 +203,24 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QToolButton" name="deleteButton10">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="icon">
-                <iconset theme="delete">
-                 <normaloff>.</normaloff>.</iconset>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="imageSlotToolBar10">
+               <item>
+                <widget class="QToolButton" name="viewImageButton10">
+                 <property name="icon">
+                  <iconset theme="view-fullscreen">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QToolButton" name="deleteButton10">
+                 <property name="icon">
+                  <iconset theme="delete">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </widget>
@@ -245,18 +263,24 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QToolButton" name="deleteButton05">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="icon">
-                <iconset theme="delete">
-                 <normaloff>.</normaloff>.</iconset>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="imageSlotToolBar05">
+               <item>
+                <widget class="QToolButton" name="viewImageButton05">
+                 <property name="icon">
+                  <iconset theme="view-fullscreen">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QToolButton" name="deleteButton05">
+                 <property name="icon">
+                  <iconset theme="delete">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </widget>
@@ -299,18 +323,24 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QToolButton" name="deleteButton06">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="icon">
-                <iconset theme="delete">
-                 <normaloff>.</normaloff>.</iconset>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="imageSlotToolBar06">
+               <item>
+                <widget class="QToolButton" name="viewImageButton06">
+                 <property name="icon">
+                  <iconset theme="view-fullscreen">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QToolButton" name="deleteButton06">
+                 <property name="icon">
+                  <iconset theme="delete">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </widget>
@@ -353,18 +383,24 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QToolButton" name="deleteButton12">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="icon">
-                <iconset theme="delete">
-                 <normaloff>.</normaloff>.</iconset>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="imageSlotToolBar12">
+               <item>
+                <widget class="QToolButton" name="viewImageButton12">
+                 <property name="icon">
+                  <iconset theme="view-fullscreen">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QToolButton" name="deleteButton12">
+                 <property name="icon">
+                  <iconset theme="delete">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </widget>
@@ -407,18 +443,24 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QToolButton" name="deleteButton03">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="icon">
-                <iconset theme="delete">
-                 <normaloff>.</normaloff>.</iconset>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="imageSlotToolBar03">
+               <item>
+                <widget class="QToolButton" name="viewImageButton03">
+                 <property name="icon">
+                  <iconset theme="view-fullscreen">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QToolButton" name="deleteButton03">
+                 <property name="icon">
+                  <iconset theme="delete">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </widget>
@@ -461,18 +503,24 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QToolButton" name="deleteButton09">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="icon">
-                <iconset theme="delete">
-                 <normaloff>.</normaloff>.</iconset>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="imageSlotToolBar09">
+               <item>
+                <widget class="QToolButton" name="viewImageButton09">
+                 <property name="icon">
+                  <iconset theme="view-fullscreen">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QToolButton" name="deleteButton09">
+                 <property name="icon">
+                  <iconset theme="delete">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </widget>
@@ -515,18 +563,24 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QToolButton" name="deleteButton11">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="icon">
-                <iconset theme="delete">
-                 <normaloff>.</normaloff>.</iconset>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="imageSlotToolBar11">
+               <item>
+                <widget class="QToolButton" name="viewImageButton11">
+                 <property name="icon">
+                  <iconset theme="view-fullscreen">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QToolButton" name="deleteButton11">
+                 <property name="icon">
+                  <iconset theme="delete">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </widget>
@@ -569,18 +623,24 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QToolButton" name="deleteButton02">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="icon">
-                <iconset theme="delete">
-                 <normaloff>.</normaloff>.</iconset>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="imageSlotToolBar02">
+               <item>
+                <widget class="QToolButton" name="viewImageButton02">
+                 <property name="icon">
+                  <iconset theme="view-fullscreen">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QToolButton" name="deleteButton02">
+                 <property name="icon">
+                  <iconset theme="delete">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </widget>
@@ -623,18 +683,24 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QToolButton" name="deleteButton04">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="icon">
-                <iconset theme="delete">
-                 <normaloff>.</normaloff>.</iconset>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="imageSlotToolBar04">
+               <item>
+                <widget class="QToolButton" name="viewImageButton04">
+                 <property name="icon">
+                  <iconset theme="view-fullscreen">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QToolButton" name="deleteButton04">
+                 <property name="icon">
+                  <iconset theme="delete">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </widget>
@@ -677,18 +743,24 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QToolButton" name="deleteButton08">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="icon">
-                <iconset theme="delete">
-                 <normaloff>.</normaloff>.</iconset>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="imageSlotToolBar08">
+               <item>
+                <widget class="QToolButton" name="viewImageButton08">
+                 <property name="icon">
+                  <iconset theme="view-fullscreen">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QToolButton" name="deleteButton08">
+                 <property name="icon">
+                  <iconset theme="delete">
+                   <normaloff>.</normaloff>.</iconset>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </widget>
@@ -798,17 +870,29 @@
   <tabstop>captureButton</tabstop>
   <tabstop>deviceSelectorComboBox</tabstop>
   <tabstop>deviceSelectorReloadButton</tabstop>
+  <tabstop>viewImageButton01</tabstop>
   <tabstop>deleteButton01</tabstop>
+  <tabstop>viewImageButton02</tabstop>
   <tabstop>deleteButton02</tabstop>
+  <tabstop>viewImageButton03</tabstop>
   <tabstop>deleteButton03</tabstop>
+  <tabstop>viewImageButton04</tabstop>
   <tabstop>deleteButton04</tabstop>
+  <tabstop>viewImageButton05</tabstop>
   <tabstop>deleteButton05</tabstop>
+  <tabstop>viewImageButton06</tabstop>
   <tabstop>deleteButton06</tabstop>
+  <tabstop>viewImageButton07</tabstop>
   <tabstop>deleteButton07</tabstop>
+  <tabstop>viewImageButton08</tabstop>
   <tabstop>deleteButton08</tabstop>
+  <tabstop>viewImageButton09</tabstop>
   <tabstop>deleteButton09</tabstop>
+  <tabstop>viewImageButton10</tabstop>
   <tabstop>deleteButton10</tabstop>
+  <tabstop>viewImageButton11</tabstop>
   <tabstop>deleteButton11</tabstop>
+  <tabstop>viewImageButton12</tabstop>
   <tabstop>deleteButton12</tabstop>
   <tabstop>deleteAllButton</tabstop>
   <tabstop>buttonBox</tabstop>
