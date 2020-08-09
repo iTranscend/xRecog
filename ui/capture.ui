@@ -68,6 +68,12 @@
                  <height>56</height>
                 </size>
                </property>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Sunken</enum>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -116,8 +122,11 @@
                  <height>56</height>
                 </size>
                </property>
-               <property name="styleSheet">
-                <string notr="true"/>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Sunken</enum>
                </property>
                <property name="text">
                 <string/>
@@ -167,6 +176,12 @@
                  <height>56</height>
                 </size>
                </property>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Sunken</enum>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -214,6 +229,12 @@
                  <width>100</width>
                  <height>56</height>
                 </size>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Sunken</enum>
                </property>
                <property name="text">
                 <string/>
@@ -263,6 +284,12 @@
                  <height>56</height>
                 </size>
                </property>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Sunken</enum>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -310,6 +337,12 @@
                  <width>100</width>
                  <height>56</height>
                 </size>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Sunken</enum>
                </property>
                <property name="text">
                 <string/>
@@ -359,6 +392,12 @@
                  <height>56</height>
                 </size>
                </property>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Sunken</enum>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -406,6 +445,12 @@
                  <width>100</width>
                  <height>56</height>
                 </size>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Sunken</enum>
                </property>
                <property name="text">
                 <string/>
@@ -455,6 +500,12 @@
                  <height>56</height>
                 </size>
                </property>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Sunken</enum>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -502,6 +553,12 @@
                  <width>100</width>
                  <height>56</height>
                 </size>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Sunken</enum>
                </property>
                <property name="text">
                 <string/>
@@ -551,6 +608,12 @@
                  <height>56</height>
                 </size>
                </property>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Sunken</enum>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -598,6 +661,12 @@
                  <width>100</width>
                  <height>56</height>
                 </size>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Sunken</enum>
                </property>
                <property name="text">
                 <string/>
