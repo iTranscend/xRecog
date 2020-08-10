@@ -26,9 +26,13 @@ class Parallelizer(EventEmitter):
         def newConstraintChecker(listeners):
             def checkConstraint(handle=None, persist=False):
                 if handle:
-                    if not persist:
-                        listeners.append(handle)
-                    threadEvent.on("cancel", handle)
+                    with cancelledEvent._cond:
+                        if cancelledEvent.isSet():
+                            handle()
+                        else:
+                            if not persist:
+                                listeners.append(handle)
+                            threadEvent.on("cancel", handle)
                 else:
                     return cancelledEvent.isSet()
             return checkConstraint
