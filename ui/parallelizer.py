@@ -197,8 +197,33 @@ if __name__ == "__main__":
             par.cancel()
             par.joinAll()
 
+    def test3():
+        def executor(item, doCancel):
+            event = threading.Event()
+            thread = threading.current_thread()
+            print(" * item %d on %a, init (cancel = %a)" %
+                  (item, thread.getName(), doCancel()))
+            doCancel(lambda: event.set())
+            event.wait()
+            print(" * item %d on %a, done (cancel = %a)" %
+                  (item, thread.getName(), doCancel()))
+        par = Parallelizer(range(4), 2, executor)
+        par.on("cancel", lambda: print(" Cancelling jobs"))
+        par.on("started", lambda: print(" Started thread execution"))
+        par.on("finished", lambda: print(" All threads finished execution"))
+        print("(i) Use ctrl+c to cancel threads")
+        try:
+            par.start()
+            par.joinAll()
+        except KeyboardInterrupt:
+            par.cancel()
+            par.joinAll()
+
     print("Running test 1")
     test1()
     print()
     print("Running test 2")
     test2()
+    print()
+    print("Running test 3")
+    test3()
