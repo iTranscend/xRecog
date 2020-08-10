@@ -446,23 +446,30 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             self.validatorQueue.put(None)
         self.on("windowClose", cancelValidatorJobs)
 
-    def _validateQuery(self, studentObject, doCancel):
-        student = studentObject["student"]
+    def _validateQuery(self, student, doCancel):
         searchFields = [student["firstName"], student["middleName"], student["lastName"],
                         str(student["entryYear"]), student["matriculationCode"], self.courses[student["courseOfStudy"]]]
-        table = self.presentTable \
-            if student["isPresent"].isSet() \
-            else self.absentTable
-        if self.query and not all(any(
+
+        doHide = self.query and not all(any(
             text in part
             for value in searchFields
             if not doCancel()
             for part in filter(bool, value.lower().split(' '))
             if not doCancel()
-        ) for text in self.query if not doCancel()):
-            table.hideRow(studentObject["index"])
-        elif not doCancel() and table.isRowHidden(studentObject["index"]):
-            table.showRow(studentObject["index"])
+        ) for text in self.query if not doCancel())
+        if not doCancel():
+            with student["handleLock"]:
+                if not doCancel():
+                    (table, record) = (self.presentTable, self.matric_records["present"]) \
+                        if student["isPresent"].isSet() \
+                        else (self.absentTable, self.matric_records["absent"])
+                    with self.recordLock:
+                        if not doCancel():
+                            index = record.index(student["matriculationCode"])
+                            if doHide:
+                                table.hideRow(index)
+                            elif table.isRowHidden(index):
+                                table.showRow(index)
 
     def _pushRow(self, student):
         self.log("<_pushRow> Creating student row on table")
@@ -498,7 +505,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             lastNameItem.setText(student["lastName"])
             yearItem.setText("%d" % student["entryYear"])
             courseItem.setText(self.courses[student["courseOfStudy"]])
-        self.validatorQueue.put({"index": index, "student": student})
+        self.validatorQueue.put(student)
 
     def resetAttendance(self):
         self.students = {}
@@ -637,14 +644,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                             for student in self.students.values():
                                 if self.stop_lookup.isSet():
                                     break
-                                (table, key) = (self.presentTable, "present") \
-                                    if student["isPresent"].isSet() \
-                                    else (self.absentTable, "absent")
-                                with self.recordLock:
-                                    index = self.matric_records[key].index(
-                                        student["matriculationCode"])
-                                self.validatorQueue.put(
-                                    {"index": index, "student": student})
+                                self.validatorQueue.put(student)
             self.lookupTimer = threading.Timer(1, doQueueLookups, (query,))
         self.lookupTimer.start()
 
