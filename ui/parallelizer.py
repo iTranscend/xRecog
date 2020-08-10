@@ -150,16 +150,32 @@ if __name__ == "__main__":
             print(" * item %d on %a, done (cancel = %a)" %
                   (item, thread.getName(), doCancel()))
 
+        par = Parallelizer(range(4), 2, executor)
+        par.on("started", lambda: print(" Started thread execution"))
+        par.on("finished", lambda: print(" All threads finished execution"))
+        print("[\x1b[32mtest1\x1b[0m]: basic threads")
+        par.start()
+        par.joinAll()
+
+    def test2():
+        def executor(item, doCancel):
+            thread = threading.current_thread()
+            print(" * item %d on %a, init (cancel = %a)" %
+                  (item, thread.getName(), doCancel()))
+            time.sleep(1)
+            print(" * item %d on %a, done (cancel = %a)" %
+                  (item, thread.getName(), doCancel()))
+
         par = Parallelizer(range(10), 4, executor)
         par.on("cancel", lambda: print(" Cancelling jobs"))
         par.on("started", lambda: print(" Started thread execution"))
         par.on("finished", lambda: print(" All threads finished execution"))
-        print("[\x1b[32mtest1\x1b[0m]: basic cancellable threads")
+        print("[\x1b[32mtest2\x1b[0m]: basic cancellable threads")
         par.start()
         par.cancel()
         par.joinAll()
 
-    def test2():
+    def test3():
         import queue
         q = queue.Queue()
 
@@ -176,7 +192,7 @@ if __name__ == "__main__":
         par.on("cancel", lambda: q.put(None))
         par.on("started", lambda: print(" Started thread execution"))
         par.on("finished", lambda: print(" All threads finished execution"))
-        print("[\x1b[32mtest2\x1b[0m]: pausable and cancellable threads")
+        print("[\x1b[32mtest3\x1b[0m]: pausable and cancellable threads")
         print("(i) Use ctrl+c to pause threads")
         try:
             par.start()
@@ -200,7 +216,7 @@ if __name__ == "__main__":
             par.cancel()
             par.joinAll()
 
-    def test3():
+    def test4():
         def executor(item, doCancel):
             event = threading.Event()
             thread = threading.current_thread()
@@ -214,7 +230,7 @@ if __name__ == "__main__":
         par.on("cancel", lambda: print(" Cancelling jobs"))
         par.on("started", lambda: print(" Started thread execution"))
         par.on("finished", lambda: print(" All threads finished execution"))
-        print("[\x1b[32mtest3\x1b[0m]: cancellable threads blocked waiting on event, cancel by forcefully setting event")
+        print("[\x1b[32mtest4\x1b[0m]: cancellable threads blocked waiting on event, cancel by forcefully setting event")
         print("(i) Use ctrl+c to cancel threads")
         try:
             par.start()
@@ -231,3 +247,6 @@ if __name__ == "__main__":
     print()
     print("Running test 3")
     test3()
+    print()
+    print("Running test 4")
+    test4()
