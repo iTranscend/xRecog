@@ -182,6 +182,7 @@ if __name__ == "__main__":
             par.start()
             for item in range(20):
                 q.put(item)
+            q.put(None)
             par.joinAll()
         except KeyboardInterrupt:
             print(" (i) Use ctrl+c to resume threads")
