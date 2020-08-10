@@ -204,17 +204,17 @@ if __name__ == "__main__":
             print(" (i) Use ctrl+c to resume threads")
             par.pause()
             print("(i) Paused!")
-        try:
-            par.joinAll()
-        except KeyboardInterrupt:
-            print(" (i) Use ctrl+c to cancel threads")
-            par.resume()
-            print("(i) Resumed!")
-        try:
-            par.joinAll()
-        except KeyboardInterrupt:
-            par.cancel()
-            par.joinAll()
+            try:
+                par.joinAll()
+            except KeyboardInterrupt:
+                print(" (i) Use ctrl+c to cancel threads")
+                par.resume()
+                print("(i) Resumed!")
+                try:
+                    par.joinAll()
+                except KeyboardInterrupt:
+                    par.cancel()
+                    par.joinAll()
 
     def test4():
         def executor(item, doCancel):
