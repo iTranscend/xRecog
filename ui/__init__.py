@@ -548,6 +548,15 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.capture_window.init()
         self.capture_window.exec_()
 
+    def stripAllBGHandlers(self):
+        stripBGHandler(self.firstNameLineEdit)
+        stripBGHandler(self.middleNameLineEdit)
+        stripBGHandler(self.lastNameLineEdit)
+        stripBGHandler(self.yearSpinBox)
+        stripBGHandler(self.matricNumberLineEdit)
+        stripBGHandler(self.courseComboBox)
+        stripBGHandler(self.captureButton)
+
     def clearRegistrationForm(self):
         self.firstNameLineEdit.clear()
         self.middleNameLineEdit.clear()
@@ -555,6 +564,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.yearSpinBox.setValue(self.yearSpinBox.minimum())
         self.matricNumberLineEdit.clear()
         self.courseComboBox.clearEditText()
+        self.stripAllBGHandlers()
         if (self.capture_window):
             self.capture_window.cleanup()
 
@@ -971,9 +981,12 @@ class ActingLogger:
 CSS_BG_RED = "background-color: rgb(223, 36, 15);"
 
 
+def stripBGHandler(object):
+    object.setStyleSheet(object.styleSheet().replace(CSS_BG_RED, ""))
+
+
 def hookupStripBGHandler(object: QtWidgets.QLineEdit, event):
-    event.connect(lambda: object.setStyleSheet(
-        object.styleSheet().replace(CSS_BG_RED, "")))
+    event.connect(lambda: stripBGHandler(object))
 
 
 def ensureValid(object, value, validifier=None):
