@@ -180,7 +180,7 @@ if __name__ == "__main__":
         print("(i) Use ctrl+c to pause threads")
         try:
             par.start()
-            for item in range(100):
+            for item in range(20):
                 q.put(item)
             par.joinAll()
         except KeyboardInterrupt:
