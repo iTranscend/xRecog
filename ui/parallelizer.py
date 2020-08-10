@@ -154,6 +154,7 @@ if __name__ == "__main__":
         par.on("cancel", lambda: print(" Cancelling jobs"))
         par.on("started", lambda: print(" Started thread execution"))
         par.on("finished", lambda: print(" All threads finished execution"))
+        print("[\x1b[32mtest1\x1b[0m]: basic cancellable threads")
         par.start()
         par.cancel()
         par.joinAll()
@@ -175,6 +176,7 @@ if __name__ == "__main__":
         par.on("cancel", lambda: q.put(None))
         par.on("started", lambda: print(" Started thread execution"))
         par.on("finished", lambda: print(" All threads finished execution"))
+        print("[\x1b[32mtest2\x1b[0m]: pausable and cancellable threads")
         print("(i) Use ctrl+c to pause threads")
         try:
             par.start()
@@ -211,6 +213,7 @@ if __name__ == "__main__":
         par.on("cancel", lambda: print(" Cancelling jobs"))
         par.on("started", lambda: print(" Started thread execution"))
         par.on("finished", lambda: print(" All threads finished execution"))
+        print("[\x1b[32mtest3\x1b[0m]: cancellable threads blocked waiting on event, cancel by forcefully setting event")
         print("(i) Use ctrl+c to cancel threads")
         try:
             par.start()
