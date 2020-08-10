@@ -363,7 +363,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             self.studentLoaderQueue.put(None)
         self.on("windowClose", cancelStudentLoaderJobs)
 
-    def _addStudent(self, studentStack):
+    def _addStudent(self, studentStack, doCancel):
         student = {
             **studentStack["student"],
             "isPresent": threading.Event(),
@@ -378,7 +378,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                     studentStack["event"].set()
                     return
                 self.students[student["matriculationCode"]] = student
-            self._pushRow(student)
+            self._pushRow(student, doCancel)
             studentStack["event"].set()
 
     addRowSignal = QtCore.pyqtSignal(str, int, threading.Event)
@@ -411,7 +411,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                 student["isPresent"].set()
         self.on("windowClose", cancelStudentMarkerJobs)
 
-    def _markStudent(self, student):
+    def _markStudent(self, student, doCancel):
         matricCode = student["matriculationCode"]
         with student["handleLock"]:
             if student["isPresent"].isSet():
@@ -428,7 +428,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                 reenter=True
             ):
                 student["isPresent"].set()
-                self._pushRow(student)
+                self._pushRow(student, doCancel)
         self.log("<markPresent> Marked student as present [%s]" % matricCode)
         self.emit("foundStudent", student)
 
@@ -471,7 +471,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                             elif table.isRowHidden(index):
                                 table.showRow(index)
 
-    def _pushRow(self, student):
+    def _pushRow(self, student, doCancel):
         self.log("<_pushRow> Creating student row on table")
 
         with self.recordLock:
@@ -483,6 +483,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             record.append(student["matriculationCode"])
             self.statUpdateSignal.emit()
             addedRowEvent = threading.Event()
+            doCancel(lambda: addedRowEvent.set())
             self.addRowSignal.emit(key, index, addedRowEvent)
             addedRowEvent.wait()
             with self.logr("<_pushRow> Insert row slots"):
