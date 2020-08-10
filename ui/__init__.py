@@ -381,15 +381,19 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             self._pushRow(student)
             studentStack["event"].set()
 
-    xRowSignal = QtCore.pyqtSignal(str, str, int, threading.Event)
+    addRowSignal = QtCore.pyqtSignal(str, int, threading.Event)
+    rmRowSignal = QtCore.pyqtSignal(str, int)
 
-    @QtCore.pyqtSlot(str, str, int, threading.Event)
-    def _xRowHandler(self, type, key, index, event):
-        if type not in ("add", "rm"):
-            raise ValueError("Unexpected rowHandler type [%s]" % type)
+    @QtCore.pyqtSlot(str, int, threading.Event)
+    def _addRowHandler(self, key, index, event):
         table = self.presentTable if key == "present" else self.absentTable
-        (table.insertRow if type == "add" else table.removeRow)(index)
+        table.insertRow(index)
         event.set()
+
+    @QtCore.pyqtSlot(str, int)
+    def _rmRowHandler(self, key, index):
+        table = self.presentTable if key == "present" else self.absentTable
+        table.removeRow(index)
 
     def initStudentsMarker(self):
         self.studentMarkerQueue = queue.Queue()
@@ -417,7 +421,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                     index = self.matric_records["absent"].index(matricCode)
                 with self.logr("<markPresent> Matric remove from records [%s]" % matricCode):
                     del self.matric_records["absent"][index]
-                self.xRowSignal.emit("rm", "absent", index, threading.Event())
+                self.rmRowSignal.emit("absent", index)
             with self.logr(
                 "<markPresent> Push student into present table [%s]" % matricCode,
                 "<markPresent> Pushed student into present table [%s]" % matricCode,
@@ -518,7 +522,8 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.presentTable.setColumnWidth(0, 90)
         self.absentTable.setColumnWidth(4, 49)
         self.presentTable.setColumnWidth(4, 49)
-        self.xRowSignal.connect(self._xRowHandler)
+        self.addRowSignal.connect(self._addRowHandler)
+        self.rmRowSignal.connect(self._rmRowHandler)
         self.statUpdateSignal.connect(self.updateStats)
         self.startCameraButton.clicked.connect(
             self.registerDispatcher("startCameraButtonClicked"))
