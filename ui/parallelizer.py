@@ -195,6 +195,7 @@ if __name__ == "__main__":
             par.joinAll()
         except KeyboardInterrupt:
             par.cancel()
+            par.joinAll()
 
     print("Running test 1")
     test1()
