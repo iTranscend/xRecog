@@ -44,7 +44,13 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
             slot.installEventFilter(self)
             slot.hide()
             imageSlot = slot.findChild(QtWidgets.QLabel)
-            deleteButton = slot.findChild(QtWidgets.QToolButton)
+            imageToolbar = slot.findChildren(
+                QtWidgets.QHBoxLayout, QtCore.QRegExp("imageSlotToolBar\d{2}"))[0]
+            previewButton = slot.findChildren(
+                QtWidgets.QToolButton, QtCore.QRegExp("viewImageButton\d{2}"))[0]
+            deleteButton = slot.findChildren(
+                QtWidgets.QToolButton, QtCore.QRegExp("deleteButton\d{2}"))[0]
+            previewButton.hide()
             deleteButton.hide()
             slotObject = {"object": slot, "item": None}
             deleteButton.clicked.connect(self.newDeleteHandler(slotObject))
@@ -60,10 +66,10 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
                 return True
         if type(obj) is QtWidgets.QWidget:
             if event.type() == QtCore.QEvent.HoverEnter:
-                obj.findChild(QtWidgets.QToolButton).show()
+                [child.show() for child in obj.findChildren(QtWidgets.QToolButton)]
                 return True
             elif event.type() == QtCore.QEvent.HoverLeave:
-                obj.findChild(QtWidgets.QToolButton).hide()
+                [child.hide() for child in obj.findChildren(QtWidgets.QToolButton)]
                 return True
         return super(QtWidgets.QDialog, self).eventFilter(obj, event)
 
