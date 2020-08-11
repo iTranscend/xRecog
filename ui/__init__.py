@@ -73,7 +73,7 @@ class XrecogImagePreviewDialog(QtWidgets.QDialog):
                 QtGui.QPixmap.fromImage(
                     self.capture_window.images[self.index]["image"])
                 .scaled(self.imageLabel.size(),
-                        QtCore.Qt.KeepAspectRatioByExpanding,
+                        QtCore.Qt.KeepAspectRatio,
                         QtCore.Qt.SmoothTransformation,
                         ))
 
