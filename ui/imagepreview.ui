@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>297</width>
-    <height>204</height>
+    <width>506</width>
+    <height>301</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>200</width>
+    <height>200</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
@@ -17,7 +23,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QToolButton" name="toolButton_2">
+      <widget class="QToolButton" name="previousToolButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -28,17 +34,33 @@
         <string>Previous</string>
        </property>
        <property name="icon">
-        <iconset theme="previous"/>
+        <iconset theme="previous">
+         <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="imageLabel">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::StrongFocus</enum>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
        </property>
        <property name="text">
         <string>Image</string>
@@ -49,7 +71,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="toolButton">
+      <widget class="QToolButton" name="nextToolButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -63,31 +85,47 @@
         <string>Next</string>
        </property>
        <property name="icon">
-        <iconset theme="next"/>
+        <iconset theme="next">
+         <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
      </item>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="footerHLayout">
      <item alignment="Qt::AlignLeft">
-      <widget class="QPushButton" name="pushButton_4">
+      <widget class="QPushButton" name="deleteButton">
        <property name="text">
         <string>Delete</string>
        </property>
        <property name="icon">
-        <iconset theme="delete"/>
+        <iconset theme="delete">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+      </widget>
+     </item>
+     <item alignment="Qt::AlignHCenter">
+      <widget class="QSpinBox" name="indexSpinBox">
+       <property name="suffix">
+        <string>/1</string>
+       </property>
+       <property name="prefix">
+        <string/>
+       </property>
+       <property name="minimum">
+        <number>1</number>
        </property>
       </widget>
      </item>
      <item alignment="Qt::AlignRight">
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QPushButton" name="closeButton">
        <property name="text">
         <string>Close</string>
        </property>
        <property name="icon">
-        <iconset theme="document-close"/>
+        <iconset theme="document-close">
+         <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
      </item>
@@ -95,6 +133,31 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>previousToolButton</tabstop>
+  <tabstop>imageLabel</tabstop>
+  <tabstop>nextToolButton</tabstop>
+  <tabstop>indexSpinBox</tabstop>
+  <tabstop>deleteButton</tabstop>
+  <tabstop>closeButton</tabstop>
+ </tabstops>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>closeButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>498</x>
+     <y>293</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>228</x>
+     <y>-15</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

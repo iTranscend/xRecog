@@ -24,6 +24,60 @@ from .eventemitter import EventEmitter
 from .parallelizer import Parallelizer
 
 
+class XrecogImagePreviewDialog(QtWidgets.QDialog):
+
+    def __init__(self, captureWindow):
+        super(XrecogImagePreviewDialog, self).__init__()
+        uic.loadUi(translatePath("imagepreview.ui"), self)
+        self.index = None
+        self.capture_window = captureWindow
+        self.deleteButton.clicked.connect(self.deleteIndex)
+        self.imageLabel.resizeEvent = lambda *args: self.preview()
+        self.nextToolButton.clicked.connect(lambda: self.select(+1))
+        self.previousToolButton.clicked.connect(lambda: self.select(-1))
+        self.indexSpinBox.valueChanged.connect(
+            lambda index: self.preview(index - 1))
+        self.setFocus()
+
+    def keyPressEvent(self, event):
+        key = event.key()
+        if key == QtCore.Qt.Key_Right:
+            self.select(+1)
+        elif key == QtCore.Qt.Key_Left:
+            self.select(-1)
+
+    def deleteIndex(self):
+        if self.index is not None:
+            imageObject = self.capture_window.imageSlots[self.index]
+            imageObject["deleteHandler"]()
+            self.capture_window.displayImages()
+            self.close() \
+                if not len(self.capture_window.images) else \
+                self.select(0)
+
+    def select(self, offset):
+        if self.index is not None:
+            self.preview((self.index+offset) % len(self.capture_window.images))
+
+    def preview(self, index=None):
+        self.index = index if index is not None else self.index
+        if self.index is not None:
+            self.indexSpinBox: QtWidgets.QSpinBox = self.indexSpinBox
+            self.indexSpinBox.blockSignals(True)
+            maximum = len(self.capture_window.images)
+            self.indexSpinBox.setMaximum(maximum)
+            self.indexSpinBox.setSuffix("/%d" % maximum)
+            self.indexSpinBox.setValue(self.index + 1)
+            self.indexSpinBox.blockSignals(False)
+            self.imageLabel.setPixmap(
+                QtGui.QPixmap.fromImage(
+                    self.capture_window.images[self.index]["image"])
+                .scaled(self.imageLabel.size(),
+                        QtCore.Qt.KeepAspectRatioByExpanding,
+                        QtCore.Qt.SmoothTransformation,
+                        ))
+
+
 class XrecogCaptureWindow(QtWidgets.QDialog):
     def __init__(self):
         super(XrecogCaptureWindow, self).__init__()
@@ -53,8 +107,10 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
             previewButton.hide()
             deleteButton.hide()
             slotObject = {"object": slot, "item": None}
+            previewButton.clicked.connect(self.newPreviewHandler(slotObject))
             deleteButton.clicked.connect(self.newDeleteHandler(slotObject))
             self.imageSlots.append(slotObject)
+        self.imagepreviewer = XrecogImagePreviewDialog(self)
         self.viewfinder = QtMultimediaWidgets.QCameraViewfinder()
         self.viewFinderFrame.layout().addWidget(self.viewfinder)
         self.installEventFilter(self)
@@ -79,6 +135,12 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
         if (not self.hasInit):
             self.hasInit = True
             self.prepareHandlers()
+
+    def newPreviewHandler(self, slotObject):
+        def previewHandler():
+            self.imagepreviewer.preview(self.imageSlots.index(slotObject))
+            self.imagepreviewer.exec_()
+        return previewHandler
 
     def newDeleteHandler(self, slotObject):
         def deleteHandler():
