@@ -381,6 +381,10 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.actionResetAttendance.triggered.connect(self.resetAttendance)
         self.recordLock = threading.Lock()
         self.studentsLock = threading.Lock()
+        self.presentTable.cellClicked.connect(lambda x, y: print(
+            self.students[self.matric_records["present"][x]]))
+        self.absentTable.cellClicked.connect(lambda x, y: print(
+            self.students[self.matric_records["absent"][x]]))
 
     def closeEvent(self, event):
         self.emit("windowClose")
