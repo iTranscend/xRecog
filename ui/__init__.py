@@ -263,7 +263,7 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
             label.setPixmap(
                 QtGui.QPixmap.fromImage(imageObject["image"])
                 .scaled(label.size(),
-                        QtCore.Qt.KeepAspectRatioByExpanding,
+                        QtCore.Qt.KeepAspectRatio,
                         QtCore.Qt.SmoothTransformation,
                         ))
             slot["object"].show()
