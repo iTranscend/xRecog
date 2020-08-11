@@ -5,6 +5,7 @@ import queue
 import random
 import tempfile
 import functools
+import itertools
 import markdown2
 import threading
 from datetime import datetime
@@ -716,11 +717,15 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                     if self.query.symmetric_difference(query):
                         self.query = query
 
-                        with self.studentsLock:
-                            for student in self.students.values():
+                        with self.recordLock:
+                            for matric in (
+                                    item for pair in itertools.zip_longest(
+                                        self.matric_records["present"],
+                                        self.matric_records["absent"]
+                                    ) for item in pair if item is not None):
                                 if self.stop_lookup.isSet():
                                     break
-                                self.validatorQueue.put(student)
+                                self.validatorQueue.put(self.students[matric])
             self.lookupTimer = threading.Timer(1, doQueueLookups, (query,))
         self.lookupTimer.start()
 
