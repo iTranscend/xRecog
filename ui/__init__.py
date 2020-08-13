@@ -71,8 +71,7 @@ class XrecogImagePreviewDialog(QtWidgets.QDialog):
             self.indexSpinBox.setValue(self.index + 1)
             self.indexSpinBox.blockSignals(False)
             self.imageLabel.setPixmap(
-                QtGui.QPixmap.fromImage(
-                    self.capture_window.images[self.index]["image"])
+                self.capture_window.images[self.index]["pixmap"]
                 .scaled(self.imageLabel.size(),
                         QtCore.Qt.KeepAspectRatio,
                         QtCore.Qt.SmoothTransformation,
@@ -148,7 +147,7 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
             if (slotObject["item"] is None):
                 return
             item = next(
-                image for image in self.images if image["image"] is slotObject["item"])
+                image for image in self.images if image["pixmap"] is slotObject["item"])
             self.images.remove(item)
             if (os.path.exists(item["path"])):
                 os.unlink(item["path"])
@@ -209,7 +208,7 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
         if pre_index is not None:
             self.releaseCamera()
             for imageObject in self.images:
-                if "image" not in imageObject:
+                if "pixmap" not in imageObject:
                     print(
                         "detected unfulfilled capture while switching camera, removing...")
                     self.images.remove(imageObject)
@@ -243,7 +242,7 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
     def imageCaptured(self, id, image):
         self.camera.unlock()
         stack = self.images[-1]
-        stack["image"] = image
+        stack["pixmap"] = QtGui.QPixmap.fromImage(image)
         self.progressBar.setValue(len(self.images))
         self.displayImages(True)
 
@@ -254,14 +253,14 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
         for (index, imageObject) in enumerate(self.images):
             lastIndex = index
             slot = self.imageSlots[index]
-            if (slot["item"] == imageObject["image"]):
+            if (slot["item"] == imageObject["pixmap"]):
                 continue
-            if ("image" not in imageObject):
+            if ("pixmap" not in imageObject):
                 break
-            slot["item"] = imageObject["image"]
+            slot["item"] = imageObject["pixmap"]
             label = slot["object"].findChild(QtWidgets.QLabel)
             label.setPixmap(
-                QtGui.QPixmap.fromImage(imageObject["image"])
+                imageObject["pixmap"]
                 .scaled(label.size(),
                         QtCore.Qt.KeepAspectRatio,
                         QtCore.Qt.SmoothTransformation,
