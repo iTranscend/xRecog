@@ -1,0 +1,31 @@
+year:
+  min: 2014
+  max: 2023
+
+courses:
+  - Computer Science
+  - Physics
+  - Chemistry
+  - Law
+  - Sociology
+  - Political Sciences
+  - Art
+  - Philosophy
+  - Music
+  - Anthropology
+  - Psychology
+  - English
+  - Astrophysics
+  - Biology
+  - Geography
+  - Physiotheraphy
+  - Medicine
+  - French
+  - Statistics
+  - Biochemistry
+  - Cybersecurity
+  - Criminology
+  - Economics
+  - Epidemiology
+  - Statistics
+  - Mathematics
