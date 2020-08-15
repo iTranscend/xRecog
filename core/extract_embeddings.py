@@ -25,38 +25,67 @@ if __name__ == "__main__":
     ap.add_argument("-c", "--confidence", type=float, default=0.5,
                     help="minimum probability to filter weak detections")
     args = vars(ap.parse_args())
-    init(args)
 
-
-def init(args):
-    # load our serialized face detector from disk
-    print("[INFO] loading face detector...")
-    protoPath = os.path.sep.join([args["detector"], "deploy.prototxt"])
-    modelPath = os.path.sep.join([args["detector"],
-                                  "res10_300x300_ssd_iter_140000.caffemodel"])
-    detector = cv2.dnn.readNetFromCaffe(protoPath, modelPath)
-
-    # load our serialized face embedding model from disk
-    print("[INFO] loading face recognizer...")
-    embedder = cv2.dnn.readNetFromTorch(args["embedding_model"])
+    faceDetector = FaceDetector(
+        detector=args["detector"],
+        embedding_model=args["embedding_model"],
+        confidence=args["confidence"]
+    )
 
     # grab the paths to the input images in our dataset
     print("[INFO] quantifying faces...")
     imagePaths = list(paths.list_images(args["dataset"]))
 
-    # initialize our lists of extracted facial embeddings and
-    # corresponding people names
-    knownEmbeddings = []
-    knownNames = []
-
-    # initialize the total number of faces processed
-    total = 0
-
     # loop over the image paths
     for (i, imagePath) in enumerate(imagePaths):
-        # extract the person name from the image path
         print("[INFO] processing image {}/{}".format(i + 1,
                                                      len(imagePaths)))
+        faceDetector.addImage(imagePath)
+
+    totalFaces = faceDetector.totalFaces()
+
+    # dump the facial embeddings + names to disk
+    print("[INFO] serializing {} encodings...".format(totalFaces))
+    data = faceDetector.dump()
+    f = open(args["embeddings"], "wb")
+    f.write(pickle.dumps(data))
+    f.close()
+
+
+"""
+faceDetector = FaceDetector()
+faceDetector.addImage("imagePath1")
+faceDetector.addImage("imagePath2")
+faceDetector.addImage("imagePath3")
+faceDetector.dump() -> {"<name>": <vector>}
+"""
+
+
+class FaceDetector:
+    def __init__(self, *, detector, confidence, embedding_model):
+        # load our serialized face detector from disk
+        print("[INFO] loading face detector...")
+        self.protoPath = os.path.sep.join([detector, "deploy.prototxt"])
+        self.modelPath = os.path.sep.join(
+            [detector, "res10_300x300_ssd_iter_140000.caffemodel"])
+        self.detector = cv2.dnn.readNetFromCaffe(protoPath, modelPath)
+
+        # load our serialized face embedding model from disk
+        print("[INFO] loading face recognizer...")
+        self.embedder = cv2.dnn.readNetFromTorch(embedding_model)
+
+        self.confidence = confidence
+
+        # initialize our lists of extracted facial embeddings and
+        # corresponding people names
+        self.knownEmbeddings = []
+        self.knownNames = []
+
+        # initialize the total number of faces processed
+        self.__totalFaces = 0
+
+    def addImage(self, imagePath):
+        # extract the person name from the image path
         name = imagePath.split(os.path.sep)[-2]
 
         # load the image, resize it to have a width of 600 pixels (while
@@ -86,7 +115,7 @@ def init(args):
             # ensure that the detection with the largest probability also
             # means our minimum probability test (thus helping filter out
             # weak detections)
-            if confidence > args["confidence"]:
+            if confidence > self.confidence:
                 # compute the (x, y)-coordinates of the bounding box for
                 # the face
                 box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
@@ -112,11 +141,10 @@ def init(args):
                 # embedding to their respective lists
                 knownNames.append(name)
                 knownEmbeddings.append(vec.flatten())
-                total += 1
+                self.__totalFaces += 1
 
-    # dump the facial embeddings + names to disk
-    print("[INFO] serializing {} encodings...".format(total))
-    data = {"embeddings": knownEmbeddings, "names": knownNames}
-    f = open(args["embeddings"], "wb")
-    f.write(pickle.dumps(data))
-    f.close()
+    def dump(self):
+        return {"embeddings": self.knownEmbeddings, "names": self.knownNames}
+
+    def totalFaces(self):
+        return self.__totalFaces
