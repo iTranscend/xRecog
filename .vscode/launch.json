@@ -1,0 +1,38 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch UI",
+      "type": "python",
+      "request": "launch",
+      "module": "ui",
+      "env": {
+        "DEBUG_UI": "${input:debugUi}"
+      },
+      "args": [
+        "${input:nStudents}"
+      ],
+    }
+  ],
+  "inputs": [
+    {
+      "id": "nStudents",
+      "type": "promptString",
+      "default": "10000",
+      "description": "Specify number of students to load"
+    },
+    {
+      "id": "debugUi",
+      "type": "pickString",
+      "options": [
+        "1",
+        "0"
+      ],
+      "default": "0",
+      "description": "Log UI events with verbose output (1 = yes, 0 = no)"
+    }
+  ]
+}
