@@ -127,7 +127,7 @@ class FaceDetector:
 
                 # ensure the face width and height are sufficiently large
                 if fW < 20 or fH < 20:
-                    continue
+                    return
 
                 # construct a blob for the face ROI, then pass the blob
                 # through our face embedding model to obtain the 128-d
