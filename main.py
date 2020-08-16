@@ -8,6 +8,12 @@ from ui import QtWidgets, XrecogMainWindow
 
 
 def extractEmbeddings():
+    """
+    > input : None
+    > output: [core/output/embeddings.pickle]
+       • knownEmbeddings: []
+       • knownNames     : []
+    """
     args = {
         "dataset": "core/dataset",
         "embeddings": "core/output/embeddings.pickle",
@@ -19,6 +25,13 @@ def extractEmbeddings():
 
 
 def trainModel():
+    """
+    > input : [core/output/embeddings.pickle]
+    > output: [core/output/recognizer.pickle]
+       • SVC{extractEmbeddings[knownEmbeddings]}
+    > output: [core/output/le.pickle]
+       • recognizer: LabelEncoder{extractEmbeddings[knownNames]}
+    """
     args = {
         "embeddings": "core/output/embeddings.pickle",
         "recognizer": "core/output/recognizer.pickle",
@@ -28,6 +41,10 @@ def trainModel():
 
 
 def recognizeVideo():
+    """
+    > input : [core/output/recognizer.pickle]
+    > input : [core/output/le.pickle]
+    """
     args = {
         "detector": "core/face_detection_model",
         "embedding_model": "core/openface_nn4.small2.v1.t7",
