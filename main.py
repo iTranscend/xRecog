@@ -7,6 +7,11 @@ import os
 from ui import QtWidgets, XrecogMainWindow
 
 
+_PROPS = {
+    "IMAGESTORE": "core/dataset"
+}
+
+
 def buildFaceDetector():
     """
     > input : None
@@ -65,12 +70,22 @@ def getStudentsFromDatabase():
 
 
 def registerStudent(student):
-    print("registerStudent")
-    # extractEmbeddings()
+    print("registerStudent[matric=%s]: %s%s %s" % (
+        student["matriculationCode"],
+        student["firstName"],
+        " %s" % student["middleName"] if student["middleName"] else "",
+        student["lastName"],
+    ))
+    for (index, imagePath) in enumerate(student["capturedImages"]):
+        os.rename(imagePath,
+                  os.path.join(
+                      _PROPS["IMAGESTORE"],
+                      student["matriculationCode"],
+                      "%02d.jpg" % index
+                  ))
+        faceDetector.addImage(imagePath)
     # trainModel()
     main_window.loadStudent(student)
-    # create student folder
-    # save images
     main_window.resetRegistrationForm()
 
 
