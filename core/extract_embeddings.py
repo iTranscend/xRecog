@@ -65,8 +65,8 @@ class FaceDetector:
     def __init__(self, *, detector, confidence, embedding_model):
         # load our serialized face detector from disk
         print("[INFO] loading face detector...")
-        self.protoPath = os.path.sep.join([detector, "deploy.prototxt"])
-        self.modelPath = os.path.sep.join(
+        protoPath = os.path.sep.join([detector, "deploy.prototxt"])
+        modelPath = os.path.sep.join(
             [detector, "res10_300x300_ssd_iter_140000.caffemodel"])
         self.detector = cv2.dnn.readNetFromCaffe(protoPath, modelPath)
 
@@ -102,8 +102,8 @@ class FaceDetector:
 
         # apply OpenCV's deep learning-based face detector to localize
         # faces in the input image
-        detector.setInput(imageBlob)
-        detections = detector.forward()
+        self.detector.setInput(imageBlob)
+        detections = self.detector.forward()
 
         # ensure at least one face was found
         if len(detections) > 0:
@@ -134,13 +134,13 @@ class FaceDetector:
                 # quantification of the face
                 faceBlob = cv2.dnn.blobFromImage(face, 1.0 / 255,
                                                  (96, 96), (0, 0, 0), swapRB=True, crop=False)
-                embedder.setInput(faceBlob)
-                vec = embedder.forward()
+                self.embedder.setInput(faceBlob)
+                vec = self.embedder.forward()
 
                 # add the name of the person + corresponding face
                 # embedding to their respective lists
-                knownNames.append(name)
-                knownEmbeddings.append(vec.flatten())
+                self.knownNames.append(name)
+                self.knownEmbeddings.append(vec.flatten())
                 self.__totalFaces += 1
 
     def dump(self):
