@@ -106,7 +106,6 @@ def mountTestInstance(main_window):
         print("Mark as present: %s" % ("yes" if data["markPresent"] else "no"))
         print("Captured Images:")
         for image in data["capturedImages"]:
-            # os.rename(image["path"], os.path.join(dir, "%02d" % index))
             print(" > %s" % image)
             os.unlink(image)
         main_window.resetRegistrationForm()
