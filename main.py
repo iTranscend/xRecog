@@ -1,4 +1,4 @@
-from core import extract_embeddings
+from core.extract_embeddings import FaceDetector
 from core import recognize_video
 from core import train_model
 import yaml
@@ -7,21 +7,26 @@ import os
 from ui import QtWidgets, XrecogMainWindow
 
 
-def extractEmbeddings():
+def buildFaceDetector():
     """
     > input : None
     > output: [core/output/embeddings.pickle]
        • knownEmbeddings: []
        • knownNames     : []
     """
-    args = {
-        "dataset": "core/dataset",
-        "embeddings": "core/output/embeddings.pickle",
-        "detector": "core/face_detection_model",
-        "embedding_model": "core/openface_nn4.small2.v1.t7",
-        "confidence": 0.5
-    }
-    extract_embeddings.init(args)
+    # args = {
+    #     "dataset": "core/dataset",
+    #     "embeddings": "core/output/embeddings.pickle",
+    #     "detector": "core/face_detection_model",
+    #     "embedding_model": "core/openface_nn4.small2.v1.t7",
+    #     "confidence": 0.5
+    # }
+    faceDetector = FaceDetector(
+        detector="core/face_detection_model",
+        embedding_model="core/openface_nn4.small2.v1.t7",
+        confidence=0.5
+    )
+    return faceDetector
 
 
 def trainModel():
@@ -100,8 +105,9 @@ if __name__ == "__main__":
     if (not os.path.exists("core/output")):
         os.mkdir("core/output")
     app = QtWidgets.QApplication(sys.argv)
-    global main_window
+    global main_window, faceDetector
     main_window = XrecogMainWindow()
+    faceDetector = buildFaceDetector()
     main_window.show()
     mountMainInstance()
     app.exec_()
