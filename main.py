@@ -1,68 +1,15 @@
-from core.extract_embeddings import FaceDetector
-from core import recognize_video
-from core import train_model
+import threading
+import shutil
 import yaml
 import sys
 import os
+from xrecogcore import XRecogCore
 from ui import QtWidgets, XrecogMainWindow
 
 
-_PROPS = {
-    "IMAGESTORE": "core/dataset"
+PROPS = {
+    "dataset": "core/dataset"
 }
-
-
-def buildFaceDetector():
-    """
-    > input : None
-    > output: [core/output/embeddings.pickle]
-       • knownEmbeddings: []
-       • knownNames     : []
-    """
-    # args = {
-    #     "dataset": "core/dataset",
-    #     "embeddings": "core/output/embeddings.pickle",
-    #     "detector": "core/face_detection_model",
-    #     "embedding_model": "core/openface_nn4.small2.v1.t7",
-    #     "confidence": 0.5
-    # }
-    faceDetector = FaceDetector(
-        detector="core/face_detection_model",
-        embedding_model="core/openface_nn4.small2.v1.t7",
-        confidence=0.5
-    )
-    return faceDetector
-
-
-def trainModel():
-    """
-    > input : [core/output/embeddings.pickle]
-    > output: [core/output/recognizer.pickle]
-       • SVC{extractEmbeddings[knownEmbeddings]}
-    > output: [core/output/le.pickle]
-       • recognizer: LabelEncoder{extractEmbeddings[knownNames]}
-    """
-    args = {
-        "embeddings": "core/output/embeddings.pickle",
-        "recognizer": "core/output/recognizer.pickle",
-        "le": "core/output/le.pickle"
-    }
-    train_model.init(args)
-
-
-def recognizeVideo():
-    """
-    > input : [core/output/recognizer.pickle]
-    > input : [core/output/le.pickle]
-    """
-    args = {
-        "detector": "core/face_detection_model",
-        "embedding_model": "core/openface_nn4.small2.v1.t7",
-        "recognizer": "core/output/recognizer.pickle",
-        "le": "core/output/le.pickle",
-        "confidence": 0.5
-    }
-    recognize_video.init(args)
 
 
 def getStudentsFromDatabase():
@@ -76,32 +23,41 @@ def registerStudent(student):
         " %s" % student["middleName"] if student["middleName"] else "",
         student["lastName"],
     ))
+    STUDENTDIR = os.path.join(
+        PROPS["dataset"], student["matriculationCode"])
+    os.mkdir(STUDENTDIR)
+    imagePaths = []
     for (index, imagePath) in enumerate(student["capturedImages"]):
-        os.rename(imagePath,
-                  os.path.join(
-                      _PROPS["IMAGESTORE"],
-                      student["matriculationCode"],
-                      "%02d.jpg" % index
-                  ))
-        faceDetector.addImage(imagePath)
-    # trainModel()
+        newPath = os.path.join(STUDENTDIR, "%02d.jpg" % index)
+        shutil.move(student["capturedImages"][index], newPath)
+        imagePaths.append(newPath)
+    xrecogCore.addStudent(student["matriculationCode"], imagePaths)
     main_window.loadStudent(student)
     main_window.resetRegistrationForm()
+    xrecogCore.quantifyFaces()
+
+
+endAttendanceCaptureHandle = threading.Event()
 
 
 def startCameraButtonClicked(*args):
     print("startCameraButtonClicked")
-    # recognizeVideo()
+    endAttendanceCaptureHandle.clear()
+
+    def startCameraHandler():
+        xrecogCore.initRecognizer(
+            endAttendanceCaptureHandle,
+            cameraDevice=CONFIG.get("prefs", {}).get("camera_device", 0)
+        )
+    threading.Thread(target=startCameraHandler).start()
 
 
 def stopCameraButtonClicked(*args):
     print("stopCameraButtonClicked")
+    endAttendanceCaptureHandle.set()
 
 
 def mountMainInstance():
-    with open("config.yml") as conf:
-        CONFIG = yaml.safe_load(conf)
-
     yearObject = CONFIG.get("year", {"min": 2014, "max": 2023})
     main_window.setRegistrationYearRange(
         yearObject.get("min"),
@@ -120,9 +76,18 @@ if __name__ == "__main__":
     if (not os.path.exists("core/output")):
         os.mkdir("core/output")
     app = QtWidgets.QApplication(sys.argv)
-    global main_window, faceDetector
+    global CONFIG, main_window, xrecogCore
+    with open("config.yml") as conf:
+        CONFIG = yaml.safe_load(conf)
+
+    xrecogCore = XRecogCore(
+        detector="core/face_detection_model",
+        embedding_model="core/openface_nn4.small2.v1.t7",
+        confidence=0.5
+    )
     main_window = XrecogMainWindow()
-    faceDetector = buildFaceDetector()
     main_window.show()
     mountMainInstance()
     app.exec_()
+    print("[INFO] Dumping model state...")
+    xrecogCore.dump()
