@@ -11,55 +11,6 @@ import pickle
 import cv2
 import os
 
-if __name__ == "__main__":
-    # construct the argument parser and parse the arguments
-    ap = argparse.ArgumentParser()
-    ap.add_argument("-i", "--dataset", required=True,
-                    help="path to input directory of faces + images")
-    ap.add_argument("-e", "--embeddings", required=True,
-                    help="path to output serialized db of facial embeddings")
-    ap.add_argument("-d", "--detector", required=True,
-                    help="path to OpenCV's deep learning face detector")
-    ap.add_argument("-m", "--embedding-model", required=True,
-                    help="path to OpenCV's deep learning face embedding model")
-    ap.add_argument("-c", "--confidence", type=float, default=0.5,
-                    help="minimum probability to filter weak detections")
-    args = vars(ap.parse_args())
-
-    faceDetector = FaceDetector(
-        detector=args["detector"],
-        embedding_model=args["embedding_model"],
-        confidence=args["confidence"]
-    )
-
-    # grab the paths to the input images in our dataset
-    print("[INFO] quantifying faces...")
-    imagePaths = list(paths.list_images(args["dataset"]))
-
-    # loop over the image paths
-    for (i, imagePath) in enumerate(imagePaths):
-        print("[INFO] processing image {}/{}".format(i + 1,
-                                                     len(imagePaths)))
-        faceDetector.addImage(imagePath)
-
-    totalFaces = faceDetector.totalFaces()
-
-    # dump the facial embeddings + names to disk
-    print("[INFO] serializing {} encodings...".format(totalFaces))
-    data = faceDetector.dump()
-    f = open(args["embeddings"], "wb")
-    f.write(pickle.dumps(data))
-    f.close()
-
-
-"""
-faceDetector = FaceDetector()
-faceDetector.addImage("imagePath1")
-faceDetector.addImage("imagePath2")
-faceDetector.addImage("imagePath3")
-faceDetector.dump() -> {"<name>": <vector>}
-"""
-
 
 class FaceDetector:
     def __init__(self, *, detector, confidence, embedding_model):
@@ -148,3 +99,44 @@ class FaceDetector:
 
     def totalFaces(self):
         return self.__totalFaces
+
+
+if __name__ == "__main__":
+    # construct the argument parser and parse the arguments
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-i", "--dataset", required=True,
+                    help="path to input directory of faces + images")
+    ap.add_argument("-e", "--embeddings", required=True,
+                    help="path to output serialized db of facial embeddings")
+    ap.add_argument("-d", "--detector", required=True,
+                    help="path to OpenCV's deep learning face detector")
+    ap.add_argument("-m", "--embedding-model", required=True,
+                    help="path to OpenCV's deep learning face embedding model")
+    ap.add_argument("-c", "--confidence", type=float, default=0.5,
+                    help="minimum probability to filter weak detections")
+    args = vars(ap.parse_args())
+
+    faceDetector = FaceDetector(
+        detector=args["detector"],
+        embedding_model=args["embedding_model"],
+        confidence=args["confidence"]
+    )
+
+    # grab the paths to the input images in our dataset
+    print("[INFO] quantifying faces...")
+    imagePaths = list(paths.list_images(args["dataset"]))
+
+    # loop over the image paths
+    for (i, imagePath) in enumerate(imagePaths):
+        print("[INFO] processing image {}/{}".format(i + 1,
+                                                     len(imagePaths)))
+        faceDetector.addImage(imagePath)
+
+    totalFaces = faceDetector.totalFaces()
+
+    # dump the facial embeddings + names to disk
+    print("[INFO] serializing {} encodings...".format(totalFaces))
+    data = faceDetector.dump()
+    f = open(args["embeddings"], "wb")
+    f.write(pickle.dumps(data))
+    f.close()
