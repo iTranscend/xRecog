@@ -15,7 +15,12 @@ from itertools import zip_longest
 
 def loads(file=None, constructor=None):
     assert file or callable(constructor)
-    return pickle.loads(open(file, "rb").read()) if file and os.path.exists(file) else constructor()
+    if os.path.exists(file):
+        with open(file, "rb") as f:
+            bytes = f.read()
+            if len(bytes):
+                return pickle.loads(bytes)
+    return constructor()
 
 
 def dumps(object, file):
