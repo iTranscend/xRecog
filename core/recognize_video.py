@@ -29,6 +29,8 @@ ap.add_argument("-l", "--le", required=True,
                 help="path to label encoder")
 ap.add_argument("-c", "--confidence", type=float, default=0.5,
                 help="minimum probability to filter weak detections")
+ap.add_argument("-v", "--video-device", type=int, default=0,
+                help="preferred video device")
 args = vars(ap.parse_args())
 
 # load our serialized face detector from disk
@@ -47,8 +49,8 @@ recognizer = pickle.loads(open(args["recognizer"], "rb").read())
 le = pickle.loads(open(args["le"], "rb").read())
 
 # initialize the video stream, then allow the camera sensor to warm up
-print("[INFO] starting video stream...")
-vs = VideoStream(src=0).start()
+print("[INFO] starting video stream with device %d..." % args["video_device"])
+vs = VideoStream(src=args["video_device"]).start()
 time.sleep(2.0)
 
 # start the FPS throughput estimator
