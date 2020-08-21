@@ -25,7 +25,7 @@ def loads(file=None, constructor=None):
 
 def dumps(object, file):
     with open(file, "wb") as f:
-        pickle.dumps(object)
+        f.write(pickle.dumps(object))
 
 
 """
