@@ -142,7 +142,7 @@ try:
 
                 connection.commit()
                 print("DETECTED [%s] (confidence=%.2f%%)" %
-                      (name, confidence * 100))
+                      (name, proba * 100))
                 print(type(casted))
 
         # update the FPS counter
