@@ -37,24 +37,23 @@ def registerStudent(student):
     xrecogCore.quantifyFaces()
 
 
-endAttendanceCaptureHandle = threading.Event()
-
 
 def startCameraButtonClicked(*args):
     print("startCameraButtonClicked")
-    endAttendanceCaptureHandle.clear()
 
     def startCameraHandler():
         xrecogCore.initRecognizer(
-            endAttendanceCaptureHandle,
-            cameraDevice=CONFIG.get("prefs", {}).get("camera_device", 0)
+            cameraDevice=CONFIG.get("prefs", {}).get("camera_device", 0),
+            imageDisplayHandler=main_window.attendanceCaptureDialog.installDisplayHandler
         )
+    main_window.attendanceCaptureDialog.init()
+    main_window.attendanceCaptureDialog.exec_()
     threading.Thread(target=startCameraHandler).start()
 
 
 def stopCameraButtonClicked(*args):
     print("stopCameraButtonClicked")
-    endAttendanceCaptureHandle.set()
+    main_window.attendanceCaptureDialog.endEvent.set()
 
 
 def mountMainInstance():

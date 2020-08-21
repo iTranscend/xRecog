@@ -364,6 +364,32 @@ class XrecogPreviewWindow(QtWidgets.QDialog, EventEmitter):
         self.rawTextEdit.setPlainText(typeStack["data"])
 
 
+class XrecogCaptureDialog(QtWidgets.QDialog):
+    def __init__(self):
+        super(XrecogCaptureDialog, self).__init__()
+        uic.loadUi(translatePath("capturedialog.ui"), self)
+        self.endEvent = threading.Event()
+
+    def closeEvent(self, event):
+        self.endEvent.set()
+        return super().closeEvent(self, event)
+
+    def init(self):
+        self.endEvent.clear()
+
+    def setFrameImage(self, rgbImage):
+        h, w, ch = rgbImage.shape
+        bytesPerLine = ch * w
+        convertedImage = QtGui.QImage(
+            rgbImage.data, w, h, bytesPerLine, QtGui.QImage.Format_RGB888)
+        self.videoSlot.setPixmap(QtGui.QPixmap.fromImage(
+            convertedImage.scaled(640, 480, QtCore.Qt.KeepAspectRatio)))
+
+    def installDisplayHandler(self, handler):
+        while not self.endEvent.isSet():
+            handler(self.setFrameImage)
+
+
 class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
     def __init__(self):
         super(XrecogMainWindow, self).__init__()
@@ -384,6 +410,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             self.students[self.matric_records["present"][x]]))
         self.absentTable.cellClicked.connect(lambda x, y: print(
             self.students[self.matric_records["absent"][x]]))
+        self.attendanceCaptureDialog = XrecogCaptureDialog()
 
     def closeEvent(self, event):
         self.emit("windowClose")

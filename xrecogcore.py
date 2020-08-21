@@ -132,7 +132,8 @@ class XRecogCore(object):
 
         self.dump()
 
-    def initRecognizer(self, endHandle, *, cameraDevice=0):
+    def initRecognizer(self, *, imageDisplayHandler=None, cameraDevice=0):
+        assert callable(imageDisplayHandler)
         # initialize the video stream, then allow the camera sensor to warm up
         print("[INFO] starting video stream...")
         vs = VideoStream(src=cameraDevice).start()
@@ -145,7 +146,8 @@ class XRecogCore(object):
             # connection = mysql.connector.connect(
             #     host='localhost', database='attendance', user='root', password='')
             # loop over frames from the video file stream
-            while not endHandle.isSet():
+
+            def readFrameAndDisplay(setFrameImage):
                 # grab the frame from the threaded video stream
                 frame = vs.read()
 
@@ -234,12 +236,15 @@ class XRecogCore(object):
                 fps.update()
 
                 # show the output frame
-                cv2.imshow("Frame", frame)
-                key = cv2.waitKey(1) & 0xFF
+                # cv2.imshow("Frame", frame)
+                setFrameImage(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+                # key = cv2.waitKey(1) & 0xFF
 
-                # if the `q` key was pressed, break from the loop
-                if key == ord("q"):
-                    break
+                # # if the `q` key was pressed, break from the loop
+                # if key == ord("q"):
+                #     break
+
+            imageDisplayHandler(readFrameAndDisplay)
 
         except Error as e:
             print("Error while connecting to MySQL", e)
