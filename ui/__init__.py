@@ -26,7 +26,6 @@ from .parallelizer import Parallelizer
 
 
 class XrecogImagePreviewDialog(QtWidgets.QDialog):
-
     def __init__(self, captureWindow):
         super(XrecogImagePreviewDialog, self).__init__()
         uic.loadUi(translatePath("imagepreview.ui"), self)
