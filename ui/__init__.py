@@ -371,6 +371,7 @@ class XrecogCaptureDialog(QtWidgets.QDialog):
         self.activeImage = None
         self.videoSlot.resizeEvent = lambda event: self.setFrameImage()
         self.videoSlot.clear()
+        self.fpsFrame.clear()
 
     def closeEvent(self, event):
         self.endEvent.set()
@@ -396,9 +397,12 @@ class XrecogCaptureDialog(QtWidgets.QDialog):
         self.activeImage = QtGui.QImage(
             rgbImage.data, w, h, bytesPerLine, QtGui.QImage.Format_RGB888)
         self.setFrameImage()
+        self.fpsFrame.setText("FPS: %.2f" %
+                              (1.0 / (time.time() - self._start_time)))
 
     def installDisplayHandler(self, handler):
         while not self.endEvent.isSet():
+            self._start_time = time.time()
             handler(self.makeFrameImage)
         self.progressBar.show()
 

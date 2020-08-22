@@ -30,7 +30,8 @@
       <string>Close</string>
      </property>
      <property name="icon">
-      <iconset theme="cancel"/>
+      <iconset theme="cancel">
+       <normaloff>.</normaloff>.</iconset>
      </property>
     </widget>
    </item>
@@ -48,8 +49,8 @@
     </widget>
    </item>
    <item row="0" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
       <widget class="QLabel" name="videoSlot">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -65,6 +66,13 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" alignment="Qt::AlignRight|Qt::AlignBottom">
+      <widget class="QLabel" name="fpsFrame">
+       <property name="text">
+        <string>FPS LABEL</string>
        </property>
       </widget>
      </item>
