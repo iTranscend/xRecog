@@ -8,8 +8,6 @@ import pickle
 import time
 import cv2
 import os
-import mysql.connector
-from mysql.connector import Error
 from itertools import zip_longest
 
 
@@ -143,123 +141,84 @@ class XRecogCore(object):
         # start the FPS throughput estimator
         fps = FPS().start()
 
-        try:
-            # connection = mysql.connector.connect(
-            #     host='localhost', database='attendance', user='root', password='')
-            # loop over frames from the video file stream
+        def readFrameAndDisplay(setFrameImage):
+            # grab the frame from the threaded video stream
+            frame = vs.read()
 
-            def readFrameAndDisplay(setFrameImage):
-                # grab the frame from the threaded video stream
-                frame = vs.read()
+            # resize the frame to have a width of 600 pixels (while
+            # maintaining the aspect ratio), and then grab the image
+            # dimensions
+            frame = imutils.resize(frame, width=600)
+            (h, w) = frame.shape[:2]
 
-                # resize the frame to have a width of 600 pixels (while
-                # maintaining the aspect ratio), and then grab the image
-                # dimensions
-                frame = imutils.resize(frame, width=600)
-                (h, w) = frame.shape[:2]
+            # construct a blob from the image
+            imageBlob = cv2.dnn.blobFromImage(
+                cv2.resize(frame, (300, 300)), 1.0, (300, 300),
+                (104.0, 177.0, 123.0), swapRB=False, crop=False)
 
-                # construct a blob from the image
-                imageBlob = cv2.dnn.blobFromImage(
-                    cv2.resize(frame, (300, 300)), 1.0, (300, 300),
-                    (104.0, 177.0, 123.0), swapRB=False, crop=False)
+            # apply OpenCV's deep learning-based face detector to localize
+            # faces in the input image
+            self.detector.setInput(imageBlob)
+            detections = self.detector.forward()
 
-                # apply OpenCV's deep learning-based face detector to localize
-                # faces in the input image
-                self.detector.setInput(imageBlob)
-                detections = self.detector.forward()
+            # loop over the detections
+            for i in range(0, detections.shape[2]):
+                # extract the confidence (i.e., probability) associated with
+                # the prediction
+                confidence = detections[0, 0, i, 2]
 
-                # loop over the detections
-                for i in range(0, detections.shape[2]):
-                    # extract the confidence (i.e., probability) associated with
-                    # the prediction
-                    confidence = detections[0, 0, i, 2]
+                # filter out weak detections
+                if confidence > self.confidence:
+                    # compute the (x, y)-coordinates of the bounding box for
+                    # the face
+                    box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+                    (startX, startY, endX, endY) = box.astype("int")
 
-                    # filter out weak detections
-                    if confidence > self.confidence:
-                        # compute the (x, y)-coordinates of the bounding box for
-                        # the face
-                        box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
-                        (startX, startY, endX, endY) = box.astype("int")
+                    # extract the face ROI
+                    face = frame[startY:endY, startX:endX]
+                    (fH, fW) = face.shape[:2]
 
-                        # extract the face ROI
-                        face = frame[startY:endY, startX:endX]
-                        (fH, fW) = face.shape[:2]
+                    # ensure the face width and height are sufficiently large
+                    if fW < 20 or fH < 20:
+                        continue
 
-                        # ensure the face width and height are sufficiently large
-                        if fW < 20 or fH < 20:
-                            continue
+                    # construct a blob for the face ROI, then pass the blob
+                    # through our face embedding model to obtain the 128-d
+                    # quantification of the face
+                    faceBlob = cv2.dnn.blobFromImage(face, 1.0 / 255,
+                                                     (96, 96), (0, 0, 0), swapRB=True, crop=False)
+                    self.embedder.setInput(faceBlob)
+                    vec = self.embedder.forward()
 
-                        # construct a blob for the face ROI, then pass the blob
-                        # through our face embedding model to obtain the 128-d
-                        # quantification of the face
-                        faceBlob = cv2.dnn.blobFromImage(face, 1.0 / 255,
-                                                         (96, 96), (0, 0, 0), swapRB=True, crop=False)
-                        self.embedder.setInput(faceBlob)
-                        vec = self.embedder.forward()
+                    # perform classification to recognize the face
+                    preds = self.svcRecognizer.predict_proba(vec)[0]
+                    j = np.argmax(preds)
+                    proba = preds[j]
+                    name = lookupLabel(self.labelEncoder.classes_[j])
 
-                        # perform classification to recognize the face
-                        preds = self.svcRecognizer.predict_proba(vec)[0]
-                        j = np.argmax(preds)
-                        proba = preds[j]
-                        name = lookupLabel(self.labelEncoder.classes_[j])
+                    # draw the bounding box of the face along with the
+                    # associated probability
+                    text = "{}: {:.2f}%".format(name, proba * 100)
+                    y = startY - 10 if startY - 10 > 10 else startY + 10
+                    cv2.rectangle(frame, (startX, startY), (endX, endY),
+                                  (194, 188, 200), 2)
+                    cv2.putText(frame, text, (startX, y),
+                                cv2.FONT_HERSHEY_COMPLEX, 0.45, (37, 105, 200), 2)
 
-                        # draw the bounding box of the face along with the
-                        # associated probability
-                        text = "{}: {:.2f}%".format(name, proba * 100)
-                        y = startY - 10 if startY - 10 > 10 else startY + 10
-                        cv2.rectangle(frame, (startX, startY), (endX, endY),
-                                      (194, 188, 200), 2)
-                        cv2.putText(frame, text, (startX, y),
-                                    cv2.FONT_HERSHEY_COMPLEX, 0.45, (37, 105, 200), 2)
+                    print("DETECTED [%s] (confidence=%.2f%%)" %
+                          (name, proba * 100))
 
-                        # print(type(name))
-                        # print(type(text))
-                        # Update the database
+            # update the FPS counter
+            fps.update()
 
-                        # if connection.is_connected():
-                        # 	db_Info = connection.get_server_info()
-                        # 	print('Connected to server: ', db_Info)
+            # show the output frame
+            setFrameImage(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
 
-                        # cursor = connection.cursor(prepared=True)
-                        # cursor = connection.cursor()
-                        # sql = "UPDATE attendees SET is_present = 1 WHERE matric_no LIKE %s;"
-                        casted = str(name).strip()
-                        val = (casted)
-                        # cursor.execute(sql, (casted, ))
-                        # cursor.execute(sql)
-
-                        # connection.commit()
-                        print("DETECTED [%s] (confidence=%.2f%%)" %
-                              (name, proba * 100))
-                        # print(type(casted))
-
-                # update the FPS counter
-                fps.update()
-
-                # show the output frame
-                # cv2.imshow("Frame", frame)
-                setFrameImage(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-                # key = cv2.waitKey(1) & 0xFF
-
-                # # if the `q` key was pressed, break from the loop
-                # if key == ord("q"):
-                #     break
-
-            imageDisplayHandler(readFrameAndDisplay)
-
-        except Error as e:
-            print("Error while connecting to MySQL", e)
-        # finally:
-        #     if (connection.is_connected()):
-        #         cursor.close()
-        #         connection.close()
-        #         print("MySQL connection is closed")
+        # loop over frames from the video file stream
+        imageDisplayHandler(readFrameAndDisplay)
 
         # stop the timer and display FPS information
         fps.stop()
         print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
         print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
-
-        # do a bit of cleanup
-        cv2.destroyAllWindows()
         vs.stop()
