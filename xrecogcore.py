@@ -203,7 +203,7 @@ class XRecogCore(object):
                     cv2.rectangle(frame, (startX, startY), (endX, endY),
                                   (194, 188, 200), 2)
                     cv2.putText(frame, text, (startX, y),
-                                cv2.FONT_HERSHEY_COMPLEX, 0.45, (37, 105, 200), 2)
+                                cv2.FONT_HERSHEY_COMPLEX, 0.55, (37, 105, 200), 2)
 
                     print("DETECTED [%s] (confidence=%.2f%%)" %
                           (name, proba * 100))
