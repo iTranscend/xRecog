@@ -20,7 +20,7 @@
    <string>xRecog Attendance Camera</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../../../../../../d3vstash/python/_clones_/face-recog/ui/resources.qrc">
+   <iconset resource="resources.qrc">
     <normaloff>:/logos/xrecog-64px.svg</normaloff>:/logos/xrecog-64px.svg</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
@@ -73,7 +73,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../../../../../../../d3vstash/python/_clones_/face-recog/ui/resources.qrc"/>
+  <include location="resources.qrc"/>
  </resources>
  <connections>
   <connection>
