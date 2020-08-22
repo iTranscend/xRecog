@@ -30,7 +30,13 @@ def registerStudent(student):
     xrecogCore.addStudent(student["matriculationCode"], imagePaths)
     main_window.loadStudent(student)
     main_window.resetRegistrationForm()
-    xrecogCore.quantifyFaces()
+    # this will currently fail, since there is only (at this moment)
+    # one buffered student with data, ready to be processed
+    # proposed fix:
+    #  • either find a means to add new labels
+    #    and teach the model new faces in real time
+    #  • or, recompute the labels and teach the model everytime
+    threading.Thread(target=xrecogCore.quantifyFaces).start()
 
 
 def lookupMatric(matric):
