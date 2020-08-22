@@ -368,25 +368,39 @@ class XrecogCaptureDialog(QtWidgets.QDialog):
         super(XrecogCaptureDialog, self).__init__()
         uic.loadUi(translatePath("capturedialog.ui"), self)
         self.endEvent = threading.Event()
+        self.activeImage = None
+        self.videoSlot.resizeEvent = lambda event: self.setFrameImage()
+        self.videoSlot.clear()
 
     def closeEvent(self, event):
         self.endEvent.set()
-        return super().closeEvent(self, event)
+        return super(XrecogCaptureDialog, self).closeEvent(event)
 
     def init(self):
         self.endEvent.clear()
 
-    def setFrameImage(self, rgbImage):
+    def setFrameImage(self):
+        if self.activeImage:
+            self.videoSlot.setPixmap(QtGui.QPixmap.fromImage(
+                self.activeImage.scaled(
+                    self.videoSlot.size(),
+                    QtCore.Qt.KeepAspectRatio,
+                    QtCore.Qt.SmoothTransformation,
+                )))
+            self.hasSet = True
+            self.progressBar.hide()
+
+    def makeFrameImage(self, rgbImage):
         h, w, ch = rgbImage.shape
         bytesPerLine = ch * w
-        convertedImage = QtGui.QImage(
+        self.activeImage = QtGui.QImage(
             rgbImage.data, w, h, bytesPerLine, QtGui.QImage.Format_RGB888)
-        self.videoSlot.setPixmap(QtGui.QPixmap.fromImage(
-            convertedImage.scaled(640, 480, QtCore.Qt.KeepAspectRatio)))
+        self.setFrameImage()
 
     def installDisplayHandler(self, handler):
         while not self.endEvent.isSet():
-            handler(self.setFrameImage)
+            handler(self.makeFrameImage)
+        self.progressBar.show()
 
 
 class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
