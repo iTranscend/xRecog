@@ -370,8 +370,7 @@ class XrecogCaptureDialog(QtWidgets.QDialog):
         self.endEvent = threading.Event()
         self.activeImage = None
         self.videoSlot.resizeEvent = lambda event: self.setFrameImage()
-        self.videoSlot.clear()
-        self.fpsFrame.clear()
+        self.init()
         self.installEventFilter(self)
 
     def eventFilter(self, obj, event):
@@ -387,6 +386,9 @@ class XrecogCaptureDialog(QtWidgets.QDialog):
 
     def init(self):
         self.endEvent.clear()
+        self.videoSlot.clear()
+        self.fpsFrame.clear()
+        self.progressBar.show()
 
     def setFrameImage(self):
         if self.activeImage:
@@ -412,7 +414,6 @@ class XrecogCaptureDialog(QtWidgets.QDialog):
         while not self.endEvent.isSet():
             self._start_time = time.time()
             handler(self.makeFrameImage)
-        self.progressBar.show()
 
 
 class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
