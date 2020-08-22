@@ -372,6 +372,14 @@ class XrecogCaptureDialog(QtWidgets.QDialog):
         self.videoSlot.resizeEvent = lambda event: self.setFrameImage()
         self.videoSlot.clear()
         self.fpsFrame.clear()
+        self.installEventFilter(self)
+
+    def eventFilter(self, obj, event):
+        if obj is self and event.type() == QtCore.QEvent.KeyPress:
+            if event.key() == QtCore.Qt.Key_Escape:
+                self.close()
+                return True
+        return super(QtWidgets.QDialog, self).eventFilter(obj, event)
 
     def closeEvent(self, event):
         self.endEvent.set()
