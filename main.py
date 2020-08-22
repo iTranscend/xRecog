@@ -51,6 +51,14 @@ def startCameraButtonClicked(*args):
     main_window.attendanceCaptureDialog.exec_()
 
 
+def tabChanged(index):
+    if index == 0:
+        # tab changed from `register` to `attendance`
+        # check if there are any new students
+        # if so, spawn a thread to register them all
+        pass
+
+
 def mountMainInstance():
     yearObject = CONFIG.get("year", {"min": 2014, "max": 2023})
     main_window.setRegistrationYearRange(
@@ -61,6 +69,7 @@ def mountMainInstance():
     main_window.loadCourses(CONFIG.get("courses", []))
     main_window.loadStudents(getStudentsFromDatabase())
     main_window.setAboutText("APP DESCRIPTION")
+    main_window.on("tabChanged", tabChanged)
     main_window.on("registrationData", registerStudent)
     main_window.on("startCameraButtonClicked", startCameraButtonClicked)
 
