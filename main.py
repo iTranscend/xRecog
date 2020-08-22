@@ -7,11 +7,6 @@ from xrecogcore import XRecogCore
 from ui import QtWidgets, XrecogMainWindow
 
 
-PROPS = {
-    "dataset": "core/dataset"
-}
-
-
 def getStudentsFromDatabase():
     return []
 
@@ -24,7 +19,8 @@ def registerStudent(student):
         student["lastName"],
     ))
     STUDENTDIR = os.path.join(
-        PROPS["dataset"], student["matriculationCode"])
+        CONFIG.get("prefs", {}).get("dataset", "core/dataset"),
+        student["matriculationCode"])
     os.mkdir(STUDENTDIR)
     imagePaths = []
     for (index, imagePath) in enumerate(student["capturedImages"]):

@@ -1,4 +1,5 @@
 prefs:
+  dataset: core/dataset
   camera_device: 1
 
 year:
