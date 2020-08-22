@@ -50,8 +50,8 @@ def startCameraButtonClicked(*args):
             imageDisplayHandler=main_window.attendanceCaptureDialog.installDisplayHandler
         )
     main_window.attendanceCaptureDialog.init()
-    main_window.attendanceCaptureDialog.exec_()
     threading.Thread(target=startCameraHandler).start()
+    main_window.attendanceCaptureDialog.exec_()
 
 
 def stopCameraButtonClicked(*args):
