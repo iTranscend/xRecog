@@ -32,6 +32,7 @@ def registerStudent(student):
     main_window.resetRegistrationForm()
     xrecogCore.quantifyFaces()
 
+
 def lookupMatric(matric):
     return matric
 
@@ -50,11 +51,6 @@ def startCameraButtonClicked(*args):
     main_window.attendanceCaptureDialog.exec_()
 
 
-def stopCameraButtonClicked(*args):
-    print("stopCameraButtonClicked")
-    main_window.attendanceCaptureDialog.endEvent.set()
-
-
 def mountMainInstance():
     yearObject = CONFIG.get("year", {"min": 2014, "max": 2023})
     main_window.setRegistrationYearRange(
@@ -67,7 +63,6 @@ def mountMainInstance():
     main_window.setAboutText("APP DESCRIPTION")
     main_window.on("registrationData", registerStudent)
     main_window.on("startCameraButtonClicked", startCameraButtonClicked)
-    main_window.on("stopCameraButtonClicked", stopCameraButtonClicked)
 
 
 if __name__ == "__main__":

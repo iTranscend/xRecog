@@ -180,24 +180,13 @@
         </item>
         <item row="1" column="0">
          <layout class="QHBoxLayout" name="captureHLayout1">
-          <item>
+          <item alignment="Qt::AlignHCenter">
            <widget class="QPushButton" name="startCameraButton">
             <property name="text">
              <string>Start Camera</string>
             </property>
             <property name="icon">
              <iconset theme="camera">
-              <normaloff>.</normaloff>.</iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="stopCameraButton">
-            <property name="text">
-             <string>Stop Camera</string>
-            </property>
-            <property name="icon">
-             <iconset theme="stop">
               <normaloff>.</normaloff>.</iconset>
             </property>
            </widget>
@@ -744,7 +733,6 @@
  <tabstops>
   <tabstop>tabWidget</tabstop>
   <tabstop>startCameraButton</tabstop>
-  <tabstop>stopCameraButton</tabstop>
   <tabstop>searchLineEdit</tabstop>
   <tabstop>presentTable</tabstop>
   <tabstop>absentTable</tabstop>
