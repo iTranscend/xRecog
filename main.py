@@ -36,6 +36,8 @@ def registerStudent(student):
     main_window.resetRegistrationForm()
     xrecogCore.quantifyFaces()
 
+def lookupMatric(matric):
+    return matric
 
 
 def startCameraButtonClicked(*args):
@@ -43,6 +45,7 @@ def startCameraButtonClicked(*args):
 
     def startCameraHandler():
         xrecogCore.initRecognizer(
+            lookupLabel=lookupMatric,
             cameraDevice=CONFIG.get("prefs", {}).get("camera_device", 0),
             imageDisplayHandler=main_window.attendanceCaptureDialog.installDisplayHandler
         )

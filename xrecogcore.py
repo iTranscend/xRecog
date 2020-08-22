@@ -132,8 +132,9 @@ class XRecogCore(object):
 
         self.dump()
 
-    def initRecognizer(self, *, imageDisplayHandler=None, cameraDevice=0):
+    def initRecognizer(self, *, lookupLabel, imageDisplayHandler=None, cameraDevice=0):
         assert callable(imageDisplayHandler)
+
         # initialize the video stream, then allow the camera sensor to warm up
         print("[INFO] starting video stream...")
         vs = VideoStream(src=cameraDevice).start()
@@ -200,7 +201,7 @@ class XRecogCore(object):
                         preds = self.svcRecognizer.predict_proba(vec)[0]
                         j = np.argmax(preds)
                         proba = preds[j]
-                        name = self.labelEncoder.classes_[j]
+                        name = lookupLabel(self.labelEncoder.classes_[j])
 
                         # draw the bounding box of the face along with the
                         # associated probability
