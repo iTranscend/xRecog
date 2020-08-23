@@ -686,7 +686,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.lastNameLineEdit.clear()
         self.yearSpinBox.setValue(self.yearSpinBox.minimum())
         self.matricNumberLineEdit.clear()
-        self.courseComboBox.clearEditText()
+        self.courseComboBox.setCurrentIndex(-1)
         self.stripAllBGHandlers()
         if (self.capture_window):
             self.capture_window.cleanup()
