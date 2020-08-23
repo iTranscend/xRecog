@@ -131,8 +131,7 @@
         <string>Close</string>
        </property>
        <property name="icon">
-        <iconset theme="document-close">
-         <normaloff>.</normaloff>.</iconset>
+        <iconset theme="cancel"/>
        </property>
       </widget>
      </item>
