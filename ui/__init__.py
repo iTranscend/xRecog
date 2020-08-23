@@ -657,7 +657,8 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.statUpdateSignal.connect(self.updateStats)
         self.startCameraButton.clicked.connect(
             self.registerDispatcher("startCameraButtonClicked"))
-        self.tabWidget.currentChanged.connect(self.registerDispatcher("tabChanged"))
+        self.tabWidget.currentChanged.connect(
+            self.registerDispatcher("tabChanged"))
         self.searchLineEdit.textChanged.connect(self.lookupText)
 
     def setRegistrationYearRange(self, min, max):
