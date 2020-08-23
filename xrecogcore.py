@@ -5,7 +5,6 @@ from sklearn.svm import SVC
 import numpy as np
 import imutils
 import pickle
-import time
 import cv2
 import os
 from itertools import zip_longest
@@ -136,7 +135,6 @@ class XRecogCore(object):
         # initialize the video stream, then allow the camera sensor to warm up
         print("[INFO] starting video stream...")
         vs = VideoStream(src=cameraDevice).start()
-        time.sleep(2.0)
 
         # start the FPS throughput estimator
         fps = FPS().start()
