@@ -365,7 +365,7 @@ class XrecogPreviewWindow(QtWidgets.QDialog, EventEmitter):
 
 
 class XrecogCaptureDialog(QtWidgets.QDialog):
-    setFrameImage = QtCore.pyqtSignal(QtGui.QImage, float)
+    setFrameImage = QtCore.pyqtSignal(QtGui.QPixmap, float)
 
     def __init__(self):
         super(XrecogCaptureDialog, self).__init__()
@@ -398,12 +398,12 @@ class XrecogCaptureDialog(QtWidgets.QDialog):
         image = image or self.activeImage
         if image:
             self.activeImage = image
-            self.videoSlot.setPixmap(QtGui.QPixmap.fromImage(
+            self.videoSlot.setPixmap(
                 image.scaled(
                     self.videoSlot.size(),
                     QtCore.Qt.KeepAspectRatio,
                     QtCore.Qt.SmoothTransformation,
-                )))
+                ))
             if fps:
                 self.fpsFrame.setText("FPS:%7.2f" % fps)
             self.progressBar.hide()
@@ -412,8 +412,10 @@ class XrecogCaptureDialog(QtWidgets.QDialog):
         h, w, ch = rgbImage.shape
         bytesPerLine = ch * w
         self.setFrameImage.emit(
-            QtGui.QImage(rgbImage.data, w, h, bytesPerLine,
-                         QtGui.QImage.Format_RGB888),
+            QtGui.QPixmap.fromImage(
+                QtGui.QImage(
+                    rgbImage.data, w, h, bytesPerLine,
+                    QtGui.QImage.Format_RGB888)),
             (1.0 / (time.time() - self._start_time))
         )
 
