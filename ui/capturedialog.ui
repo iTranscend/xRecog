@@ -58,6 +58,9 @@
      </item>
      <item row="0" column="0" alignment="Qt::AlignRight|Qt::AlignBottom">
       <widget class="QLabel" name="fpsFrame">
+       <property name="styleSheet">
+        <string notr="true">font-family: monospace;</string>
+       </property>
        <property name="text">
         <string>FPS LABEL</string>
        </property>
