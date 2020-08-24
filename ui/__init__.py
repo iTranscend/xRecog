@@ -365,12 +365,15 @@ class XrecogPreviewWindow(QtWidgets.QDialog, EventEmitter):
 
 
 class XrecogCaptureDialog(QtWidgets.QDialog):
+    setFrameImage = QtCore.pyqtSignal(QtGui.QImage)
+
     def __init__(self):
         super(XrecogCaptureDialog, self).__init__()
         uic.loadUi(translatePath("capturedialog.ui"), self)
         self.endEvent = threading.Event()
         self.activeImage = None
-        self.videoSlot.resizeEvent = lambda event: self.setFrameImage()
+        self.videoSlot.resizeEvent = lambda event: self._setFrameImage()
+        self.setFrameImage.connect(self._setFrameImage)
         self.init()
         self.installEventFilter(self)
 
@@ -391,25 +394,28 @@ class XrecogCaptureDialog(QtWidgets.QDialog):
         self.fpsFrame.clear()
         self.progressBar.show()
 
-    def setFrameImage(self):
-        if self.activeImage:
+    def _setFrameImage(self, image=None):
+        image = image or self.activeImage
+        if image:
+            self.activeImage = image
             self.videoSlot.setPixmap(QtGui.QPixmap.fromImage(
-                self.activeImage.scaled(
+                image.scaled(
                     self.videoSlot.size(),
                     QtCore.Qt.KeepAspectRatio,
                     QtCore.Qt.SmoothTransformation,
                 )))
+            self.fpsFrame.setText("FPS:%6.2f" %
+                                  (1.0 / (time.time() - self._start_time)))
             self.hasSet = True
             self.progressBar.hide()
 
     def makeFrameImage(self, rgbImage):
         h, w, ch = rgbImage.shape
         bytesPerLine = ch * w
-        self.activeImage = QtGui.QImage(
-            rgbImage.data, w, h, bytesPerLine, QtGui.QImage.Format_RGB888)
-        self.setFrameImage()
-        self.fpsFrame.setText("FPS: %.2f" %
-                              (1.0 / (time.time() - self._start_time)))
+        self.setFrameImage.emit(
+            QtGui.QImage(
+                rgbImage.data, w, h, bytesPerLine, QtGui.QImage.Format_RGB888
+            ))
 
     def installDisplayHandler(self, handler):
         while not self.endEvent.isSet():
