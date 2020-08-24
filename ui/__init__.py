@@ -406,7 +406,6 @@ class XrecogCaptureDialog(QtWidgets.QDialog):
                 )))
             if fps:
                 self.fpsFrame.setText("FPS:%7.2f" % fps)
-            self.hasSet = True
             self.progressBar.hide()
 
     def makeFrameImage(self, rgbImage):
