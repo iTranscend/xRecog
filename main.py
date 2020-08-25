@@ -97,7 +97,7 @@ if __name__ == "__main__":
     if (not os.path.exists("core/output")):
         os.mkdir("core/output")
     app = QtWidgets.QApplication(sys.argv)
-    global CONFIG, main_window, xrecogCore
+    global CONFIG, main_window, xrecogCore, connection
     with open("config.yml") as conf:
         CONFIG = yaml.safe_load(conf)
 
@@ -106,9 +106,19 @@ if __name__ == "__main__":
         embedding_model="core/openface_nn4.small2.v1.t7",
         confidence=0.5
     )
-    main_window = XrecogMainWindow()
-    main_window.show()
-    mountMainInstance()
-    app.exec_()
-    print("[INFO] Dumping model state...")
-    xrecogCore.dump()
+    try:
+        print("[INFO] Initializing MySQL Connection...")
+        connection = mysql.connector.connect(
+            host='localhost', database='attendance', user='root', password='')
+        main_window = XrecogMainWindow()
+        main_window.show()
+        mountMainInstance()
+        app.exec_()
+        print("[INFO] Closing MySQL Connection...")
+        if (connection.is_connected()):
+            connection.close()
+            print("MySQL connection is closed")
+        print("[INFO] Dumping model state...")
+        xrecogCore.dump()
+    except Error as err:
+        sqlErrorHandler(err)
