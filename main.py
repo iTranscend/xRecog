@@ -1,12 +1,11 @@
 import threading
 import shutil
+import mysql
 import yaml
 import sys
 import os
 from xrecogcore import XRecogCore
 from ui import QtWidgets, XrecogMainWindow
-import mysql.connector
-from mysql.connector import Error
 
 
 def getStudentsFromDatabase():
@@ -18,7 +17,7 @@ def sqlErrorHandler(err):
 
 
 def attendanceErrorHandler(err):
-    if isinstance(err, Error):
+    if isinstance(err, mysql.connector.Error):
         sqlErrorHandler(err)
     else:
         print(
@@ -131,5 +130,5 @@ if __name__ == "__main__":
             print("MySQL connection is closed")
         print("[INFO] Dumping model state...")
         xrecogCore.dump()
-    except Error as err:
+    except mysql.connector.Error as err:
         sqlErrorHandler(err)
