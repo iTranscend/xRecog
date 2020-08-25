@@ -366,6 +366,7 @@ class XrecogPreviewWindow(QtWidgets.QDialog, EventEmitter):
 
 class XrecogCaptureDialog(QtWidgets.QDialog):
     setFrameImage = QtCore.pyqtSignal(QtGui.QPixmap, float)
+    errorEmitter = QtCore.pyqtSignal(Exception)
 
     def __init__(self):
         super(XrecogCaptureDialog, self).__init__()
@@ -374,6 +375,7 @@ class XrecogCaptureDialog(QtWidgets.QDialog):
         self.activeImage = None
         self.videoSlot.resizeEvent = lambda event: self._setFrameImage()
         self.setFrameImage.connect(self._setFrameImage)
+        self.errorEmitter.connect(self._errorHandler)
         self.init()
         self.installEventFilter(self)
 
@@ -393,6 +395,14 @@ class XrecogCaptureDialog(QtWidgets.QDialog):
         self.videoSlot.clear()
         self.fpsFrame.clear()
         self.progressBar.show()
+
+    def _errorHandler(self, err):
+        QtWidgets.QMessageBox.critical(
+            self,
+            "Error!",
+            "An error occurred: %s" % err,
+            QtWidgets.QMessageBox.Close)
+        self.close()
 
     def _setFrameImage(self, image=None, fps=None):
         image = image or self.activeImage
@@ -420,9 +430,12 @@ class XrecogCaptureDialog(QtWidgets.QDialog):
         )
 
     def installDisplayHandler(self, handler):
-        while not self.endEvent.isSet():
-            self._start_time = time.time()
-            handler(self.makeFrameImage)
+        try:
+            while not self.endEvent.isSet():
+                self._start_time = time.time()
+                handler(self.makeFrameImage)
+        except Exception as e:
+            self.errorEmitter.emit(e)
 
 
 class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
