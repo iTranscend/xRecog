@@ -5,11 +5,23 @@ import sys
 import os
 from xrecogcore import XRecogCore
 from ui import QtWidgets, XrecogMainWindow
+import mysql.connector
+from mysql.connector import Error
 
 
 def getStudentsFromDatabase():
     return []
 
+
+def sqlErrorHandler(err):
+    print("Error while connecting to MySQL", err)
+
+
+def attendanceErrorHandler(err):
+    if isinstance(err, Error):
+        sqlErrorHandler(err)
+    else:
+        print("[ERROR] An unknown error occurred with the attendance capture dialog")
 
 def registerStudent(student):
     print("registerStudent[matric=%s]: %s%s %s" % (
@@ -78,6 +90,7 @@ def mountMainInstance():
     main_window.on("tabChanged", tabChanged)
     main_window.on("registrationData", registerStudent)
     main_window.on("startCameraButtonClicked", startCameraButtonClicked)
+    main_window.attendanceCaptureDialog.on("error", attendanceErrorHandler)
 
 
 if __name__ == "__main__":

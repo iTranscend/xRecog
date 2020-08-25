@@ -364,7 +364,7 @@ class XrecogPreviewWindow(QtWidgets.QDialog, EventEmitter):
         self.rawTextEdit.setPlainText(typeStack["data"])
 
 
-class XrecogCaptureDialog(QtWidgets.QDialog):
+class XrecogCaptureDialog(QtWidgets.QDialog, EventEmitter):
     setFrameImage = QtCore.pyqtSignal(QtGui.QPixmap, float)
     errorEmitter = QtCore.pyqtSignal(Exception)
 
@@ -397,6 +397,7 @@ class XrecogCaptureDialog(QtWidgets.QDialog):
         self.progressBar.show()
 
     def _errorHandler(self, err):
+        self.emit("error", err)
         QtWidgets.QMessageBox.critical(
             self,
             "Error!",
