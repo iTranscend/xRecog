@@ -130,6 +130,7 @@ class XRecogCore(object):
         self.dump()
 
     def initRecognizer(self, *, lookupLabel, imageDisplayHandler=None, cameraDevice=0):
+        assert callable(lookupLabel)
         assert callable(imageDisplayHandler)
 
         # initialize the video stream, then allow the camera sensor to warm up
