@@ -23,6 +23,15 @@ def attendanceErrorHandler(err):
     else:
         print("[ERROR] An unknown error occurred with the attendance capture dialog")
 
+
+def verifyAsPresent(name):
+    cursor = connection.cursor(prepared=True)
+    sql = "UPDATE attendees SET is_present = 1 WHERE matric_no LIKE %s;"
+    casted = str(name).strip()
+    cursor.execute(sql, (casted, ))
+    connection.commit()
+
+
 def registerStudent(student):
     print("registerStudent[matric=%s]: %s%s %s" % (
         student["matriculationCode"],
@@ -62,7 +71,8 @@ def startCameraButtonClicked(*args):
         xrecogCore.initRecognizer(
             lookupLabel=lookupMatric,
             cameraDevice=CONFIG.get("prefs", {}).get("camera_device", 0),
-            imageDisplayHandler=main_window.attendanceCaptureDialog.installDisplayHandler
+            imageDisplayHandler=main_window.attendanceCaptureDialog.installDisplayHandler,
+            markAsPresent=verifyAsPresent
         )
     main_window.attendanceCaptureDialog.init()
     threading.Thread(target=startCameraHandler).start()

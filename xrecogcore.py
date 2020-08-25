@@ -129,8 +129,9 @@ class XRecogCore(object):
 
         self.dump()
 
-    def initRecognizer(self, *, lookupLabel, imageDisplayHandler=None, cameraDevice=0):
+    def initRecognizer(self, *, lookupLabel, markAsPresent, imageDisplayHandler=None, cameraDevice=0):
         assert callable(lookupLabel)
+        assert callable(markAsPresent)
         assert callable(imageDisplayHandler)
 
         # initialize the video stream, then allow the camera sensor to warm up
@@ -208,6 +209,8 @@ class XRecogCore(object):
 
                     print("DETECTED [%s] (confidence=%.2f%%)" %
                           (name, proba * 100))
+
+                    markAsPresent(name)
 
             # update the FPS counter
             fps.update()
