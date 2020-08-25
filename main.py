@@ -21,7 +21,8 @@ def attendanceErrorHandler(err):
     if isinstance(err, Error):
         sqlErrorHandler(err)
     else:
-        print("[ERROR] An unknown error occurred with the attendance capture dialog")
+        print(
+            "[ERROR] An unknown error occurred with the attendance capture dialog: ", err)
 
 
 def verifyAsPresent(name):
