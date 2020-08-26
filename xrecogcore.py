@@ -200,6 +200,8 @@ class XRecogCore(object):
                     proba = preds[j]
                     matricCode = self.labelEncoder.classes_[j]
                     name = lookupLabel(matricCode)
+                    if proba < self.confidence:
+                        continue
                     if name:
                         # draw the bounding box of the face along with the
                         # associated probability
