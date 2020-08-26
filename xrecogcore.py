@@ -196,7 +196,8 @@ class XRecogCore(object):
                     preds = self.svcRecognizer.predict_proba(vec)[0]
                     j = np.argmax(preds)
                     proba = preds[j]
-                    name = lookupLabel(self.labelEncoder.classes_[j])
+                    matricCode = self.labelEncoder.classes_[j]
+                    name = lookupLabel(matricCode)
 
                     # draw the bounding box of the face along with the
                     # associated probability
@@ -210,7 +211,7 @@ class XRecogCore(object):
                     print("DETECTED [%s] (confidence=%.2f%%)" %
                           (name, proba * 100))
 
-                    markAsPresent(name)
+                    markAsPresent(matricCode)
 
             # update the FPS counter
             fps.update()
