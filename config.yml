@@ -3,7 +3,7 @@ prefs:
   camera_device: 1
 
 database:
-  name: attendance
+  name: xrecog
   connection:
     host: localhost
     port: 3306
