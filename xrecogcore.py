@@ -175,6 +175,8 @@ class XRecogCore(object):
                     # the face
                     box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
                     (startX, startY, endX, endY) = box.astype("int")
+                    cv2.rectangle(frame, (startX, startY), (endX, endY),
+                                  (194, 188, 200), 2)
 
                     # extract the face ROI
                     face = frame[startY:endY, startX:endX]
@@ -203,8 +205,6 @@ class XRecogCore(object):
                         # associated probability
                         text = "{}: {:.2f}%".format(name, proba * 100)
                         y = startY - 10 if startY - 10 > 10 else startY + 10
-                        cv2.rectangle(frame, (startX, startY), (endX, endY),
-                                      (194, 188, 200), 2)
                         cv2.putText(frame, text, (startX, y),
                                     cv2.FONT_HERSHEY_COMPLEX, 0.55, (0, 0, 256), 2)
 
