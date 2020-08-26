@@ -165,7 +165,7 @@ if __name__ == "__main__":
     xrecogCore = XRecogCore(
         detector="core/face_detection_model",
         embedding_model="core/openface_nn4.small2.v1.t7",
-        confidence=0.5
+        confidence=float(CONFIG.get("model", {}).get("confidence", 0.5))
     )
     try:
         print("[INFO] Initializing MySQL Connection...")
