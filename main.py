@@ -6,6 +6,7 @@ import sys
 import os
 from xrecogcore import XRecogCore
 from ui import QtWidgets, XrecogMainWindow
+from mysql import connector
 
 
 def getStudentsFromDatabase():
@@ -17,7 +18,7 @@ def sqlErrorHandler(err):
 
 
 def attendanceErrorHandler(err):
-    if isinstance(err, mysql.connector.Error):
+    if isinstance(err, connector.Error):
         sqlErrorHandler(err)
     else:
         print(
@@ -118,7 +119,7 @@ if __name__ == "__main__":
     )
     try:
         print("[INFO] Initializing MySQL Connection...")
-        connection = mysql.connector.connect(
+        connection = connector.connect(
             host='localhost', database='attendance', user='root', password='')
         main_window = XrecogMainWindow()
         main_window.show()
@@ -130,5 +131,5 @@ if __name__ == "__main__":
             print("MySQL connection is closed")
         print("[INFO] Dumping model state...")
         xrecogCore.dump()
-    except mysql.connector.Error as err:
+    except connector.Error as err:
         sqlErrorHandler(err)
