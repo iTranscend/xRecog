@@ -61,7 +61,7 @@ def attendanceErrorHandler(err):
 def resetAttendance():
     cursor = connection.cursor(prepared=True)
     cursor.execute(
-        "UPDATE `attendees` SET `isPresent` = 0 WHERE `isPresent` = 1;")
+        "UPDATE attendees SET isPresent = 0 WHERE isPresent = 1;")
     connection.commit()
     cursor.close()
     # hacky workaround, find a better way
