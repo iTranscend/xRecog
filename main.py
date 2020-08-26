@@ -31,6 +31,7 @@ def getStudentsFromDatabase():
                 matriculationCode,
                 courseOfStudy,
                 markPresent) in cursor.fetchall()
+            if matriculationCode != '0000'
         ]
     finally:
         cursor.close()
@@ -96,10 +97,11 @@ def registerStudent(student):
 
 
 def lookupMatric(matric):
-    student = main_window.students.get(matric, {})
-    firstName = student.get("firstName", None)
-    lastName = student.get("lastName", None)
-    return ("%s %s" % (firstName, lastName)) if firstName and lastName else firstName or matric
+    if matric != "0000":
+        student = main_window.students.get(matric, {})
+        firstName = student.get("firstName", None)
+        lastName = student.get("lastName", None)
+        return ("%s %s" % (firstName, lastName)) if firstName and lastName else firstName or matric
 
 
 def startCameraButtonClicked(*args):
