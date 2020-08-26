@@ -12,7 +12,7 @@ from mysql import connector
 def getStudentsFromDatabase():
     try:
         cursor = connection.cursor(prepared=True)
-        cursor.execute("SELECT * FROM `attendees`;")
+        cursor.execute("SELECT * FROM attendees;")
         return [
             {
                 "firstName": firstName,
