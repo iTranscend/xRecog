@@ -14,7 +14,7 @@ def getStudentsFromDatabase():
 
 
 def sqlErrorHandler(err):
-    print("Error while connecting to MySQL", err)
+    print("Error while connecting to MySQL", err.__repr__())
 
 
 def attendanceErrorHandler(err):
@@ -22,7 +22,7 @@ def attendanceErrorHandler(err):
         sqlErrorHandler(err)
     else:
         print(
-            "[ERROR] An unknown error occurred with the attendance capture dialog: ", err)
+            "[ERROR] An unknown error occurred with the attendance capture dialog:", err.__repr__())
 
 
 def verifyAsPresent(name):
