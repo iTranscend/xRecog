@@ -2,6 +2,15 @@ prefs:
   dataset: core/dataset
   camera_device: 1
 
+database:
+  name: attendance
+  connection:
+    host: localhost
+    port: 3306
+  auth:
+    user: root
+    pass: ""
+
 year:
   min: 2014
   max: 2023

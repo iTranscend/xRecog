@@ -143,8 +143,15 @@ if __name__ == "__main__":
     )
     try:
         print("[INFO] Initializing MySQL Connection...")
+        database_opts = CONFIG.get("database", {})
+        connection_opts = database_opts.get("connection", {})
+        auth_opts = database_opts.get("auth", {})
         connection = connector.connect(
-            host='localhost', database='attendance', user='root', password='')
+            host=str(connection_opts.get("host", "localhost")),
+            port=int(connection_opts.get("port", 3306)),
+            database=str(database_opts.get("name", "attendance")),
+            user=str(auth_opts.get("user", "root")),
+            password=str(auth_opts.get("pass", "")))
         main_window = XrecogMainWindow()
         main_window.show()
         mountMainInstance()
