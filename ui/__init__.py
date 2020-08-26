@@ -665,6 +665,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.totalLineEdit.setText('0')
         self.presentLineEdit.setText('0')
         self.absentLineEdit.setText('0')
+        self.emit("resetAttendance")
 
     def prepareAttendance(self):
         self.resetAttendance()

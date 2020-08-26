@@ -48,6 +48,16 @@ def attendanceErrorHandler(err):
             "[ERROR] An unknown error occurred with the attendance capture dialog:", err.__repr__())
 
 
+def resetAttendance():
+    cursor = connection.cursor(prepared=True)
+    cursor.execute(
+        "UPDATE `attendees` SET `isPresent` = 0 WHERE `isPresent` = 1;")
+    connection.commit()
+    cursor.close()
+    # hacky workaround, find a better way
+    main_window.loadStudents(getStudentsFromDatabase())
+
+
 def verifyAsPresent(matricCode):
     main_window.markStudent(matricCode)
     cursor = connection.cursor(prepared=True)
@@ -123,6 +133,7 @@ def mountMainInstance():
     main_window.loadStudents(getStudentsFromDatabase())
     main_window.setAboutText("APP DESCRIPTION")
     main_window.on("tabChanged", tabChanged)
+    main_window.on("resetAttendance", resetAttendance)
     main_window.on("registrationData", registerStudent)
     main_window.on("startCameraButtonClicked", startCameraButtonClicked)
     main_window.attendanceCaptureDialog.on("error", attendanceErrorHandler)
