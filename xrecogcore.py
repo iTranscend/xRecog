@@ -198,18 +198,18 @@ class XRecogCore(object):
                     proba = preds[j]
                     matricCode = self.labelEncoder.classes_[j]
                     name = lookupLabel(matricCode)
+                    if name:
+                        # draw the bounding box of the face along with the
+                        # associated probability
+                        text = "{}: {:.2f}%".format(name, proba * 100)
+                        y = startY - 10 if startY - 10 > 10 else startY + 10
+                        cv2.rectangle(frame, (startX, startY), (endX, endY),
+                                      (194, 188, 200), 2)
+                        cv2.putText(frame, text, (startX, y),
+                                    cv2.FONT_HERSHEY_COMPLEX, 0.55, (0, 0, 256), 2)
 
-                    # draw the bounding box of the face along with the
-                    # associated probability
-                    text = "{}: {:.2f}%".format(name, proba * 100)
-                    y = startY - 10 if startY - 10 > 10 else startY + 10
-                    cv2.rectangle(frame, (startX, startY), (endX, endY),
-                                  (194, 188, 200), 2)
-                    cv2.putText(frame, text, (startX, y),
-                                cv2.FONT_HERSHEY_COMPLEX, 0.55, (0, 0, 256), 2)
-
-                    print("DETECTED [%s] (confidence=%.2f%%)" %
-                          (name, proba * 100))
+                        print("DETECTED [%s] (confidence=%.2f%%)" %
+                              (name, proba * 100))
 
                     markAsPresent(matricCode)
 
