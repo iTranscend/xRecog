@@ -10,7 +10,30 @@ from mysql import connector
 
 
 def getStudentsFromDatabase():
-    return []
+    try:
+        cursor = connection.cursor(prepared=True)
+        cursor.execute("SELECT * FROM `attendees`;")
+        return [
+            {
+                "firstName": firstName,
+                "middleName": middleName,
+                "lastName": lastName,
+                "entryYear": entryYear,
+                "matriculationCode": matriculationCode,
+                "courseOfStudy": courseOfStudy,
+                "markPresent": markPresent
+            }
+            for (
+                firstName,
+                middleName,
+                lastName,
+                entryYear,
+                matriculationCode,
+                courseOfStudy,
+                markPresent) in cursor.fetchall()
+        ]
+    finally:
+        cursor.close()
 
 
 def sqlErrorHandler(err):
