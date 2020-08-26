@@ -9,6 +9,15 @@ from ui import QtWidgets, XrecogMainWindow
 from mysql import connector
 
 
+def getCoursesFromDatabase():
+    try:
+        cursor = connection.cursor(prepared=True)
+        cursor.execute("SELECT * FROM courses;")
+        return [name for (_, name) in cursor.fetchall()]
+    finally:
+        cursor.close()
+
+
 def getStudentsFromDatabase():
     try:
         cursor = connection.cursor(prepared=True)
@@ -134,7 +143,7 @@ def mountMainInstance():
         yearObject.get("max")
     )
 
-    main_window.loadCourses(CONFIG.get("courses", []))
+    main_window.loadCourses(getCoursesFromDatabase())
     main_window.loadStudents(getStudentsFromDatabase())
     main_window.setAboutText("APP DESCRIPTION")
     main_window.on("tabChanged", tabChanged)
