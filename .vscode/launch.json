@@ -5,6 +5,10 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Open phpMyAdmin",
+      "preLaunchTask": "phpMyAdmin",
+    },
+    {
       "name": "Launch UI",
       "type": "python",
       "request": "launch",
