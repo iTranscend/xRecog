@@ -69,12 +69,13 @@ def resetAttendance():
 
 
 def verifyAsPresent(matricCode):
-    main_window.markStudent(matricCode)
-    cursor = connection.cursor(prepared=True)
-    cursor.execute(
-        f"UPDATE attendees SET isPresent = 1 WHERE matricCode LIKE \"{matricCode}\";")
-    connection.commit()
-    cursor.close()
+    if matricCode != "0000":
+        main_window.markStudent(matricCode)
+        cursor = connection.cursor(prepared=True)
+        cursor.execute(
+            f"UPDATE attendees SET isPresent = 1 WHERE matricCode LIKE \"{matricCode}\";")
+        connection.commit()
+        cursor.close()
 
 
 def registerStudent(student):
