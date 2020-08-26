@@ -48,12 +48,13 @@ def attendanceErrorHandler(err):
             "[ERROR] An unknown error occurred with the attendance capture dialog:", err.__repr__())
 
 
-def verifyAsPresent(name):
+def verifyAsPresent(matricCode):
+    main_window.markStudent(matricCode)
     cursor = connection.cursor(prepared=True)
-    sql = "UPDATE attendees SET is_present = 1 WHERE matric_no LIKE %s;"
-    casted = str(name).strip()
-    cursor.execute(sql, (casted, ))
+    sql = "UPDATE attendees SET isPresent = 1 WHERE matricCode LIKE %s;"
+    cursor.execute(sql, (matricCode, ))
     connection.commit()
+    cursor.close()
 
 
 def registerStudent(student):
