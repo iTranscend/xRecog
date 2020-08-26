@@ -85,7 +85,7 @@ def registerStudent(student):
 
 
 def lookupMatric(matric):
-    return matric
+    return main_window.students.get(matric, {}).get("firstName", matric)
 
 
 def startCameraButtonClicked(*args):
