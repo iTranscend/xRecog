@@ -86,7 +86,7 @@ def registerStudent(student):
         student["lastName"],
     ))
     STUDENTDIR = os.path.join(
-        CONFIG.get("prefs", {}).get("dataset", "core/dataset"),
+        CONFIG.setdefault("prefs", {}).setdefault("dataset", "core/dataset"),
         student["matriculationCode"])
     main_window.loadStudent(student)
 
@@ -137,9 +137,9 @@ def registerStudent(student):
 
 def lookupMatric(matric):
     if matric != "0000":
-        student = main_window.students.get(matric, {})
-        firstName = student.get("firstName", None)
-        lastName = student.get("lastName", None)
+        student = main_window.students.setdefault(matric, {})
+        firstName = student.setdefault("firstName", None)
+        lastName = student.setdefault("lastName", None)
         return ("%s %s" % (firstName, lastName)) if firstName and lastName else firstName or matric
 
 
@@ -149,7 +149,8 @@ def startCameraButtonClicked(*args):
     def startCameraHandler():
         xrecogCore.initRecognizer(
             lookupLabel=lookupMatric,
-            cameraDevice=CONFIG.get("prefs", {}).get("camera_device", 0),
+            cameraDevice=CONFIG.setdefault(
+                "prefs", {}).setdefault("camera_device", 0),
             imageDisplayHandler=main_window.attendanceCaptureDialog.installDisplayHandler,
             markAsPresent=verifyAsPresent
         )
@@ -200,8 +201,8 @@ def prepareBaseFacialVectors(addStudent):
         "0000",
         list(paths.list_images(os.path.join(
             CONFIG
-            .get("prefs", {})
-            .get("dataset", "core/dataset"),
+            .setdefault("prefs", {})
+            .setdefault("dataset", "core/dataset"),
             "0000"
         ))),
         pQueue
@@ -228,20 +229,21 @@ if __name__ == "__main__":
     xrecogCore = XRecogCore(
         detector="core/face_detection_model",
         embedding_model="core/openface_nn4.small2.v1.t7",
-        confidence=float(CONFIG.get("model", {}).get("confidence", 0.5)),
+        confidence=float(CONFIG.setdefault(
+            "model", {}).setdefault("confidence", 0.5)),
         prepareBaseFacialVectors=prepareBaseFacialVectors
     )
     try:
         print("[INFO] initializing MySQL Connection...")
-        database_opts = CONFIG.get("database", {})
-        connection_opts = database_opts.get("connection", {})
-        auth_opts = database_opts.get("auth", {})
+        database_opts = CONFIG.setdefault("database", {})
+        connection_opts = database_opts.setdefault("connection", {})
+        auth_opts = database_opts.setdefault("auth", {})
         connection = connector.connect(
-            host=str(connection_opts.get("host", "localhost")),
-            port=int(connection_opts.get("port", 3306)),
-            database=str(database_opts.get("name", "xrecog")),
-            user=str(auth_opts.get("user", "root")),
-            password=str(auth_opts.get("pass", "")))
+            host=str(connection_opts.setdefault("host", "localhost")),
+            port=int(connection_opts.setdefault("port", 3306)),
+            database=str(database_opts.setdefault("name", "xrecog")),
+            user=str(auth_opts.setdefault("user", "root")),
+            password=str(auth_opts.setdefault("pass", "")))
         main_window = XrecogMainWindow()
         main_window.show()
         mountMainInstance()
