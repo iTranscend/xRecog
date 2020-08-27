@@ -160,9 +160,17 @@ def startCameraButtonClicked(*args):
 
 def tabChanged(index):
     if index == 0:
-        # tab changed from `register` to `attendance`
-        # check if there are any new students
-        # if so, spawn a thread to register them all
+        # NOTE:
+        #   tab changed from `register` to `attendance`.
+        #   this was originally inteneded to serve as a signal
+        #   to register students to save multiple call might just
+        #   be a trivial issue but might lag if performance is
+        #   a priority. if that ever happens, heres a hint for a fix
+        #    * check if any new students were registered since we
+        #    * entered the `register` tab
+        #    * if so, spawn a thread to register them all
+        #    * it might help to use main_window._dispatch() to
+        #    * launch a progress window like in registerStudent()
         pass
 
 
