@@ -105,7 +105,7 @@ def registerStudent(student):
         cursor = connection.cursor(prepared=True)
         cursor.execute(
             f"""
-            INSERT INTO `attendees`
+            INSERT INTO attendees
             (firstName, middleName, lastName, entryYear, matricCode, courseOfStudy, isPresent)
             VALUES
             (
