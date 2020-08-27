@@ -173,6 +173,23 @@ def mountMainInstance():
     main_window.attendanceCaptureDialog.on("error", attendanceErrorHandler)
 
 
+def prepareBaseFacialVectors(addStudent):
+    from imutils import paths
+    print("[INFO] Preparing base image store...")
+    pQueue = {}
+    addStudent(
+        "0000",
+        list(paths.list_images(os.path.join(
+            CONFIG
+            .get("prefs", {})
+            .get("dataset", "core/dataset"),
+            "0000"
+        ))),
+        pQueue
+    )
+    return pQueue
+
+
 if __name__ == "__main__":
     if (not os.path.exists("core/output")):
         os.mkdir("core/output")
@@ -184,7 +201,8 @@ if __name__ == "__main__":
     xrecogCore = XRecogCore(
         detector="core/face_detection_model",
         embedding_model="core/openface_nn4.small2.v1.t7",
-        confidence=float(CONFIG.get("model", {}).get("confidence", 0.5))
+        confidence=float(CONFIG.get("model", {}).get("confidence", 0.5)),
+        prepareBaseFacialVectors=prepareBaseFacialVectors
     )
     try:
         print("[INFO] Initializing MySQL Connection...")

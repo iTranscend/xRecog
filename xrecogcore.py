@@ -34,14 +34,8 @@ xRecogCore.dump() -> {<matricNumber>: <vector>,...}
 
 
 class XRecogCore(object):
-    def __init__(self, *, detector, confidence, embedding_model):
+    def __init__(self, *, detector, confidence, embedding_model, prepareBaseFacialVectors):
         super().__init__()
-        self.labelEncoder = loads(
-            "core/output/le.pickle", lambda: LabelEncoder())
-        self.processQueue = loads(
-            "core/output/pqueue.pickle", lambda: {})
-        self.svcRecognizer = loads(
-            "core/output/recognizer.pickle", lambda: SVC(C=1.0, kernel="linear", probability=True))
 
         # load our serialized face detector from disk
         print("[INFO] loading face detector...")
@@ -56,12 +50,22 @@ class XRecogCore(object):
 
         self.confidence = confidence
 
+        self.labelEncoder = loads(
+            "core/output/le.pickle", lambda: LabelEncoder())
+        self.processQueue = loads(
+            "core/output/pqueue.pickle", lambda: prepareBaseFacialVectors(self._addStudent))
+        self.svcRecognizer = loads(
+            "core/output/recognizer.pickle", lambda: SVC(C=1.0, kernel="linear", probability=True))
+
     def dump(self):
         dumps(self.labelEncoder, "core/output/le.pickle")
         dumps(self.processQueue, "core/output/pqueue.pickle")
         dumps(self.svcRecognizer, "core/output/recognizer.pickle")
 
     def addStudent(self, matricCode, images):
+        self._addStudent(matricCode, images, self.processQueue)
+
+    def _addStudent(self, matricCode, images, pQueue):
         for (index, imagePath) in enumerate(images):
             print("[INFO] processing image {}/{}".format(index + 1, len(images)))
             # load the image, resize it to have a width of 600 pixels (while
@@ -116,7 +120,7 @@ class XRecogCore(object):
                     # add the name of the person + corresponding face
                     # embedding to their respective lists
                     # TODO: LabelEncoder fit transform & recognizer fit embeddings
-                    self.processQueue \
+                    pQueue \
                         .setdefault(matricCode, []) \
                         .append(vec.flatten())
 
