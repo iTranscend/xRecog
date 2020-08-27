@@ -88,41 +88,51 @@ def registerStudent(student):
     STUDENTDIR = os.path.join(
         CONFIG.get("prefs", {}).get("dataset", "core/dataset"),
         student["matriculationCode"])
-    os.mkdir(STUDENTDIR)
-    imagePaths = []
-    for (index, imagePath) in enumerate(student["capturedImages"]):
-        newPath = os.path.join(STUDENTDIR, "%02d.jpg" % index)
-        shutil.move(student["capturedImages"][index], newPath)
-        imagePaths.append(newPath)
-    xrecogCore.addStudent(student["matriculationCode"], imagePaths)
     main_window.loadStudent(student)
-    cursor = connection.cursor(prepared=True)
-    cursor.execute(
-        f"""
-        INSERT INTO `attendees`
-          (firstName, middleName, lastName, entryYear, matricCode, courseOfStudy, isPresent)
-        VALUES
-          (
-            '{student["firstName"]}',
-            '{student["middleName"]}',
-            '{student["lastName"]}',
-            '{student["entryYear"]}',
-            '{student["matriculationCode"]}',
-            '{student["courseOfStudy"]}',
-            '{int(student["markPresent"])}'
-          )
-        """
+
+    def processStudent(logTick):
+        logTick("Preparing student stage...", 8)
+        os.mkdir(STUDENTDIR)
+        nImages = len(student["capturedImages"])
+        imagePaths = []
+        for (index, imagePath) in enumerate(student["capturedImages"]):
+            logTick("Saving student image [%02d/%02d]..." %
+                    (index, nImages), tick=(42 / nImages))
+            newPath = os.path.join(STUDENTDIR, "%02d.jpg" % index)
+            shutil.move(student["capturedImages"][index], newPath)
+            xrecogCore.addImage(student["matriculationCode"], newPath)
+        logTick("Registering student, please wait...", 80)
+        cursor = connection.cursor(prepared=True)
+        cursor.execute(
+            f"""
+            INSERT INTO `attendees`
+            (firstName, middleName, lastName, entryYear, matricCode, courseOfStudy, isPresent)
+            VALUES
+            (
+                '{student["firstName"]}',
+                '{student["middleName"]}',
+                '{student["lastName"]}',
+                '{student["entryYear"]}',
+                '{student["matriculationCode"]}',
+                '{student["courseOfStudy"]}',
+                '{int(student["markPresent"])}'
+            )
+            """
+        )
+        connection.commit()
+        cursor.close()
+        logTick("Analyzing student's face...", 100)
+        xrecogCore.quantifyFaces()
+        logTick("Finalizing student registration...")
+
+    main_window._dispatch(
+        processStudent,
+        max=100,
+        tickValue=1,
+        timeout=1,
+        title="Registering"
     )
-    connection.commit()
-    cursor.close()
     main_window.resetRegistrationForm()
-    # this will currently fail, since there is only (at this moment)
-    # one buffered student with data, ready to be processed
-    # proposed fix:
-    #  • either find a means to add new labels
-    #    and teach the model new faces in real time
-    #  • or, recompute the labels and teach the model everytime
-    threading.Thread(target=xrecogCore.quantifyFaces).start()
 
 
 def lookupMatric(matric):
