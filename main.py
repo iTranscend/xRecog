@@ -231,7 +231,7 @@ if __name__ == "__main__":
         connection = connector.connect(
             host=str(connection_opts.get("host", "localhost")),
             port=int(connection_opts.get("port", 3306)),
-            database=str(database_opts.get("name", "attendance")),
+            database=str(database_opts.get("name", "xrecog")),
             user=str(auth_opts.get("user", "root")),
             password=str(auth_opts.get("pass", "")))
         main_window = XrecogMainWindow()
