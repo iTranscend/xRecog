@@ -860,9 +860,11 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
 
         if timeout:
             time.sleep(timeout)
-        if finished.isSet():
-            return
-        logTick()
+        with finished._cond:
+            if finished.isSet():
+                return
+            logTick()
+            dialog.show()
         dialog.exec_()
 
     def log(self, *args, **kwargs):
