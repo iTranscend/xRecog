@@ -844,9 +844,9 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                 (msg, progress) = (None, msg)
             if progress:
                 dialog.progressBar.setValue(progress)
-            elif tick and tickValue:
+            elif tick and (tickValue if type(tick) == bool else isinstance(tick, (int, float))):
                 dialog.progressBar.setValue(
-                    dialog.progressBar.value() + tickValue)
+                    dialog.progressBar.value() + (tick if isinstance(tick, (int, float)) else tickValue))
             return dialog.label.setText("%s" % (msg or message or "Loading..."))
 
         def execTarget(*args):
