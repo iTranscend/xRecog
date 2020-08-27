@@ -71,7 +71,8 @@ class XRecogCore(object):
 
     def _addStudent(self, matricCode, images, pQueue):
         for (index, imagePath) in enumerate(images):
-            print("[INFO] processing image {}/{}".format(index + 1, len(images)))
+            print(
+                "[INFO] processing image for [{}] {}/{}".format(matricCode, index + 1, len(images)))
             self._addImage(matricCode, imagePath, pQueue)
 
     def _addImage(self, matricCode, imagePath, pQueue):
