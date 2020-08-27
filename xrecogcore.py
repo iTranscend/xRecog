@@ -38,6 +38,8 @@ class XRecogCore(object):
         super().__init__()
         self.labelEncoder = loads(
             "core/output/le.pickle", lambda: LabelEncoder())
+        self.processQueue = loads(
+            "core/output/pqueue.pickle", lambda: {})
         self.svcRecognizer = loads(
             "core/output/recognizer.pickle", lambda: SVC(C=1.0, kernel="linear", probability=True))
 
@@ -54,10 +56,9 @@ class XRecogCore(object):
 
         self.confidence = confidence
 
-        self.processQueue = []
-
     def dump(self):
         dumps(self.labelEncoder, "core/output/le.pickle")
+        dumps(self.processQueue, "core/output/pqueue.pickle")
         dumps(self.svcRecognizer, "core/output/recognizer.pickle")
 
     def addStudent(self, matricCode, images):
