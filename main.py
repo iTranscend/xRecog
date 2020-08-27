@@ -175,7 +175,7 @@ def mountMainInstance():
 
 def prepareBaseFacialVectors(addStudent):
     from imutils import paths
-    print("[INFO] Preparing base image store...")
+    print("[INFO] preparing base image store...")
     pQueue = {}
     addStudent(
         "0000",
@@ -205,7 +205,7 @@ if __name__ == "__main__":
         prepareBaseFacialVectors=prepareBaseFacialVectors
     )
     try:
-        print("[INFO] Initializing MySQL Connection...")
+        print("[INFO] initializing MySQL Connection...")
         database_opts = CONFIG.get("database", {})
         connection_opts = database_opts.get("connection", {})
         auth_opts = database_opts.get("auth", {})
@@ -219,11 +219,11 @@ if __name__ == "__main__":
         main_window.show()
         mountMainInstance()
         app.exec_()
-        print("[INFO] Closing MySQL Connection...")
+        print("[INFO] closing MySQL Connection...")
         if (connection.is_connected()):
             connection.close()
-            print("MySQL connection is closed")
-        print("[INFO] Dumping model state...")
+            print("[INFO] closed MySQL connection")
+        print("[INFO] dumping model state...")
         xrecogCore.dump()
     except connector.Error as err:
         sqlErrorHandler(err)
