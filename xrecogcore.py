@@ -115,10 +115,18 @@ class XRecogCore(object):
                     # add the name of the person + corresponding face
                     # embedding to their respective lists
                     # TODO: LabelEncoder fit transform & recognizer fit embeddings
-                    self.processQueue.append((matricCode, vec.flatten()))
+                    self.processQueue \
+                        .setdefault(matricCode, []) \
+                        .append(vec.flatten())
 
     def quantifyFaces(self):
-        (names, vectors) = zip_longest(*self.processQueue)
+        # this is expensive, try to limit calls as much as possible
+        (names, vectors) = zip_longest(
+            *[
+                (name, vectors)
+                for name in self.processQueue
+                for vectors in self.processQueue[name]
+            ])
         labelEncoder = LabelEncoder()
         labels = labelEncoder.fit_transform(names)
 
