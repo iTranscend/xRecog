@@ -214,8 +214,16 @@ if __name__ == "__main__":
         os.mkdir("core/output")
     app = QtWidgets.QApplication(sys.argv)
     global CONFIG, main_window, xrecogCore, connection
-    with open("config.yml") as conf:
-        CONFIG = yaml.safe_load(conf)
+    if os.path.exists("config.yml"):
+        with open("config.yml") as conf:
+            CONFIG = yaml.safe_load(conf)
+            if not CONFIG:
+                print(
+                    "[INFO] configuration file \"config.yml\" wasn't successfully loaded, falling back to defaults")
+                CONFIG = {}
+    else:
+        print("[WARN] configuration file \"config.yml\" does not exist, using defaults")
+        CONFIG = {}
 
     xrecogCore = XRecogCore(
         detector="core/face_detection_model",
