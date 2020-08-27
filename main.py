@@ -175,10 +175,10 @@ def tabChanged(index):
 
 
 def mountMainInstance():
-    yearObject = CONFIG.get("year", {"min": 2014, "max": 2023})
+    yearObject = CONFIG.setdefault("year", {})
     main_window.setRegistrationYearRange(
-        yearObject.get("min"),
-        yearObject.get("max")
+        yearObject.setdefault("min", 2014),
+        yearObject.setdefault("max", 2023)
     )
 
     main_window.loadCourses(getCoursesFromDatabase())
