@@ -401,7 +401,7 @@ class XrecogCaptureDialog(QtWidgets.QDialog, EventEmitter):
         QtWidgets.QMessageBox.critical(
             self,
             "Error!",
-            "An error occurred: %s" % err,
+            "An error occurred: %s" % err.__repr__(),
             QtWidgets.QMessageBox.Close)
         self.close()
 
