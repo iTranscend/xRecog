@@ -133,7 +133,9 @@ class XRecogCore(object):
                     .append(vec.flatten())
 
     def quantifyFaces(self):
-        # this is expensive, try to limit calls as much as possible
+        # performance untested! this can be potentially expensive
+        # it recreates both the labelencoder and svc recognizer
+        # try to limit calls to this method as much as possible
         (names, vectors) = zip_longest(
             *[
                 (name, vectors)
