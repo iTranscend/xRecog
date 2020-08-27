@@ -40,7 +40,7 @@ def getStudentsFromDatabase():
                 matriculationCode,
                 courseOfStudy,
                 markPresent) in cursor.fetchall()
-            if matriculationCode != '0000'
+            if matriculationCode != "0000"
         ]
     finally:
         cursor.close()
