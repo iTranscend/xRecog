@@ -183,7 +183,8 @@ def mountMainInstance():
 
     main_window.loadCourses(getCoursesFromDatabase())
     main_window.loadStudents(getStudentsFromDatabase())
-    main_window.setAboutText("APP DESCRIPTION")
+    main_window.setAboutText(
+        "xRecog\n\nApp Description\n\n2020 (c) Femi Bankole, Miraculous Owonubi")
     main_window.on("tabChanged", tabChanged)
     main_window.on("resetAttendance", resetAttendance)
     main_window.on("registrationData", registerStudent)

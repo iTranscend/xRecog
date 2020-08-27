@@ -90,7 +90,7 @@ def mountTestInstance(main_window):
         threading.Thread(target=handle).start()
 
     main_window.setAboutText(
-        "xRecog\n\nApp Description\n\n2020 (c) Femi Bankole")
+        "xRecog\n\nApp Description\n\n2020 (c) Femi Bankole, Miraculous Owonubi")
     main_window.setRegistrationYearRange(MIN_YEAR, MAX_YEAR)
 
     def handleTestRegData(data):

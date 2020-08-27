@@ -44,7 +44,7 @@
        <string notr="true">color: rgb(180, 180, 180);</string>
       </property>
       <property name="text">
-       <string>Copyright (c) 2020 Femi Bankole</string>
+       <string>Copyright (c) 2020 Femi Bankole, Miraculous Owonubi</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
