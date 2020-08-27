@@ -96,6 +96,25 @@ def registerStudent(student):
         imagePaths.append(newPath)
     xrecogCore.addStudent(student["matriculationCode"], imagePaths)
     main_window.loadStudent(student)
+    cursor = connection.cursor(prepared=True)
+    cursor.execute(
+        f"""
+        INSERT INTO `attendees`
+          (firstName, middleName, lastName, entryYear, matricCode, courseOfStudy, isPresent)
+        VALUES
+          (
+            '{student["firstName"]}',
+            '{student["middleName"]}',
+            '{student["lastName"]}',
+            '{student["entryYear"]}',
+            '{student["matriculationCode"]}',
+            '{student["courseOfStudy"]}',
+            '{int(student["markPresent"])}'
+          )
+        """
+    )
+    connection.commit()
+    cursor.close()
     main_window.resetRegistrationForm()
     # this will currently fail, since there is only (at this moment)
     # one buffered student with data, ready to be processed
