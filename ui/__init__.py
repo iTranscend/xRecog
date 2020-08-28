@@ -460,6 +460,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.absentTable.cellClicked.connect(lambda x, y: print(
             self.students[self.matric_records["absent"][x]]))
         self.attendanceCaptureDialog = XrecogCaptureDialog()
+        self.logTickSignal.connect(self._logTickHandler)
 
     def closeEvent(self, event):
         self.emit("windowClose")
@@ -843,27 +844,40 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
     def getAbsentStudentsMatric(self, n=None):
         return [*self.matric_records["absent"]][:n]
 
+    logTickSignal = QtCore.pyqtSignal(
+        QtWidgets.QDialog, str, float, threading.Event)
+
+    def _logTickHandler(self, dialog, msg, progress, event):
+        dialog.progressBar.setValue(progress)
+        dialog.label.setText(msg)
+        event.set()
+
     def _dispatch(self, executor, timeout=None, args=(), kwargs=None, *, title=None, message=None, max=None, tickValue=None):
-        finished = threading.Event()
+        (_progress, _events, finished) = ([-1], [], threading.Event())
         dialog = XrecogProgressDialog(title=title, max=max)
 
         def logTick(msg=None, progress=None, *, tick=False):
             if type(msg) == int:
                 (msg, progress) = (None, msg)
             if progress:
-                dialog.progressBar.setValue(progress)
+                _progress[0] = progress
             elif tick and (tickValue if type(tick) == bool else isinstance(tick, (int, float))):
-                dialog.progressBar.setValue(
-                    dialog.progressBar.value() + (tick if isinstance(tick, (int, float)) else tickValue))
-            return dialog.label.setText("%s" % (msg or message or "Loading..."))
+                _progress[0] += (tick if isinstance(tick,
+                                                    (int, float)) else tickValue)
+            event = threading.Event()
+            _events.append(event)
+            self.logTickSignal.emit(
+                dialog,
+                msg or message or "Loading...", _progress[0], event)
 
-        def execTarget(*args):
+        def execTarget():
             executor(logTick, *args, **(kwargs or {}))
-            dialog.progressBar.setValue(100)
             finished.set()
+            [job.wait() for job in _events]
+            dialog.progressBar.setValue(100)
             dialog.close()
 
-        thread = threading.Thread(target=execTarget, args=args)
+        thread = threading.Thread(target=execTarget)
         thread.start()
 
         if timeout:
