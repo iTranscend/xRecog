@@ -670,6 +670,10 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self._resetAttendance()
         self.emit("resetAttendance")
 
+    def refreshAttendance(self):
+        self._resetAttendance()
+        self.emit("refresh")
+
     def prepareAttendance(self):
         self._resetAttendance()
         self.initQueryValidator()
@@ -684,6 +688,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.statUpdateSignal.connect(self.updateStats)
         self.startCameraButton.clicked.connect(
             self.registerDispatcher("startCameraButtonClicked"))
+        self.refreshToolButton.clicked.connect(self.refreshAttendance)
         self.tabWidget.currentChanged.connect(
             self.registerDispatcher("tabChanged"))
         self.searchLineEdit.textChanged.connect(self.lookupText)
