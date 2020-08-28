@@ -20,6 +20,7 @@ def getCoursesFromDatabase():
 
 def getStudentsFromDatabase():
     try:
+        connection.commit()
         cursor = connection.cursor(prepared=True)
         cursor.execute("SELECT * FROM attendees;")
         return [
