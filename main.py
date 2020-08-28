@@ -193,9 +193,25 @@ def prepareBaseFacialVectors(addStudent):
     return pQueue
 
 
-def loadStudentsIntoUI():
-    xrecogCore.loadPickles(prepareBaseFacialVectors)
-    main_window.loadStudents(getStudentsFromDatabase())
+def loadStudentsIntoUI(timeout):
+    def loadStudents(logTick):
+        logTick("Loading serialized data...", 19)
+        xrecogCore.loadPickles(prepareBaseFacialVectors)
+        logTick("Loading students from database...", 40)
+        students = getStudentsFromDatabase()
+        nStudents = len(students)
+        for (index, job) in enumerate(main_window.loadStudents(students)):
+            logTick(
+                f"Loading student into UI [%0{len(str(nStudents))}d/%d]..." % (index + 1, nStudents), tick=(60 / nStudents))
+            job.wait()
+        logTick("Finalizing student load...", 100)
+
+    main_window._dispatch(
+        loadStudents,
+        max=100, timeout=timeout,
+        title="Loading Students",
+        message="Loading Students, please wait..."
+    )
 
 
 def mountMainInstance():
@@ -206,10 +222,10 @@ def mountMainInstance():
     )
 
     main_window.loadCourses(getCoursesFromDatabase())
-    loadStudentsIntoUI()
+    loadStudentsIntoUI(timeout=1)
     main_window.setAboutText(
         "xRecog\n\nApp Description\n\n2020 (c) Femi Bankole, Miraculous Owonubi")
-    main_window.on("refresh", loadStudentsIntoUI)
+    main_window.on("refresh", lambda: loadStudentsIntoUI(timeout=1))
     main_window.on("tabChanged", tabChanged)
     main_window.on("resetAttendance", resetAttendance)
     main_window.on("registrationData", registerStudent)
