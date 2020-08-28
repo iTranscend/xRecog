@@ -233,6 +233,8 @@ if __name__ == "__main__":
         print("[WARN] configuration file \"config.yml\" does not exist, using defaults")
         CONFIG = {}
 
+    main_window = XrecogMainWindow()
+    main_window.show()
     xrecogCore = XRecogCore(
         detector="core/face_detection_model",
         embedding_model="core/openface_nn4.small2.v1.t7",
@@ -251,8 +253,6 @@ if __name__ == "__main__":
             database=str(database_opts.setdefault("name", "xrecog")),
             user=str(auth_opts.setdefault("user", "root")),
             password=str(auth_opts.setdefault("pass", "")))
-        main_window = XrecogMainWindow()
-        main_window.show()
         mountMainInstance()
         app.exec_()
         print("[INFO] closing MySQL Connection...")
