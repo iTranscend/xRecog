@@ -98,7 +98,7 @@ def registerStudent(student):
         imagePaths = []
         for (index, imagePath) in enumerate(student["capturedImages"]):
             logTick("Saving student image [%02d/%02d]..." %
-                    (index, nImages), tick=(42 / nImages))
+                    (index + 1, nImages), tick=(42 / nImages))
             newPath = os.path.join(STUDENTDIR, "%02d.jpg" % index)
             shutil.move(student["capturedImages"][index], newPath)
             xrecogCore.addImage(student["matriculationCode"], newPath)
