@@ -81,13 +81,20 @@ def mountTestInstance(main_window):
             len(students), "" if len(students) == 1 else 's'),
         reenter=True, force=True, is_async=True
     ) as logr:
-        jobs = main_window.loadStudents(students)
-
-        def handle():
-            for job in jobs:
+        def loadStudents(logTick):
+            nStudents = len(students)
+            for (index, job) in enumerate(main_window.loadStudents(students)):
+                logTick(
+                    f"Loading student into UI [%d/%d]..." % (index + 1, nStudents), tick=(100 / nStudents))
                 job.wait()
             logr.done()
-        threading.Thread(target=handle).start()
+
+        main_window._dispatch(
+            loadStudents,
+            max=100, timeout=0,
+            title="Loading Students",
+            message="Loading Students, please wait..."
+        )
 
     main_window.setAboutText(
         "xRecog\n\nApp Description\n\n2020 (c) Femi Bankole, Miraculous Owonubi")
