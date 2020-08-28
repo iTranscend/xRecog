@@ -18,9 +18,11 @@ def mountTestInstance(main_window):
     args = sys.argv[1:]
     num_students = int(args[0]) if len(args) else 10000
 
+    courses = []
+
     def loadCoursesAndStudents(logTick):
         logTick("Preparing courses...", 1)
-        courses = [
+        courses.extend([
             "Computer Science",
             "Physics",
             "Chemistry",
@@ -47,7 +49,7 @@ def mountTestInstance(main_window):
             "Epidemiology",
             "Statistics",
             "Mathematics"
-        ]
+        ])
         with main_window.logr(
                 "Loading %d course%s" % (len(courses), "" if len(courses) == 1 else 's'), force=True):
             logTick("Loading courses into UI...", 10)
