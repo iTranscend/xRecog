@@ -57,7 +57,7 @@ def mountTestInstance(main_window):
 
         max_students = max(10000, num_students)
 
-        logTick("Generating decoy students...", 5)
+        logTick("Generating decoy students...")
         with main_window.logr("Generating %d student%s" % (num_students, "" if num_students == 1 else 's'), force=True):
             faker = Faker()
             students = []
@@ -95,6 +95,7 @@ def mountTestInstance(main_window):
                     f"Loading students into UI [%d/%d]..." % (index + 1, num_students), tick=(40 / num_students))
                 job.wait()
 
+        logTick("Finalizing loading demo instance...", 99)
         main_window.setAboutText(
             "xRecog\n\nApp Description\n\n2020 (c) Femi Bankole, Miraculous Owonubi")
         main_window.setRegistrationYearRange(MIN_YEAR, MAX_YEAR)
