@@ -143,6 +143,6 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     app.setApplicationName("xRecog")
     main_window = XrecogMainWindow()
-    mountTestInstance(main_window)
     main_window.show()
+    mountTestInstance(main_window)
     app.exec_()
