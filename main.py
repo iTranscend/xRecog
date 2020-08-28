@@ -31,7 +31,7 @@ def getStudentsFromDatabase():
                 "entryYear": entryYear,
                 "matriculationCode": matriculationCode,
                 "courseOfStudy": courseOfStudy,
-                "markPresent": markPresent
+                "markPresent": bool(markPresent)
             }
             for (
                 firstName,
