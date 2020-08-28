@@ -102,7 +102,7 @@ def mountTestInstance(main_window):
 
     main_window._dispatch(
         loadCoursesAndStudents,
-        max=100, timeout=0,
+        max=100, timeout=1,
         title="Loading demo instance...",
         message="Loading courses and students, please wait..."
     )
