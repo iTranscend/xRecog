@@ -128,9 +128,7 @@ def registerStudent(student):
 
     main_window._dispatch(
         processStudent,
-        max=100,
-        tickValue=1,
-        timeout=1,
+        max=100, timeout=1,
         title="Registering"
     )
     main_window.resetRegistrationForm()
