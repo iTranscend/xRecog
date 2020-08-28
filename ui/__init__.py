@@ -853,22 +853,25 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         event.set()
 
     def _dispatch(self, executor, timeout=None, args=(), kwargs=None, *, title=None, message=None, max=None, tickValue=None):
-        (_progress, _events, finished) = ([-1], [], threading.Event())
+        (_progress, _events,
+         progressLock, finished) = ([-1], [],
+                                    threading.Lock(), threading.Event())
         dialog = XrecogProgressDialog(title=title, max=max)
 
         def logTick(msg=None, progress=None, *, tick=False):
             if type(msg) == int:
                 (msg, progress) = (None, msg)
-            if progress:
-                _progress[0] = progress
-            elif tick and (tickValue if type(tick) == bool else isinstance(tick, (int, float))):
-                _progress[0] += (tick if isinstance(tick,
-                                                    (int, float)) else tickValue)
-            event = threading.Event()
-            _events.append(event)
-            self.logTickSignal.emit(
-                dialog,
-                msg or message or "Loading...", _progress[0], event)
+            with progressLock:
+                if progress:
+                    _progress[0] = progress
+                elif tick and (tickValue if type(tick) == bool else isinstance(tick, (int, float))):
+                    _progress[0] += (tick if isinstance(tick,
+                                                        (int, float)) else tickValue)
+                event = threading.Event()
+                _events.append(event)
+                self.logTickSignal.emit(
+                    dialog,
+                    msg or message or "Loading...", _progress[0], event)
 
         def execTarget():
             executor(logTick, *args, **(kwargs or {}))
