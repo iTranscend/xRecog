@@ -176,7 +176,25 @@ def tabChanged(index):
         pass
 
 
+def prepareBaseFacialVectors(addStudent):
+    from imutils import paths
+    print("[INFO] preparing base image store...")
+    pQueue = {}
+    addStudent(
+        "0000",
+        list(paths.list_images(os.path.join(
+            CONFIG
+            .setdefault("prefs", {})
+            .setdefault("dataset", "core/dataset"),
+            "0000"
+        ))),
+        pQueue
+    )
+    return pQueue
+
+
 def loadStudentsIntoUI():
+    xrecogCore.loadPickles(prepareBaseFacialVectors)
     main_window.loadStudents(getStudentsFromDatabase())
 
 
@@ -197,23 +215,6 @@ def mountMainInstance():
     main_window.on("registrationData", registerStudent)
     main_window.on("startCameraButtonClicked", startCameraButtonClicked)
     main_window.attendanceCaptureDialog.on("error", attendanceErrorHandler)
-
-
-def prepareBaseFacialVectors(addStudent):
-    from imutils import paths
-    print("[INFO] preparing base image store...")
-    pQueue = {}
-    addStudent(
-        "0000",
-        list(paths.list_images(os.path.join(
-            CONFIG
-            .setdefault("prefs", {})
-            .setdefault("dataset", "core/dataset"),
-            "0000"
-        ))),
-        pQueue
-    )
-    return pQueue
 
 
 if __name__ == "__main__":
