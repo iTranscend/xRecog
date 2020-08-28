@@ -653,7 +653,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             self._addStudentRowSignal.emit(key, index, student)
             self.validatorQueue.put(student)
 
-    def resetAttendance(self):
+    def _resetAttendance(self):
         self.students = {}
         self.matric_records = {"present": deque(), "absent": deque()}
         if hasattr(self, "_clearStudentLoaderJobs"):
@@ -665,10 +665,13 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.totalLineEdit.setText('0')
         self.presentLineEdit.setText('0')
         self.absentLineEdit.setText('0')
+
+    def resetAttendance(self):
+        self._resetAttendance()
         self.emit("resetAttendance")
 
     def prepareAttendance(self):
-        self.resetAttendance()
+        self._resetAttendance()
         self.initQueryValidator()
         self.initStudentsLoader()
         self.initStudentsMarker()
