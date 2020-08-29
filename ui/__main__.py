@@ -96,9 +96,10 @@ def mountTestInstance(main_window):
                 job.wait()
 
         logTick("Finalizing loading demo instance...", 99)
-        main_window.setAboutText(
-            "xRecog\n\nApp Description\n\n2020 (c) Femi Bankole, Miraculous Owonubi")
-        main_window.setRegistrationYearRange(MIN_YEAR, MAX_YEAR)
+
+    main_window.setAboutText(
+        "xRecog\n\nApp Description\n\n2020 (c) Femi Bankole, Miraculous Owonubi")
+    main_window.setRegistrationYearRange(MIN_YEAR, MAX_YEAR)
 
     main_window._dispatch(
         loadCoursesAndStudents,
