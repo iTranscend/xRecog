@@ -124,7 +124,7 @@ def registerStudent(student):
         logTick("Analyzing student's face...", 100)
         xrecogCore.quantifyFaces()
         logTick("Finalizing student registration...")
-        main_window.resetRegistrationForm()
+        main_window.resetButton.click()
 
     main_window._dispatch(
         processStudent,
