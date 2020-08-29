@@ -124,13 +124,13 @@ def registerStudent(student):
         logTick("Analyzing student's face...", 100)
         xrecogCore.quantifyFaces()
         logTick("Finalizing student registration...")
+        main_window.resetRegistrationForm()
 
     main_window._dispatch(
         processStudent,
         max=100, timeout=1,
         title="Registering"
     )
-    main_window.resetRegistrationForm()
 
 
 def lookupMatric(matric):
