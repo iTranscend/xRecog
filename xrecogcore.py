@@ -10,6 +10,11 @@ import os
 from itertools import zip_longest
 
 
+def dumps(object, file):
+    with open(file, "wb") as f:
+        f.write(pickle.dumps(object))
+
+
 def loads(file=None, constructor=None):
     assert file or callable(constructor)
     if os.path.exists(file):
@@ -17,12 +22,9 @@ def loads(file=None, constructor=None):
             bytes = f.read()
             if len(bytes):
                 return pickle.loads(bytes)
-    return constructor()
-
-
-def dumps(object, file):
-    with open(file, "wb") as f:
-        f.write(pickle.dumps(object))
+    object = constructor()
+    dumps(object, file)
+    return object
 
 
 """
