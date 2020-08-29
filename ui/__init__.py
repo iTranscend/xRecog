@@ -873,24 +873,35 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                     dialog,
                     msg or message or "Loading...", _progress[0], event)
 
+        def checkOrShowDialog():
+            QtWidgets.QApplication.restoreOverrideCursor()
+            with finished._cond:
+                if finished.isSet():
+                    return
+                logTick()
+                dialog.show()
+            dialog.exec_()
+
+        timer = threading.Timer(timeout, checkOrShowDialog)
+
         def execTarget():
             executor(logTick, *args, **(kwargs or {}))
-            finished.set()
             [job.wait() for job in _events]
+            finished.set()
             dialog.progressBar.setValue(100)
             dialog.close()
+            timer.cancel()
+            QtWidgets.QApplication.restoreOverrideCursor()
 
         thread = threading.Thread(target=execTarget)
         thread.start()
 
-        if timeout:
-            time.sleep(timeout)
         with finished._cond:
             if finished.isSet():
                 return
-            logTick()
-            dialog.show()
-        dialog.exec_()
+            if timeout:
+                QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            timer.start()
 
     def log(self, *args, **kwargs):
         force = False
