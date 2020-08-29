@@ -95,12 +95,11 @@ def registerStudent(student):
         logTick("Preparing student stage...", 8)
         os.mkdir(STUDENTDIR)
         nImages = len(student["capturedImages"])
-        imagePaths = []
         for (index, imagePath) in enumerate(student["capturedImages"]):
             logTick("Saving student image [%02d/%02d]..." %
                     (index + 1, nImages), tick=(42 / nImages))
             newPath = os.path.join(STUDENTDIR, "%02d.jpg" % index)
-            shutil.move(student["capturedImages"][index], newPath)
+            shutil.move(imagePath, newPath)
             xrecogCore.addImage(student["matriculationCode"], newPath)
         logTick("Registering student, please wait...", 80)
         cursor = connection.cursor(prepared=True)
