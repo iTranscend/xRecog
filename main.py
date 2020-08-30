@@ -261,7 +261,12 @@ if __name__ == "__main__":
         embedding_model="core/openface_nn4.small2.v1.t7",
         confidence=float(CONFIG.setdefault(
             "model", {}).setdefault("confidence", 0.5)),
-        prepareBaseFacialVectors=prepareBaseFacialVectors
+        prepareBaseFacialVectors=prepareBaseFacialVectors,
+        pickleMaps={
+            "le": "core/output/le.pickle",
+            "pqueue": "core/output/pqueue.pickle",
+            "recognizer": "core/output/recognizer.pickle"
+        }
     )
     try:
         print("[INFO] initializing MySQL Connection...")
