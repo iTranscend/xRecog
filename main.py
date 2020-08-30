@@ -135,7 +135,8 @@ def registerStudent(student):
     main_window._dispatch(
         processStudent,
         max=100, timeout=1,
-        title="Registering",
+        title="Registering student",
+        message="Registering student & processing captured images, please wait...",
         errorHandler=main_window.errorEmitter.emit
     )
 
