@@ -1,6 +1,5 @@
 import threading
 import shutil
-import mysql
 import yaml
 import sys
 import os
