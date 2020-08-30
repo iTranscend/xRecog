@@ -95,7 +95,7 @@ def mountTestInstance(main_window):
                     f"Loading students into UI [%d/%d]..." % (index + 1, num_students), tick=(40 / num_students))
                 job.wait()
 
-        logTick("Finalizing loading demo instance...", 99)
+        logTick("Finalizing demo instance setup...", 99)
 
     main_window.setAboutText(
         "xRecog\n\nApp Description\n\n2020 (c) Femi Bankole, Miraculous Owonubi")
@@ -104,8 +104,8 @@ def mountTestInstance(main_window):
     main_window._dispatch(
         loadCoursesAndStudents,
         max=100, timeout=1,
-        title="Loading demo instance...",
-        message="Loading courses and students, please wait..."
+        title="Setting up demo instance",
+        message="Loading courses & students, please wait..."
     )
 
     def handleTestRegData(data):
