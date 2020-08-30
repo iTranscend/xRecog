@@ -239,8 +239,6 @@ def mountMainInstance():
 
 
 if __name__ == "__main__":
-    if (not os.path.exists("core/output")):
-        os.mkdir("core/output")
     app = QtWidgets.QApplication(sys.argv)
     global CONFIG, main_window, xrecogCore, connection
     if os.path.exists("config.yml"):
