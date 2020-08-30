@@ -461,10 +461,21 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             self.students[self.matric_records["absent"][x]]))
         self.attendanceCaptureDialog = XrecogCaptureDialog()
         self.logTickSignal.connect(self._logTickHandler)
+        self.errorEmitter.connect(self._errorHandler)
 
     def closeEvent(self, event):
         self.emit("windowClose")
         return super(QtWidgets.QMainWindow, self).closeEvent(event)
+
+    errorEmitter = QtCore.pyqtSignal(Exception)
+
+    def _errorHandler(self, err):
+        self.emit("error", err)
+        QtWidgets.QMessageBox.critical(
+            self,
+            "Error!",
+            "An error occurred: %s" % err.__repr__(),
+            QtWidgets.QMessageBox.Close)
 
     def showAbout(self):
         dialog = QtWidgets.QDialog()
