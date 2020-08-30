@@ -261,9 +261,15 @@ if __name__ == "__main__":
             "model", {}).setdefault("confidence", 0.5)),
         prepareBaseFacialVectors=prepareBaseFacialVectors,
         pickleMaps={
-            "le": "core/output/le.pickle",
-            "pqueue": "core/output/pqueue.pickle",
-            "recognizer": "core/output/recognizer.pickle"
+            "le": os.path.join(
+                CONFIG.setdefault("prefs", {})
+                .setdefault("pickle_path", "core/output"), "le.pickle"),
+            "pqueue": os.path.join(
+                CONFIG.setdefault("prefs", {})
+                .setdefault("pickle_path", "core/output"), "pqueue.pickle"),
+            "recognizer": os.path.join(
+                CONFIG.setdefault("prefs", {})
+                .setdefault("pickle_path", "core/output"), "recognizer.pickle")
         }
     )
     try:
