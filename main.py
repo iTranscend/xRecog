@@ -120,10 +120,11 @@ def registerStudent(student):
         )
         connection.commit()
         cursor.close()
-        logTick("Analyzing student's face...", 100)
+        logTick("Analyzing student's face...", 90)
         xrecogCore.quantifyFaces()
-        logTick("Finalizing student registration...")
-        main_window.loadStudent(student)
+        logTick("Loading student into UI...", 97)
+        main_window.loadStudent(student).wait()
+        logTick("Finalizing student registration...", 99)
         main_window.resetButton.click()
 
     main_window._dispatch(
