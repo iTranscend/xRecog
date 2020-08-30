@@ -11,6 +11,11 @@ from itertools import zip_longest
 
 
 def dumps(object, file):
+    dirname = os.path.dirname(file)
+    if not os.path.exists(dirname):
+        print(
+            "[INFO] dump directory [%s] doesn't exist, attempting to create..." % dirname)
+        os.mkdir(dirname)
     with open(file, "wb") as f:
         f.write(pickle.dumps(object))
 
