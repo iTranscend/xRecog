@@ -36,8 +36,12 @@ xRecogCore.dump() -> {<matricNumber>: <vector>,...}
 
 
 class XRecogCore(object):
-    def __init__(self, *, detector, confidence, embedding_model, prepareBaseFacialVectors):
+    def __init__(self, *, detector, confidence, embedding_model, pickleMaps=None, prepareBaseFacialVectors):
         super().__init__()
+        assert isinstance(pickleMaps, dict)
+        assert isinstance(pickleMaps["le"], str)
+        assert isinstance(pickleMaps["pqueue"], str)
+        assert isinstance(pickleMaps["recognizer"], str)
 
         # load our serialized face detector from disk
         print("[INFO] loading face detector...")
@@ -52,20 +56,22 @@ class XRecogCore(object):
 
         self.confidence = confidence
 
+        self.pickleMaps = pickleMaps
+
         self.loadPickles(prepareBaseFacialVectors)
 
     def dump(self):
-        dumps(self.labelEncoder, "core/output/le.pickle")
-        dumps(self.processQueue, "core/output/pqueue.pickle")
-        dumps(self.svcRecognizer, "core/output/recognizer.pickle")
+        dumps(self.labelEncoder, self.pickleMaps["le"])
+        dumps(self.processQueue, self.pickleMaps["pqueue"])
+        dumps(self.svcRecognizer, self.pickleMaps["recognizer"])
 
     def loadPickles(self, prepareBaseFacialVectors):
         self.labelEncoder = loads(
-            "core/output/le.pickle", lambda: LabelEncoder())
+            self.pickleMaps["le"], lambda: LabelEncoder())
         self.processQueue = loads(
-            "core/output/pqueue.pickle", lambda: prepareBaseFacialVectors(self._addStudent))
+            self.pickleMaps["pqueue"], lambda: prepareBaseFacialVectors(self._addStudent))
         self.svcRecognizer = loads(
-            "core/output/recognizer.pickle", lambda: SVC(C=1.0, kernel="linear", probability=True))
+            self.pickleMaps["recognizer"], lambda: SVC(C=1.0, kernel="linear", probability=True))
 
     def addStudent(self, matricCode, images):
         self._addStudent(matricCode, images, self.processQueue)
