@@ -89,7 +89,6 @@ def registerStudent(student):
     STUDENTDIR = os.path.join(
         CONFIG.setdefault("prefs", {}).setdefault("dataset", "core/dataset"),
         student["matriculationCode"])
-    main_window.loadStudent(student)
 
     def processStudent(logTick):
         logTick("Preparing student stage...", 8)
@@ -124,6 +123,7 @@ def registerStudent(student):
         logTick("Analyzing student's face...", 100)
         xrecogCore.quantifyFaces()
         logTick("Finalizing student registration...")
+        main_window.loadStudent(student)
         main_window.resetButton.click()
 
     main_window._dispatch(
