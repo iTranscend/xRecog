@@ -904,12 +904,13 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
                     exceptionHandler(e)
                 else:
                     raise
-            [job.wait() for job in _events]
-            finished.set()
-            dialog.progressBar.setValue(100)
-            dialog.close()
-            timer.cancel()
-            QtWidgets.QApplication.restoreOverrideCursor()
+            finally:
+                [job.wait() for job in _events]
+                finished.set()
+                dialog.progressBar.setValue(100)
+                dialog.close()
+                timer.cancel()
+                QtWidgets.QApplication.restoreOverrideCursor()
 
         thread = threading.Thread(target=execTarget)
         thread.start()
