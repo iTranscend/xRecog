@@ -899,7 +899,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             try:
                 executor(logTick, *args, **(kwargs or {}))
             except Exception as e:
-                print("An error occurred within the dispatcher: ", e.__repr__())
+                print("An error occurred within the dispatched executor:", e.__repr__())
                 if exceptionHandler:
                     exceptionHandler(e)
                 else:
