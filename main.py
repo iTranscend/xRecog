@@ -92,6 +92,11 @@ def registerStudent(student):
 
     def processStudent(logTick):
         logTick("Preparing student stage...", 8)
+        if os.path.exists(STUDENTDIR):
+            print("[FATAL] Student stage exists [%s]" %
+                  student["matriculationCode"])
+            raise FileExistsError("Student stage exists: %s" %
+                                  student["matriculationCode"])
         os.mkdir(STUDENTDIR)
         nImages = len(student["capturedImages"])
         for (index, imagePath) in enumerate(student["capturedImages"]):
