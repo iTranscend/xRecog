@@ -863,7 +863,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         dialog.label.setText(msg)
         event.set()
 
-    def _dispatch(self, executor, timeout=None, args=(), kwargs=None, *, title=None, message=None, max=None, tickValue=None):
+    def _dispatch(self, executor, timeout=None, args=(), kwargs=None, *, title=None, message=None, max=None, tickValue=None, exceptionHandler=None):
         (_progress, _events,
          progressLock, finished) = ([-1], [],
                                     threading.Lock(), threading.Event())
@@ -896,7 +896,14 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         timer = threading.Timer(timeout, checkOrShowDialog)
 
         def execTarget():
-            executor(logTick, *args, **(kwargs or {}))
+            try:
+                executor(logTick, *args, **(kwargs or {}))
+            except Exception as e:
+                print("An error occurred within the dispatcher: ", e.__repr__())
+                if exceptionHandler:
+                    exceptionHandler(e)
+                else:
+                    raise
             [job.wait() for job in _events]
             finished.set()
             dialog.progressBar.setValue(100)
