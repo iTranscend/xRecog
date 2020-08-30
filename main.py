@@ -142,10 +142,11 @@ def registerStudent(student):
 
 def lookupMatric(matric):
     if matric != "0000":
-        student = main_window.students.setdefault(matric, {})
-        firstName = student.setdefault("firstName", None)
-        lastName = student.setdefault("lastName", None)
-        return ("%s %s" % (firstName, lastName)) if firstName and lastName else firstName or matric
+        student = main_window.students.get(matric, None)
+        if student:
+            firstName = student.get("firstName", None)
+            lastName = student.get("lastName", None)
+            return ("%s %s" % (firstName, lastName)) if firstName and lastName else firstName or matric
 
 
 def startCameraButtonClicked(*args):
