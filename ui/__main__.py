@@ -105,7 +105,8 @@ def mountTestInstance(main_window):
         loadCoursesAndStudents,
         max=100, timeout=1,
         title="Setting up demo instance",
-        message="Loading courses & students, please wait..."
+        message="Loading courses & students, please wait...",
+        exceptionHandler=main_window.errorEmitter.emit
     )
 
     def handleTestRegData(data):
