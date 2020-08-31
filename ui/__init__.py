@@ -898,6 +898,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         def execTarget():
             try:
                 executor(logTick, *args, **(kwargs or {}))
+                dialog.progressBar.setValue(100)
             except Exception as e:
                 print("An error occurred within the dispatched executor:", e.__repr__())
                 if exceptionHandler:
@@ -907,7 +908,6 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             finally:
                 [job.wait() for job in _events]
                 finished.set()
-                dialog.progressBar.setValue(100)
                 dialog.close()
                 timer.cancel()
                 QtWidgets.QApplication.restoreOverrideCursor()
