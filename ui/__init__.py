@@ -282,6 +282,7 @@ class XrecogCaptureWindow(QtWidgets.QDialog):
     def stop(self):
         self.releaseCamera()
         if self.camera:
+            self.camera.setViewfinder(None)
             self.camera.unload()
         self.destroy()
 
