@@ -78,6 +78,10 @@ def verifyAsPresent(matricCode):
         cursor.close()
 
 
+class StudentExistsError(Exception):
+    pass
+
+
 def registerStudent(student):
     print("registerStudent[matric=%s]: %s%s %s" % (
         student["matriculationCode"],
@@ -85,51 +89,52 @@ def registerStudent(student):
         " %s" % student["middleName"] if student["middleName"] else "",
         student["lastName"],
     ))
-    STUDENTDIR = os.path.join(
-        CONFIG.setdefault("prefs", {}).setdefault("dataset", "core/dataset"),
-        student["matriculationCode"])
 
     def processStudent(logTick):
         logTick("Preparing student stage...", 8)
-        if os.path.exists(STUDENTDIR):
-            print("[WARN] Student stage exists [%s]" %
-                  student["matriculationCode"])
-            raise FileExistsError("Student stage exists: %s" %
-                                  student["matriculationCode"])
-        os.mkdir(STUDENTDIR)
         nImages = len(student["capturedImages"])
-        for (index, imagePath) in enumerate(student["capturedImages"]):
-            logTick("Saving student image [%02d/%02d]..." %
-                    (index + 1, nImages), tick=(42 / nImages))
-            newPath = os.path.join(STUDENTDIR, "%02d.jpg" % index)
-            shutil.move(imagePath, newPath)
-            xrecogCore.addImage(student["matriculationCode"], newPath)
-        logTick("Registering student, please wait...", 80)
         cursor = connection.cursor(prepared=True)
-        cursor.execute(
-            f"""
-            INSERT INTO attendees
-            (firstName, middleName, lastName, entryYear, matricCode, courseOfStudy, isPresent)
-            VALUES
-            (
-                '{student["firstName"]}',
-                '{student["middleName"]}',
-                '{student["lastName"]}',
-                '{student["entryYear"]}',
-                '{student["matriculationCode"]}',
-                '{student["courseOfStudy"]}',
-                '{int(student["markPresent"])}'
+        try:
+            cursor.execute(f"""
+                SELECT EXISTS (
+                    SELECT 1 from attendees
+                    WHERE matricCode = '{student["matriculationCode"]}'
+                ) LIMIT 1
+            """)
+            if cursor.fetchone()[0] != 0:
+                raise StudentExistsError(
+                    "Matric code [%s] exists" % student["matriculationCode"])
+            for (index, imagePath) in enumerate(student["capturedImages"]):
+                logTick("Saving student image [%02d/%02d]..." %
+                        (index + 1, nImages), tick=(42 / nImages))
+                xrecogCore.addImage(student["matriculationCode"], imagePath)
+                os.unlink(imagePath)
+            logTick("Registering student, please wait...", 80)
+            cursor.execute(
+                f"""
+                INSERT INTO attendees
+                (firstName, middleName, lastName, entryYear, matricCode, courseOfStudy, isPresent)
+                VALUES
+                (
+                    '{student["firstName"]}',
+                    '{student["middleName"]}',
+                    '{student["lastName"]}',
+                    '{student["entryYear"]}',
+                    '{student["matriculationCode"]}',
+                    '{student["courseOfStudy"]}',
+                    '{int(student["markPresent"])}'
+                )
+                """
             )
-            """
-        )
-        connection.commit()
-        cursor.close()
-        logTick("Analyzing student's face...", 90)
-        xrecogCore.quantifyFaces()
-        logTick("Loading student into UI...", 97)
-        main_window.loadStudent(student).wait()
-        logTick("Finalizing student registration...", 99)
-        main_window.resetButton.click()
+            connection.commit()
+            logTick("Analyzing student's face...", 90)
+            xrecogCore.quantifyFaces()
+            logTick("Loading student into UI...", 97)
+            main_window.loadStudent(student).wait()
+            logTick("Finalizing student registration...", 99)
+            main_window.resetButton.click()
+        finally:
+            cursor.close()
 
     main_window._dispatch(
         processStudent,
@@ -190,8 +195,7 @@ def prepareBaseFacialVectors(addStudent):
         list(paths.list_images(os.path.join(
             CONFIG
             .setdefault("prefs", {})
-            .setdefault("dataset", "core/dataset"),
-            "0000"
+            .setdefault("base", "core/base")
         ))),
         pQueue
     )

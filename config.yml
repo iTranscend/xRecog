@@ -1,5 +1,5 @@
 prefs:
-  dataset: core/dataset
+  base: core/base
   pickle_path: core/output
   camera_device: 1
 
