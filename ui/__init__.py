@@ -8,6 +8,7 @@ import functools
 import itertools
 import markdown2
 import threading
+import traceback
 from datetime import datetime
 from collections import deque
 
@@ -899,10 +900,11 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
             try:
                 executor(logTick, *args, **(kwargs or {}))
                 dialog.progressBar.setValue(100)
-            except Exception as e:
-                print("An error occurred within the dispatched executor:", e.__repr__())
+            except:
                 if exceptionHandler:
-                    exceptionHandler(e)
+                    print("An error occurred with the dispatched executor: %s" %
+                          "".join(traceback.format_exc()), end="")
+                    exceptionHandler(sys.exc_info()[1])
                 else:
                     raise
             finally:
