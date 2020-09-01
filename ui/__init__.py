@@ -437,8 +437,8 @@ class XrecogCaptureDialog(QtWidgets.QDialog, EventEmitter):
             while not self.endEvent.isSet():
                 self._start_time = time.time()
                 handler(self.makeFrameImage)
-        except Exception as e:
-            self.errorEmitter.emit(e)
+        except:
+            self.errorEmitter.emit(sys.exc_info()[1])
 
 
 class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
