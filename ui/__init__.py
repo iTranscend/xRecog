@@ -831,8 +831,7 @@ class XrecogMainWindow(QtWidgets.QMainWindow, EventEmitter):
         self.lookupTimer.start()
 
     def loadCourses(self, courses):
-        for course in courses:
-            self.courses.append(course)
+        self.courses.extend(courses)
         self.courseComboBox.clear()
         self.courseComboBox.addItems(courses)
         self.courseComboBox.setCurrentIndex(-1)
