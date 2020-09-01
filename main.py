@@ -140,6 +140,20 @@ def registerStudent(student):
     )
 
 
+def matricExistsInDb(matricCode, _cursor=None):
+    cursor = _cursor or connection.cursor(prepared=True)
+    cursor.execute(f"""
+        SELECT EXISTS (
+            SELECT 1 from attendees
+            WHERE matricCode = '{matricCode}'
+        ) LIMIT 1
+    """)
+    ret = cursor.fetchone()[0] != 0
+    if _cursor != None:
+        cursor.close()
+    return ret
+
+
 def lookupMatric(matric):
     if matric != "0000":
         student = main_window.students.get(matric, None)
@@ -230,6 +244,8 @@ def mountMainInstance():
     loadStudentsIntoUI(timeout=1)
     main_window.setAboutText(
         "xRecog\n\nApp Description\n\n2020 (c) Femi Bankole, Miraculous Owonubi")
+    main_window.matriculationCodeValidator = \
+        lambda matricCode: not matricExistsInDb(matricCode)
     main_window.on("refresh", lambda: loadStudentsIntoUI(timeout=1))
     main_window.on("tabChanged", tabChanged)
     main_window.on("resetAttendance", resetAttendance)
