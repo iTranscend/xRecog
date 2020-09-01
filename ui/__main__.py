@@ -18,42 +18,41 @@ def mountTestInstance(main_window):
     args = sys.argv[1:]
     num_students = int(args[0]) if len(args) else 10000
 
-    courses = []
+    courses = [
+        "Computer Science",
+        "Physics",
+        "Chemistry",
+        "Law",
+        "Sociology",
+        "Political Sciences",
+        "Art",
+        "Philosophy",
+        "Music",
+        "Anthropology",
+        "Psychology",
+        "English",
+        "Astrophysics",
+        "Biology",
+        "Geography",
+        "Physiotheraphy",
+        "Medicine",
+        "French",
+        "Statistics",
+        "Biochemistry",
+        "Cybersecurity",
+        "Criminology",
+        "Economics",
+        "Epidemiology",
+        "Statistics",
+        "Mathematics"
+    ]
+
+    with main_window.logr(
+            "Loading %d course%s" % (len(courses), "" if len(courses) == 1 else 's'), force=True):
+        main_window.loadCourses(courses)
 
     def loadCoursesAndStudents(logTick):
         logTick("Preparing courses...", 1)
-        courses.extend([
-            "Computer Science",
-            "Physics",
-            "Chemistry",
-            "Law",
-            "Sociology",
-            "Political Sciences",
-            "Art",
-            "Philosophy",
-            "Music",
-            "Anthropology",
-            "Psychology",
-            "English",
-            "Astrophysics",
-            "Biology",
-            "Geography",
-            "Physiotheraphy",
-            "Medicine",
-            "French",
-            "Statistics",
-            "Biochemistry",
-            "Cybersecurity",
-            "Criminology",
-            "Economics",
-            "Epidemiology",
-            "Statistics",
-            "Mathematics"
-        ])
-        with main_window.logr(
-                "Loading %d course%s" % (len(courses), "" if len(courses) == 1 else 's'), force=True):
-            logTick("Loading courses into UI...", 10)
-            main_window.loadCourses(courses)
 
         max_students = max(10000, num_students)
 
@@ -67,7 +66,7 @@ def mountTestInstance(main_window):
 
             def newStudent(matric_number):
                 logTick("Generating decoy students [%d/%d]..." % (
-                    len(students) + 1, num_students), tick=45 / num_students)
+                    len(students) + 1, num_students), tick=55 / num_students)
                 male = bool(random.getrandbits(1))
                 students.append({
                     "firstName": faker.first_name_male() if male else faker.first_name_female(),
@@ -92,7 +91,7 @@ def mountTestInstance(main_window):
         ) as logr:
             for (index, job) in enumerate(main_window.loadStudents(students)):
                 logTick(
-                    f"Loading students into UI [%d/%d]..." % (index + 1, num_students), tick=(40 / num_students))
+                    f"Loading students into UI [%d/%d]..." % (index + 1, num_students), tick=(42 / num_students))
                 job.wait()
 
         logTick("Finalizing demo instance setup...", 99)
