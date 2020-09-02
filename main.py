@@ -94,47 +94,39 @@ def registerStudent(student):
         logTick("Preparing student stage...", 8)
         nImages = len(student["capturedImages"])
         cursor = connection.cursor(prepared=True)
-        try:
-            cursor.execute(f"""
-                SELECT EXISTS (
-                    SELECT 1 from attendees
-                    WHERE matricCode = '{student["matriculationCode"]}'
-                ) LIMIT 1
-            """)
-            if cursor.fetchone()[0] != 0:
-                raise StudentExistsError(
-                    "Matric code [%s] exists" % student["matriculationCode"])
-            for (index, imagePath) in enumerate(student["capturedImages"]):
-                logTick("Saving student image [%02d/%02d]..." %
-                        (index + 1, nImages), tick=(42 / nImages))
-                xrecogCore.addImage(student["matriculationCode"], imagePath)
-                os.unlink(imagePath)
-            logTick("Registering student, please wait...", 80)
-            cursor.execute(
-                f"""
-                INSERT INTO attendees
-                (firstName, middleName, lastName, entryYear, matricCode, courseOfStudy, isPresent)
-                VALUES
-                (
-                    '{student["firstName"]}',
-                    '{student["middleName"]}',
-                    '{student["lastName"]}',
-                    '{student["entryYear"]}',
-                    '{student["matriculationCode"]}',
-                    '{student["courseOfStudy"]}',
-                    '{int(student["markPresent"])}'
-                )
-                """
+        if matricExistsInDb(student["matriculationCode"], cursor):
+            raise StudentExistsError(
+                "Matric code [%s] exists" % student["matriculationCode"])
+        for (index, imagePath) in enumerate(student["capturedImages"]):
+            logTick("Saving student image [%02d/%02d]..." %
+                    (index + 1, nImages), tick=(42 / nImages))
+            xrecogCore.addImage(student["matriculationCode"], imagePath)
+            os.unlink(imagePath)
+        logTick("Registering student, please wait...", 80)
+        cursor.execute(
+            f"""
+            INSERT INTO attendees
+            (firstName, middleName, lastName, entryYear, matricCode, courseOfStudy, isPresent)
+            VALUES
+            (
+                '{student["firstName"]}',
+                '{student["middleName"]}',
+                '{student["lastName"]}',
+                '{student["entryYear"]}',
+                '{student["matriculationCode"]}',
+                '{student["courseOfStudy"]}',
+                '{int(student["markPresent"])}'
             )
-            connection.commit()
-            logTick("Analyzing student's face...", 90)
-            xrecogCore.quantifyFaces()
-            logTick("Loading student into UI...", 97)
-            main_window.loadStudent(student).wait()
-            logTick("Finalizing student registration...", 99)
-            main_window.resetButton.click()
-        finally:
-            cursor.close()
+            """
+        )
+        connection.commit()
+        cursor.close()
+        logTick("Analyzing student's face...", 90)
+        xrecogCore.quantifyFaces()
+        logTick("Loading student into UI...", 97)
+        main_window.loadStudent(student).wait()
+        logTick("Finalizing student registration...", 99)
+        main_window.resetButton.click()
 
     main_window._dispatch(
         processStudent,
