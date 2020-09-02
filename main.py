@@ -154,7 +154,7 @@ def matricExistsInDb(matricCode, _cursor=None):
         ) LIMIT 1
     """)
     ret = cursor.fetchone()[0] != 0
-    if _cursor != None:
+    if _cursor == None:
         cursor.close()
     return ret
 
