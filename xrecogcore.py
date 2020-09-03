@@ -71,7 +71,7 @@ class XRecogCore(object):
 
     def loadPickles(self, prepareBaseFacialVectors):
         self.processQueue = loads(
-            self.pickleMaps["pqueue"], lambda: prepareBaseFacialVectors(self._addStudent))
+            self.pickleMaps["pqueue"], lambda: prepareBaseFacialVectors(self._addImage))
         (self.labelEncoder, self.svcRecognizer) = loads(
             self.pickleMaps["vectors"],
             lambda: (

@@ -194,19 +194,18 @@ def tabChanged(index):
         pass
 
 
-def prepareBaseFacialVectors(addStudent):
+def prepareBaseFacialVectors(addImage):
     from imutils import paths
     print("[INFO] preparing base image store...")
     pQueue = {}
-    addStudent(
-        "0000",
-        list(paths.list_images(os.path.join(
-            CONFIG
-            .setdefault("prefs", {})
-            .setdefault("base", "core/base")
-        ))),
-        pQueue
-    )
+    baseImages = list(paths.list_images(os.path.join(
+        CONFIG
+        .setdefault("prefs", {})
+        .setdefault("base", "core/base")
+    )))
+    for (index, imagePath) in enumerate(baseImages):
+        print("[INFO] processing base image {}/{}".format(index + 1, len(baseImages)))
+        addImage("0000", imagePath, pQueue)
     return pQueue
 
 
