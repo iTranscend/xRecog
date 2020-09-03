@@ -126,7 +126,7 @@ def registerStudent(student):
         logTick("Loading student into UI...", 97)
         main_window.loadStudent(student).wait()
         logTick("Finalizing student registration...", 99)
-        main_window.resetButton.click()
+        main_window.resetButton.clicked.emit()
 
     main_window._dispatch(
         processStudent,
