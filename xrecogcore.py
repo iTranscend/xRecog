@@ -44,9 +44,8 @@ class XRecogCore(object):
     def __init__(self, *, detector, confidence, embedding_model, pickleMaps=None, prepareBaseFacialVectors):
         super().__init__()
         assert isinstance(pickleMaps, dict)
-        assert isinstance(pickleMaps["le"], str)
         assert isinstance(pickleMaps["pqueue"], str)
-        assert isinstance(pickleMaps["recognizer"], str)
+        assert isinstance(pickleMaps["vectors"], str)
 
         # load our serialized face detector from disk
         print("[INFO] loading face detector...")
@@ -66,17 +65,20 @@ class XRecogCore(object):
         self.loadPickles(prepareBaseFacialVectors)
 
     def dump(self):
-        dumps(self.labelEncoder, self.pickleMaps["le"])
         dumps(self.processQueue, self.pickleMaps["pqueue"])
-        dumps(self.svcRecognizer, self.pickleMaps["recognizer"])
+        dumps((self.labelEncoder, self.svcRecognizer),
+              self.pickleMaps["vectors"])
 
     def loadPickles(self, prepareBaseFacialVectors):
-        self.labelEncoder = loads(
-            self.pickleMaps["le"], lambda: LabelEncoder())
         self.processQueue = loads(
             self.pickleMaps["pqueue"], lambda: prepareBaseFacialVectors(self._addStudent))
-        self.svcRecognizer = loads(
-            self.pickleMaps["recognizer"], lambda: SVC(C=1.0, kernel="linear", probability=True))
+        (self.labelEncoder, self.svcRecognizer) = loads(
+            self.pickleMaps["vectors"],
+            lambda: (
+                LabelEncoder(),
+                SVC(C=1.0, kernel="linear", probability=True)
+            )
+        )
 
     def addStudent(self, matricCode, images):
         self._addStudent(matricCode, images, self.processQueue)
