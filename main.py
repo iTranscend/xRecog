@@ -141,7 +141,7 @@ def registerStudent(student):
 
 
 def matricExistsInDb(matricCode, _cursor=None):
-    if matricCode == '0000':
+    if matricCode == "0000":
         return True
     cursor = _cursor or connection.cursor(prepared=True)
     cursor.execute(f"""
