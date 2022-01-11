@@ -74,9 +74,14 @@ class XRecogCore(object):
         self.labelEncoder = loads(
             self.pickleMaps["le"], lambda: LabelEncoder())
         self.processQueue = loads(
-            self.pickleMaps["pqueue"], lambda: prepareBaseFacialVectors(self._addStudent))
-        self.svcRecognizer = loads(
-            self.pickleMaps["recognizer"], lambda: SVC(C=1.0, kernel="linear", probability=True))
+            self.pickleMaps["pqueue"], lambda: prepareBaseFacialVectors(self._addImage))
+        (self.labelEncoder, self.svcRecognizer) = loads(
+            self.pickleMaps["vectors"],
+            lambda: (
+                LabelEncoder(),
+                SVC(C=1.0, kernel="linear", probability=True)
+            )
+        )
 
     def addStudent(self, matricCode, images):
         self._addStudent(matricCode, images, self.processQueue)
