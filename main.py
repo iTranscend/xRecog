@@ -78,10 +78,6 @@ def verifyAsPresent(matricCode):
         cursor.close()
 
 
-class StudentExistsError(Exception):
-    pass
-
-
 def registerStudent(student):
     print("registerStudent[matric=%s]: %s%s %s" % (
         student["matriculationCode"],
@@ -89,20 +85,27 @@ def registerStudent(student):
         " %s" % student["middleName"] if student["middleName"] else "",
         student["lastName"],
     ))
+    STUDENTDIR = os.path.join(
+        CONFIG.setdefault("prefs", {}).setdefault("dataset", "core/dataset"),
+        student["matriculationCode"])
 
     def processStudent(logTick):
         logTick("Preparing student stage...", 8)
+        if os.path.exists(STUDENTDIR):
+            print("[WARN] Student stage exists [%s]" %
+                  student["matriculationCode"])
+            raise FileExistsError("Student stage exists: %s" %
+                                  student["matriculationCode"])
+        os.mkdir(STUDENTDIR)
         nImages = len(student["capturedImages"])
-        cursor = connection.cursor(prepared=True)
-        if matricExistsInDb(student["matriculationCode"], cursor):
-            raise StudentExistsError(
-                "Matric code [%s] exists" % student["matriculationCode"])
         for (index, imagePath) in enumerate(student["capturedImages"]):
             logTick("Saving student image [%02d/%02d]..." %
                     (index + 1, nImages), tick=(42 / nImages))
-            xrecogCore.addImage(student["matriculationCode"], imagePath)
-            os.unlink(imagePath)
+            newPath = os.path.join(STUDENTDIR, "%02d.jpg" % index)
+            shutil.move(imagePath, newPath)
+            xrecogCore.addImage(student["matriculationCode"], newPath)
         logTick("Registering student, please wait...", 80)
+        cursor = connection.cursor(prepared=True)
         cursor.execute(
             f"""
             INSERT INTO attendees
@@ -126,7 +129,7 @@ def registerStudent(student):
         logTick("Loading student into UI...", 97)
         main_window.loadStudent(student).wait()
         logTick("Finalizing student registration...", 99)
-        main_window.resetButton.clicked.emit()
+        main_window.resetButton.click()
 
     main_window._dispatch(
         processStudent,
@@ -274,12 +277,15 @@ if __name__ == "__main__":
             "model", {}).setdefault("confidence", 0.5)),
         prepareBaseFacialVectors=prepareBaseFacialVectors,
         pickleMaps={
+            "le": os.path.join(
+                CONFIG.setdefault("prefs", {})
+                .setdefault("pickle_path", "core/output"), "le.pickle"),
             "pqueue": os.path.join(
                 CONFIG.setdefault("prefs", {})
                 .setdefault("pickle_path", "core/output"), "pqueue.pickle"),
-            "vectors": os.path.join(
+            "recognizer": os.path.join(
                 CONFIG.setdefault("prefs", {})
-                .setdefault("pickle_path", "core/output"), "vectors.pickle")
+                .setdefault("pickle_path", "core/output"), "recognizer.pickle")
         }
     )
     try:
