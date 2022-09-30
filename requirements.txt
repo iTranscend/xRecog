@@ -3,7 +3,7 @@ decorator==4.4.1
 Faker==4.1.1
 imageio==2.6.1
 imutils==0.5.3
-joblib==0.14.1
+joblib==1.2.0
 kiwisolver==1.1.0
 mahotas==1.4.9
 markdown2==2.4.0
